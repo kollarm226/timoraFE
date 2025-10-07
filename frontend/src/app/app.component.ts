@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RegisterComponent } from './register/register.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  standalone: true,
+  imports: [RouterModule, ReactiveFormsModule, RegisterComponent],
+  templateUrl: './app.component.html'
 })
-export class AppComponent {
-  title = 'frontend';
+export class AppComponent { 
+
+  title = 'Timora';
+  
 }
