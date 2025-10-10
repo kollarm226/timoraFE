@@ -1,0 +1,16 @@
+<mat-toolbar class="topbar">
+  <div class="left"></div>
+  <div class="right">
+    <button mat-stroked-button color="primary">Request vacation</button>
+    <button mat-icon-button aria-label="theme toggle" (click)="toggleTheme()">
+      <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+    <div class="user">
+      <div class="avatar"></div>
+      <div class="info">
+        <div class="name">Peter Doe</div>
+        <div class="role">Employee</div>
+      </div>
+    </div>
+  </div>
+</mat-toolbar>
