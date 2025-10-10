@@ -7,7 +7,6 @@ import { User } from '../models/user.model';
 // Injectable s providedIn: 'root' znamená že Angular automaticky poskytne tento servis naprieč aplikáciou.
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-constructor() { }
 
 private getUsers(): User[] {
 const raw = localStorage.getItem('users');
@@ -22,31 +21,43 @@ localStorage.setItem('users', JSON.stringify(users));
 
 
 register(user: User): Observable<{ success: boolean; user: User }> {
-const users = this.getUsers();
+  const users = this.getUsers();
 
+  // Unikátne companyId (case-insensitive porovnanie)
+  if (users.find(u => u.companyId?.toLowerCase() === user.companyId.toLowerCase())) {
+    return throwError(() => new Error('Company ID už existuje'));
+  }
 
+  // Unikátny e-mail (case-insensitive)
+  if (users.find(u => u.email?.toLowerCase() === user.email.toLowerCase())) {
+    return throwError(() => new Error('E-mailová adresa je už použitá'));
+  }
 
-if (users.find(u => u.username === user.username)) {
+  users.push(user);
+  this.saveUsers(users);
 
-return throwError(() => new Error('Užívateľské meno už existuje'));
+  return of({ success: true, user }).pipe(delay(500));
 }
 
+login(credentials: { companyId: string; username: string; password: string }): Observable<{ success: boolean; user: User }> {
+  const users = this.getUsers();
+  
+  // Find user by companyId and username
+  const user = users.find(u => 
+    u.companyId?.toLowerCase() === credentials.companyId.toLowerCase() &&
+    (u.firstName?.toLowerCase() === credentials.username.toLowerCase() || 
+     u.lastName?.toLowerCase() === credentials.username.toLowerCase() ||
+     `${u.firstName} ${u.lastName}`.toLowerCase() === credentials.username.toLowerCase())
+  );
 
+  if (!user) {
+    return throwError(() => new Error('Invalid credentials'));
+  }
 
-if (users.find(u => u.email === user.email)) {
-return throwError(() => new Error('E-mailová adresa je už použitá'));
-}
+  if (user.password !== credentials.password) {
+    return throwError(() => new Error('Invalid password'));
+  }
 
-
-
-users.push(user);
-this.saveUsers(users);
-
-
-
-return of({ success: true, user }).pipe(delay(500));
-
-
-
+  return of({ success: true, user }).pipe(delay(500));
 }
 }
