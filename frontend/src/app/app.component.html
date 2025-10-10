@@ -177,12 +177,15 @@
   }
 </style>
 
-<div class="app-shell">
-  <app-sidebar></app-sidebar>
-  <div class="content-area">
-    <app-topbar></app-topbar>
-    <div class="page-container">
-      <router-outlet />
+<div class="layout">
+  <app-topbar></app-topbar>
+  <div class="app-shell">
+    <app-sidebar></app-sidebar>
+    <div class="content-area">
+      <div class="page-container">
+        <router-outlet />
+      </div>
     </div>
   </div>
+  
 </div>

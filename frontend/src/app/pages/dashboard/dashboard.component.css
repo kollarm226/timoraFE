@@ -1,16 +1,56 @@
 .page h1 { margin: 8px 0 12px; font-weight: 700; }
 
-.table-card { padding: 0; overflow: hidden; }
+.table-card { padding: 0; overflow: hidden; background: var(--card-bg); color: var(--text); }
+:host-context(.dark-theme) .table-card { background: #464646; }
 
-table { width: 100%; }
+table { width: 100%; border-collapse: collapse; background: var(--card-bg); color: var(--text); }
+:host-context(.dark-theme) table { background: #464646; }
 
 th.mat-mdc-header-cell { color: #6b7280; font-weight: 600; }
+.status-header { text-align: center; }
+.center-header { text-align: center; }
 
-.mat-mdc-table .mat-mdc-row { height: 64px; }
+.mat-mdc-table .mat-mdc-row { height: 56px; }
+.mat-mdc-table .mdc-data-table__cell,
+.mat-mdc-table .mdc-data-table__header-cell { padding: 12px 20px; }
+.status-cell { text-align: center; }
+.status-chips { display: inline-flex; }
+.center-cell { text-align: center; }
 
-mat-chip.approved { background: #10b9811a; color: #059669; }
-mat-chip.declined { background: #ef44441a; color: #dc2626; }
-mat-chip.pending { background: #f59e0b1a; color: #d97706; }
+/* Ensure text is white in dark mode for table headers */
+:host-context(.dark-theme) th.mat-mdc-header-cell,
+:host-context(.dark-theme) .mdc-data-table__cell {
+  color: #ffffff !important;
+}
+.mat-mdc-table .mdc-data-table__header-row { border-bottom: 1px solid #dfe3ea; }
+.mat-mdc-table .mdc-data-table__row { border-bottom: 1px solid #dfe3ea; }
+/* Force light separators on all cells */
+.mat-mdc-table .mdc-data-table__cell,
+.mat-mdc-table .mdc-data-table__header-cell { border-bottom: 1px solid #dfe3ea; }
+
+mat-chip { border-radius: 9999px; padding: 2px 12px; line-height: 18px; font-size: 13px; }
+.mat-mdc-standard-chip { 
+  box-shadow: none; 
+  --mdc-chip-outline-color: transparent; 
+  --mdc-chip-disabled-outline-color: transparent;
+}
+.mat-mdc-standard-chip .mdc-evolution-chip__overlay { border: none; }
+.mat-mdc-standard-chip .mdc-evolution-chip__ripple::before,
+.mat-mdc-standard-chip .mdc-evolution-chip__ripple::after { border: none; }
+/* Light mode: gray text */
+mat-chip.approved { background: rgba(52, 211, 153, 0.25); color: #374151; border: 2px solid #10b981; font-weight: 700; }
+mat-chip.declined { background: rgba(248, 113, 113, 0.25); color: #374151; border: 2px solid #ef4444; font-weight: 700; }
+mat-chip.pending { background: rgba(251, 191, 36, 0.25); color: #374151; border: 2px solid #f59e0b; font-weight: 700; }
+
+/* Dark mode: force white text */
+:host-context(.dark-theme) mat-chip.approved,
+:host-context(.dark-theme) mat-chip.declined,
+:host-context(.dark-theme) mat-chip.pending { color: #ffffff; --mdc-chip-label-text-color: #ffffff; --mdc-chip-with-icon-label-text-color: #ffffff; }
+
+.mat-mdc-standard-chip .mdc-evolution-chip__text-label { color: inherit !important; opacity: 1 !important; }
+:host-context(.dark-theme) mat-chip.approved .mdc-evolution-chip__text-label,
+:host-context(.dark-theme) mat-chip.declined .mdc-evolution-chip__text-label,
+:host-context(.dark-theme) mat-chip.pending .mdc-evolution-chip__text-label { color: #ffffff !important; }
 
 .grid {
   display: grid;
@@ -19,7 +59,10 @@ mat-chip.pending { background: #f59e0b1a; color: #d97706; }
   margin-top: 16px;
 }
 
-mat-card { padding: 16px; border-radius: 16px; }
+mat-card { padding: 16px; border-radius: 16px; background: #ffffff; border: 1px solid #eef2f7; box-shadow: 0 2px 8px rgba(17, 24, 39, 0.05); }
+:host-context(.dark-theme) mat-card { background: #464646; border-color: #7b8086; }
+/* Ensure info cards pick up the dark background and white text */
+:host-context(.dark-theme) .grid mat-card { background: #464646 !important; color: #ffffff; }
 .muted { color: #6b7280; }
 .role { text-align: center; margin-top: 8px; }
 .avatar {
@@ -27,6 +70,8 @@ mat-card { padding: 16px; border-radius: 16px; }
 }
 .dot { width: 8px; height: 8px; background: #ef4444; border-radius: 9999px; margin: 8px 0; }
 .announcement { font-size: 13px; color: #374151; }
+:host-context(.dark-theme) .announcement { color: #ffffff !important; }
 .docs { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .doc-icon { font-size: 96px; height: 96px; width: 96px; color: #111827; margin-top: 12px; }
+:host-context(.dark-theme) .doc-icon { color: #ffffff; }
 

@@ -2,12 +2,12 @@ html, body, :host {
   height: 100%;
 }
 
+.layout { min-height: 100vh; background: var(--bg); }
+
 .app-shell {
   display: grid;
   grid-template-columns: 260px 1fr;
   grid-template-rows: 100%;
-  min-height: 100vh;
-  background: #f3f4f6;
 }
 
 .content-area {
@@ -18,5 +18,6 @@ html, body, :host {
 
 .page-container {
   padding: 24px;
+  color: var(--text);
 }
 

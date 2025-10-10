@@ -1,18 +1,17 @@
-<mat-sidenav-container class="sidenav-container" hasBackdrop="false">
-  <mat-sidenav mode="side" opened class="sidenav">
+<div class="sidebar-wrap">
+  <div class="sidenav">
     <div class="brand">
       <div class="logo">Timora</div>
       <div class="subtitle">Intranet & Vacation planner</div>
     </div>
-    <mat-nav-list>
-      <a mat-list-item href="#">Dashboard</a>
-      <a mat-list-item href="#">Calendar</a>
-      <a mat-list-item href="#">Announcements</a>
-      <a mat-list-item href="#">Contact</a>
-      <a mat-list-item href="#">Documents</a>
-      <a mat-list-item href="#">About us</a>
-      <a mat-list-item href="#">FAQ</a>
+    <mat-nav-list class="nav">
+      <a mat-list-item href="#"><mat-icon matListItemIcon>dashboard</mat-icon><span matListItemTitle>Dashboard</span></a>
+      <a mat-list-item href="#"><mat-icon matListItemIcon>event</mat-icon><span matListItemTitle>Calendar</span></a>
+      <a mat-list-item href="#"><mat-icon matListItemIcon>campaign</mat-icon><span matListItemTitle>Announcements</span></a>
+      <a mat-list-item href="#"><mat-icon matListItemIcon>call</mat-icon><span matListItemTitle>Contact</span></a>
+      <a mat-list-item href="#"><mat-icon matListItemIcon>description</mat-icon><span matListItemTitle>Documents</span></a>
+      <a mat-list-item href="#"><mat-icon matListItemIcon>groups</mat-icon><span matListItemTitle>About us</span></a>
+      <a mat-list-item href="#"><mat-icon matListItemIcon>help_outline</mat-icon><span matListItemTitle>FAQ</span></a>
     </mat-nav-list>
-  </mat-sidenav>
-  <mat-sidenav-content></mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</div>

@@ -10,5 +10,15 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './topbar.component.css'
 })
 export class TopbarComponent {
+  isDark = false;
 
+  toggleTheme() {
+    this.isDark = !this.isDark;
+    const root = document.body.classList;
+    if (this.isDark) {
+      root.add('dark-theme');
+    } else {
+      root.remove('dark-theme');
+    }
+  }
 }
