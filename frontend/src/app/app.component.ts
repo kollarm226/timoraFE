@@ -8,7 +8,18 @@ import { TopbarComponent } from './layout/topbar/topbar.component';
   imports: [RouterOutlet, SidebarComponent, TopbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
+import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RegisterComponent } from './register/register.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterModule, ReactiveFormsModule, RegisterComponent],
+  templateUrl: './app.component.html'
 })
-export class AppComponent {
-  title = 'frontend';
+export class AppComponent { 
+
+  title = 'Timora';
+  
 }
