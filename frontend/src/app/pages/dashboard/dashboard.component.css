@@ -1,0 +1,32 @@
+.page h1 { margin: 8px 0 12px; font-weight: 700; }
+
+.table-card { padding: 0; overflow: hidden; }
+
+table { width: 100%; }
+
+th.mat-mdc-header-cell { color: #6b7280; font-weight: 600; }
+
+.mat-mdc-table .mat-mdc-row { height: 64px; }
+
+mat-chip.approved { background: #10b9811a; color: #059669; }
+mat-chip.declined { background: #ef44441a; color: #dc2626; }
+mat-chip.pending { background: #f59e0b1a; color: #d97706; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+mat-card { padding: 16px; border-radius: 16px; }
+.muted { color: #6b7280; }
+.role { text-align: center; margin-top: 8px; }
+.avatar {
+  width: 120px; height: 120px; border-radius: 9999px; background: #d1d5db; margin: 16px auto;
+}
+.dot { width: 8px; height: 8px; background: #ef4444; border-radius: 9999px; margin: 8px 0; }
+.announcement { font-size: 13px; color: #374151; }
+.docs { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.doc-icon { font-size: 96px; height: 96px; width: 96px; color: #111827; margin-top: 12px; }
+
