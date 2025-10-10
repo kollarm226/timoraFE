@@ -1,1 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+:root {
+  --bg: #f3f4f6;
+  --card-bg: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+}
+
+.dark-theme {
+  --bg: #545454;
+  --card-bg: #545454;
+  --text: #ffffff;
+  --muted: #e3e5e8;
+  --border: #b8bdc4;
+}
+
+body, .layout { background: var(--bg); color: var(--text); }
+mat-card { background: var(--card-bg) !important; color: var(--text); border-color: var(--border) !important; }
+.muted { color: var(--muted) !important; }
+.mat-mdc-table .mdc-data-table__header-row, .mat-mdc-table .mdc-data-table__row, .mat-mdc-table .mdc-data-table__cell, .mat-mdc-table .mdc-data-table__header-cell { border-color: var(--border); }
+
+/* Smooth theme transitions */
+body, .layout, mat-card, .topbar, .table-card, table, .nav, .sidenav {
+  transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease;
+}

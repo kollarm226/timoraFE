@@ -1,0 +1,53 @@
+<div class="page">
+  <h1>Upcoming vacations</h1>
+  <mat-card class="table-card">
+    <table mat-table [dataSource]="vacations" class="mat-elevation-z1">
+      <ng-container matColumnDef="start">
+        <th mat-header-cell *matHeaderCellDef>Starts</th>
+        <td mat-cell *matCellDef="let v">{{ v.start }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="end">
+        <th mat-header-cell *matHeaderCellDef class="center-header">Ends</th>
+        <td mat-cell *matCellDef="let v" class="center-cell">{{ v.end }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef class="status-header">Status</th>
+        <td mat-cell *matCellDef="let v" class="status-cell">
+          <mat-chip-set class="status-chips">
+            <mat-chip [class.approved]="v.status==='Approved'" [class.declined]="v.status==='Declined'" [class.pending]="v.status==='Pending'">{{ v.status }}</mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </mat-card>
+
+  <div class="grid">
+    <mat-card>
+      <h2>Contact</h2>
+      <div class="muted">Michael Jisacle</div>
+      <div class="avatar"></div>
+      <div class="muted role">CEO</div>
+    </mat-card>
+
+    <mat-card>
+      <h2>Announcements</h2>
+      <div class="muted">Michael Barbados</div>
+      <div class="dot"></div>
+      <p class="announcement">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eget aliquet nibh praesent tristique magna sit amet purus. Vitae aliquet nec ullamcorper sit amet risus nullam. Mattis aliquam faucibus purus in massa tempor nec feugiat nisl.
+      </p>
+    </mat-card>
+
+    <mat-card class="docs">
+      <h2>Documents</h2>
+      <div class="muted">Summer Newsletter</div>
+      <p>This is a overview from this summer.</p>
+      <mat-icon class="doc-icon" fontIcon="description"></mat-icon>
+    </mat-card>
+  </div>
+</div>
