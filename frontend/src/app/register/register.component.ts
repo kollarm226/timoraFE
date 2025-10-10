@@ -74,14 +74,11 @@ export class RegisterComponent {
 
 
 
-passwordsMatchValidator: ValidatorFn = (group: AbstractControl) => {
-const pw = group.get('password')?.value;
-const cpw = group.get('confirmPassword')?.value;
-
-
-
-return pw && cpw && pw !== cpw ? { passwordsNotMatching: true } : null;
-};
+private passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
+  const pw = group.get('password')?.value;
+  const cpw = group.get('confirmPassword')?.value;
+  return pw && cpw && pw !== cpw ? { passwordsNotMatching: true } : null;
+}
 
 
 // Povolené len písmená (vrátane diakritiky) a medzery/čiarky medzi menami
