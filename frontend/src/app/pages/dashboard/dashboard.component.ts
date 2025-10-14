@@ -11,7 +11,7 @@ import { SidebarComponent } from '../../layout/sidebar/sidebar.component';
   standalone: true,
   imports: [MatTableModule, MatChipsModule, MatCardModule, MatIconModule, TopbarComponent, SidebarComponent],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
   displayedColumns = ['start', 'end', 'status'];
