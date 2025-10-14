@@ -3,11 +3,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TopbarComponent } from '../../layout/topbar/topbar.component';
+import { SidebarComponent } from '../../layout/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatTableModule, MatChipsModule, MatCardModule, MatIconModule],
+  imports: [MatTableModule, MatChipsModule, MatCardModule, MatIconModule, TopbarComponent, SidebarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
