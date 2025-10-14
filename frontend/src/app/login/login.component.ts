@@ -48,7 +48,7 @@ export class LoginComponent {
       ]
     });
 
-  // Alfanumerický reťazec pre companyId (bez medzier)
+  
   private alphanumericValidator(): ValidatorFn {
     const regex = /^[A-Za-z0-9]+$/;
     return (control: AbstractControl): ValidationErrors | null => {
@@ -76,11 +76,11 @@ export class LoginComponent {
 
     this.loading = true;
 
-    // Call auth service login method
+   
     this.auth.login(loginData).subscribe({
       next: () => {
         this.loading = false;
-        // Navigate to dashboard or main page after successful login
+       
         this.router.navigate(['/dashboard']);
       },
       error: (err: unknown) => {
