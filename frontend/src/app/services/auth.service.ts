@@ -4,7 +4,7 @@ import { delay } from 'rxjs/operators';
 import { User } from '../models/user.model';
 
 
-// Injectable s providedIn: 'root' znamená že Angular automaticky poskytne tento servis naprieč aplikáciou.
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
@@ -23,12 +23,12 @@ localStorage.setItem('users', JSON.stringify(users));
 register(user: User): Observable<{ success: boolean; user: User }> {
   const users = this.getUsers();
 
-  // Unikátne companyId (case-insensitive porovnanie)
+ 
   if (users.find(u => u.companyId?.toLowerCase() === user.companyId.toLowerCase())) {
     return throwError(() => new Error('Company ID už existuje'));
   }
 
-  // Unikátny e-mail (case-insensitive)
+  
   if (users.find(u => u.email?.toLowerCase() === user.email.toLowerCase())) {
     return throwError(() => new Error('E-mailová adresa je už použitá'));
   }

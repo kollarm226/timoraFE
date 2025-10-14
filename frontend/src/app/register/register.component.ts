@@ -70,7 +70,7 @@ export class RegisterComponent {
       ],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordsMatchValidator });
-	// Poznámka: druhý parameter Group options môžeme využiť na pridanie "cross-field" validatora
+	
 
 
 
@@ -81,9 +81,9 @@ private passwordsMatchValidator(group: AbstractControl): ValidationErrors | null
 }
 
 
-// Povolené len písmená (vrátane diakritiky) a medzery/čiarky medzi menami
+
 private lettersOnlyValidator(): ValidatorFn {
-  const regex = /^[A-Za-zÀ-ž]+(?:[\s'-][A-Za-zÀ-ž]+)*$/u; // podporuje diakritiku
+  const regex = /^[A-Za-zÀ-ž]+(?:[\s'-][A-Za-zÀ-ž]+)*$/u; 
   return (control: AbstractControl): ValidationErrors | null => {
     const value = (control.value || '').trim();
     if (!value) return null; // prázdne rieši required
@@ -91,7 +91,7 @@ private lettersOnlyValidator(): ValidatorFn {
   };
 }
 
-// Alfanumerický reťazec pre companyId (bez medzier)
+
 private alphanumericValidator(): ValidatorFn {
   const regex = /^[A-Za-z0-9]+$/;
   return (control: AbstractControl): ValidationErrors | null => {
@@ -101,7 +101,7 @@ private alphanumericValidator(): ValidatorFn {
   };
 }
 
-// Adresa: povolené písmená, čísla, medzery a .,,-/ znak
+
 private addressValidator(): ValidatorFn {
   const regex = /^[A-Za-zÀ-ž0-9\s.,/-]{5,100}$/u;
   return (control: AbstractControl): ValidationErrors | null => {
@@ -111,7 +111,7 @@ private addressValidator(): ValidatorFn {
   };
 }
 
-// Sila hesla: min. 1 veľké, 1 malé písmeno, 1 číslo a 1 špeciálny znak
+
 private passwordStrengthValidator(): ValidatorFn {
   const upper = /[A-Z]/;
   const lower = /[a-z]/;
@@ -153,14 +153,14 @@ password: String(this.f['password'].value)
 };
 
 
-this.loading = true; // loading
+this.loading = true; 
 
 
-// volame mock
+
 this.auth.register(user).subscribe({
   next: () => {
     this.loading = false;
-    // show success feedback and stay on register (or navigate to a valid route)
+    
     alert('Úspešne zaregistrovaný používateľ: ' + this.registerForm.value.username);
     this.router.navigate(['/register']);
 
@@ -171,7 +171,7 @@ this.loading = false;
 const message = (err instanceof Error) ? err.message : 'Nastala chyba počas registrácie';
 this.serverError = message;
 
-        // tu si môžeš simulovať registráciu – zatiaľ len log
+       
         console.log('Formulár odoslaný:', this.registerForm.value);
 
 }
