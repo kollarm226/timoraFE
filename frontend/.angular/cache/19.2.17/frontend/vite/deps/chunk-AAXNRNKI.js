@@ -4412,7 +4412,6 @@ function provideClientHydration(...features) {
 var VERSION = new Version("19.2.15");
 
 export {
-  HttpClient,
   EVENT_MANAGER_PLUGINS,
   EventManager,
   EventManagerPlugin,
@@ -4462,4 +4461,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-QWL5QADC.js.map
+//# sourceMappingURL=chunk-AAXNRNKI.js.map
