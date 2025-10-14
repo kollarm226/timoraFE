@@ -59,6 +59,11 @@ mat-chip.pending { background: rgba(251, 191, 36, 0.25); color: #374151; border:
   margin-top: 16px;
 }
 
+/* Layout wrapper to position sidebar and main content */
+.layout { display: flex; gap: 16px; }
+.layout app-sidebar { flex: 0 0 240px; }
+.layout main.page { flex: 1 1 auto; }
+
 mat-card { padding: 16px; border-radius: 16px; background: #ffffff; border: 1px solid #eef2f7; box-shadow: 0 2px 8px rgba(17, 24, 39, 0.05); }
 :host-context(.dark-theme) mat-card { background: #464646; border-color: #7b8086; }
 /* Ensure info cards pick up the dark background and white text */
