@@ -1,5 +1,9 @@
-<div class="page">
-  <h1>Upcoming vacations</h1>
+<app-topbar></app-topbar>
+<div class="layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="page">
+    <h1>Upcoming vacations</h1>
   <mat-card class="table-card">
     <table mat-table [dataSource]="vacations" class="mat-elevation-z1">
       <ng-container matColumnDef="start">
@@ -49,5 +53,5 @@
       <p>This is a overview from this summer.</p>
       <mat-icon class="doc-icon" fontIcon="description"></mat-icon>
     </mat-card>
-  </div>
+  </main>
 </div>
