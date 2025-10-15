@@ -1,3 +1,11 @@
 <div class="app-container">
-  <router-outlet></router-outlet>
+  <app-topbar *ngIf="!hideSidebar"></app-topbar>
+  
+  <div class="main-content" [class.with-sidebar]="!hideSidebar">
+    <app-sidebar *ngIf="!hideSidebar"></app-sidebar>
+    
+    <div class="content-area" [class.full-width]="hideSidebar">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
 </div>

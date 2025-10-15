@@ -1,6 +1,26 @@
-.sidebar-wrap { display: flex; align-items: center; justify-content: center; height: calc(100vh - 75px); padding: 0 8px 0 0; }
+.sidebar-wrap { 
+  position: fixed; 
+  left: 0; 
+  top: 64px; 
+  width: 240px; 
+  height: calc(100vh - 64px); 
+  z-index: 999;
+  display: flex; 
+  align-items: flex-start; 
+  justify-content: center; 
+  padding: 30px 8px 0 0; 
+}
 
-.sidenav { width: 100%; height: 400px; background: #2b4262; color: #e5e7eb; padding: 12px 0 0 0; border-radius: 0 20px 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,.15); overflow: hidden; transform: translateY(-125px); }
+.sidenav { 
+  width: 100%; 
+  height: 400px; 
+  background: #2b4262; 
+  color: #e5e7eb; 
+  padding: 12px 0 0 0; 
+  border-radius: 0 20px 20px 0; 
+  box-shadow: 0 10px 30px rgba(0,0,0,.15); 
+  overflow: hidden; 
+}
 /* Dark mode panel */
 :host-context(.dark-theme) .sidenav { background: #292929; }
 
