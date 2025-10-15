@@ -5,17 +5,17 @@ import {
   MatLabel,
   MatPrefix,
   MatSuffix
-} from "./chunk-EWITJH4F.js";
+} from "./chunk-MBE6YDMA.js";
 import {
   MatCommonModule,
   ObserversModule
-} from "./chunk-ECO6IGLU.js";
+} from "./chunk-D5V2Z7CI.js";
 import {
   NgModule,
   setClassMetadata,
   ɵɵdefineInjector,
   ɵɵdefineNgModule
-} from "./chunk-OLJ2W2BP.js";
+} from "./chunk-XXW2RU6F.js";
 
 // node_modules/@angular/material/fesm2022/module-BXZhw7pQ.mjs
 var MatFormFieldModule = class _MatFormFieldModule {
@@ -44,4 +44,4 @@ var MatFormFieldModule = class _MatFormFieldModule {
 export {
   MatFormFieldModule
 };
-//# sourceMappingURL=chunk-CIDSI33Y.js.map
+//# sourceMappingURL=chunk-56AEEHAB.js.map
