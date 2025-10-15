@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
-import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { TopbarComponent } from './layout/topbar/topbar.component';
+import { SidebarComponent } from '../layout/sidebar/sidebar.component';
+import { TopbarComponent } from '../layout/topbar/topbar.component';
 import { NgIf } from '@angular/common';
 import { filter } from 'rxjs';
 
@@ -27,6 +27,6 @@ export class AppComponent {
 
   private updateSidebarVisibility(): void {
     const url = this.router.url || '';
-    this.hideSidebar = url.startsWith('/register');
+    this.hideSidebar = url.startsWith('/register') || url === '/';
   }
 }
