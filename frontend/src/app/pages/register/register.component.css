@@ -1,0 +1,4 @@
+.register-wrap { display: flex; justify-content: center; padding: 32px; }
+mat-card { width: 420px; }
+.full { width: 100%; }
+
