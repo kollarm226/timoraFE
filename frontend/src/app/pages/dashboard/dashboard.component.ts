@@ -3,15 +3,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { TopbarComponent } from '../../layout/topbar/topbar.component';
-import { SidebarComponent } from '../../layout/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatTableModule, MatChipsModule, MatCardModule, MatIconModule, TopbarComponent, SidebarComponent],
+  imports: [MatTableModule, MatChipsModule, MatCardModule, MatIconModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
   displayedColumns = ['start', 'end', 'status'];

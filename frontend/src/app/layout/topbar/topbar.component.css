@@ -13,4 +13,3 @@
 /* Make the theme toggle icon white in dark mode, keep default in light */
 :host-context(.dark-theme) .mat-mdc-icon-button mat-icon { color: #ffffff !important; }
 body.dark-theme .topbar button[mat-icon-button] mat-icon { color: #ffffff; }
-

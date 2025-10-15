@@ -5,10 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-topbar',
-  standalone: true,
   imports: [MatToolbarModule, MatButtonModule, MatIconModule],
   templateUrl: './topbar.component.html',
-  styleUrls: ['./topbar.component.css']
+  styleUrl: './topbar.component.css'
 })
 export class TopbarComponent {
   isDark = false;
