@@ -42,7 +42,7 @@ register(user: User): Observable<{ success: boolean; user: User }> {
 login(credentials: { companyId: string; username: string; password: string }): Observable<{ success: boolean; user: User }> {
   const users = this.getUsers();
   
-  // Find user by companyId and username
+  
   const user = users.find(u => 
     u.companyId?.toLowerCase() === credentials.companyId.toLowerCase() &&
     (u.firstName?.toLowerCase() === credentials.username.toLowerCase() || 
