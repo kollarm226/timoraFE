@@ -1,15 +1,13 @@
 import {
   MatCommonModule,
+  Platform,
+  _CdkPrivateStyleLoader,
   _getEventTarget,
+  coerceElement,
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader,
   normalizePassiveListenerOptions
-} from "./chunk-D5V2Z7CI.js";
-import {
-  Platform,
-  _CdkPrivateStyleLoader,
-  coerceElement
-} from "./chunk-TGBX2JF4.js";
+} from "./chunk-UKF6I7KB.js";
 import {
   ANIMATION_MODULE_TYPE,
   ChangeDetectionStrategy,
@@ -29,10 +27,10 @@ import {
   ɵɵdefineDirective,
   ɵɵdefineInjector,
   ɵɵdefineNgModule
-} from "./chunk-XXW2RU6F.js";
+} from "./chunk-33T6IU7O.js";
 import {
   __spreadValues
-} from "./chunk-2C44WUKA.js";
+} from "./chunk-CXCX2JKZ.js";
 
 // node_modules/@angular/material/fesm2022/ripple-BT3tzh6F.mjs
 var RippleState;
@@ -671,4 +669,4 @@ export {
   _StructuralStylesLoader,
   MatRippleModule
 };
-//# sourceMappingURL=chunk-GFDKYUTF.js.map
+//# sourceMappingURL=chunk-ROKFZIF2.js.map
