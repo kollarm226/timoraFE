@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
@@ -12,14 +13,16 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private document = inject(DOCUMENT);
 
   submitted = false;
   serverError: string | null = null;
   loading = false;
+  isDark = false;
 
   loginForm: FormGroup = this.fb.group({
       companyId: [
@@ -90,5 +93,27 @@ export class LoginComponent {
         console.log('Login error:', err);
       }
     });
+  }
+
+  ngOnInit(): void {
+    
+    this.document.body.classList.add('auth-no-scroll');
+    this.isDark = this.document.body.classList.contains('dark-theme');
+  }
+
+  ngOnDestroy(): void {
+    
+    this.document.body.classList.remove('auth-no-scroll');
+  }
+
+  toggleTheme(): void {
+    const root = this.document.body.classList;
+    const willEnableDark = !root.contains('dark-theme');
+    if (willEnableDark) {
+      root.add('dark-theme');
+    } else {
+      root.remove('dark-theme');
+    }
+    this.isDark = willEnableDark;
   }
 }
