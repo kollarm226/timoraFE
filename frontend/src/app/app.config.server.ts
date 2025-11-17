@@ -5,11 +5,15 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
 
+/**
+ * Server-side rendering (SSR) konfiguracia
+ * Merguje client config s SSR-specifickymi providermi
+ */
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(),
     provideServerRouting(serverRoutes),
-    provideHttpClient(withFetch())
+    provideHttpClient(withFetch())  // HttpClient pre SSR
   ]
 };
 

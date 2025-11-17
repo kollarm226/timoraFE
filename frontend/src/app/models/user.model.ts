@@ -1,9 +1,12 @@
-// jednoduché rozhranie (interface) ktoré definuje čo obsahuje "User"
+/**
+ * User model pre lokalne prihlasovanie
+ * Pouziva sa v auth.service.ts (localStorage)
+ */
 export interface User {
-companyId: string; // ID firmy (unikátne)
-firstName: string; // krstné meno
-lastName: string; // priezvisko
-email: string; // e-mail (unikátny)
-address: string; // adresa
-password: string; // heslo (v reálnom projekte vždy hashované na serveri)
+  companyId: string;   // ID firmy (unikatne)
+  firstName: string;   // krstne meno
+  lastName: string;    // priezvisko
+  email: string;       // e-mail (unikatny)
+  address: string;     // adresa
+  password: string;    // heslo (v realnom projekte vzdy hashovane na serveri)
 }

@@ -4,13 +4,15 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 import { appConfig } from './app/app.config';
 
-// Merge application-level providers from `appConfig` so things like HttpClient
-// (provided via provideHttpClient) are available to standalone components.
+/**
+ * Entry point aplikacie
+ * Merguje providery z appConfig (HttpClient, atd.) so standalone komponentom
+ */
 bootstrapApplication(AppComponent, {
   providers: [
-    // include any providers declared in appConfig (provideHttpClient, etc.)
+    // Spread operatorom mergujeme vsetkych providerov z appConfig
     ...(appConfig.providers ?? []),
-    // keep router provider as a fallback
+    // Router provider ako fallback (ak nie je v appConfig)
     provideRouter(routes)
   ]
 }).catch(err => console.error(err));
