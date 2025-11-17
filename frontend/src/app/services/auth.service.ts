@@ -3,61 +3,75 @@ import { Observable, of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { User } from '../models/user.model';
 
-
-
+/**
+ * Auth servis - autentifikacia a autorizacia uzivatelov
+ * Pouziva localStorage na simulovanie backendu (POZOR: len pre development!)
+ * V produkcii treba nahradit API callmi
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-private getUsers(): User[] {
-const raw = localStorage.getItem('users');
-
-return raw ? JSON.parse(raw) as User[] : [];
-}
-
-
-private saveUsers(users: User[]) {
-localStorage.setItem('users', JSON.stringify(users));
-}
-
-
-register(user: User): Observable<{ success: boolean; user: User }> {
-  const users = this.getUsers();
-
- 
-  if (users.find(u => u.companyId?.toLowerCase() === user.companyId.toLowerCase())) {
-    return throwError(() => new Error('Company ID už existuje'));
+  /**
+   * Nacita zoznam uzivatelov z localStorage
+   */
+  private getUsers(): User[] {
+    const raw = localStorage.getItem('users');
+    return raw ? JSON.parse(raw) as User[] : [];
   }
 
-  
-  if (users.find(u => u.email?.toLowerCase() === user.email.toLowerCase())) {
-    return throwError(() => new Error('E-mailová adresa je už použitá'));
+  /**
+   * Ulozi zoznam uzivatelov do localStorage
+   */
+  private saveUsers(users: User[]): void {
+    localStorage.setItem('users', JSON.stringify(users));
   }
 
-  users.push(user);
-  this.saveUsers(users);
+  /**
+   * Registracia noveho uzivatela
+   * Kontroluje duplicitu companyId a emailu
+   */
+  register(user: User): Observable<{ success: boolean; user: User }> {
+    const users = this.getUsers();
 
-  return of({ success: true, user }).pipe(delay(500));
-}
+    // Kontrola duplicity companyId
+    if (users.find(u => u.companyId?.toLowerCase() === user.companyId.toLowerCase())) {
+      return throwError(() => new Error('Company ID uz existuje'));
+    }
 
-login(credentials: { companyId: string; username: string; password: string }): Observable<{ success: boolean; user: User }> {
-  const users = this.getUsers();
-  
-  // Find user by companyId and username
-  const user = users.find(u => 
-    u.companyId?.toLowerCase() === credentials.companyId.toLowerCase() &&
-    (u.firstName?.toLowerCase() === credentials.username.toLowerCase() || 
-     u.lastName?.toLowerCase() === credentials.username.toLowerCase() ||
-     `${u.firstName} ${u.lastName}`.toLowerCase() === credentials.username.toLowerCase())
-  );
+    // Kontrola duplicity emailu
+    if (users.find(u => u.email?.toLowerCase() === user.email.toLowerCase())) {
+      return throwError(() => new Error('E-mailova adresa je uz pouzita'));
+    }
 
-  if (!user) {
-    return throwError(() => new Error('Invalid credentials'));
+    users.push(user);
+    this.saveUsers(users);
+
+    return of({ success: true, user }).pipe(delay(500));
   }
 
-  if (user.password !== credentials.password) {
-    return throwError(() => new Error('Invalid password'));
-  }
+  /**
+   * Prihlasenie uzivatela
+   * Kontroluje companyId, username (firstName/lastName) a heslo
+   */
+  login(credentials: { companyId: string; username: string; password: string }): Observable<{ success: boolean; user: User }> {
+    const users = this.getUsers();
+    
+    // Najdi uzivatela podla companyId a username (firstName alebo lastName)
+    const user = users.find(u => 
+      u.companyId?.toLowerCase() === credentials.companyId.toLowerCase() &&
+      (u.firstName?.toLowerCase() === credentials.username.toLowerCase() || 
+       u.lastName?.toLowerCase() === credentials.username.toLowerCase() ||
+       `${u.firstName} ${u.lastName}`.toLowerCase() === credentials.username.toLowerCase())
+    );
 
-  return of({ success: true, user }).pipe(delay(500));
-}
+    if (!user) {
+      return throwError(() => new Error('Invalid credentials'));
+    }
+
+    if (user.password !== credentials.password) {
+      return throwError(() => new Error('Invalid password'));
+    }
+
+    return of({ success: true, user }).pipe(delay(500));
+  }
 }

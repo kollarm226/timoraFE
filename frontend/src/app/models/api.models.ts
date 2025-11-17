@@ -1,4 +1,10 @@
-// Company model
+/**
+ * API modely pre komunikaciu s backendom
+ * Tieto interfacy zodpovedaju strukturam z Azure API
+ */
+
+// ===== COMPANY =====
+
 export interface Company {
   id: number;
   name: string;
@@ -8,7 +14,8 @@ export interface Company {
   createdAt?: Date;
 }
 
-// Holiday Request model
+// ===== HOLIDAY REQUEST =====
+
 export interface HolidayRequest {
   id: number;
   userId: number;
@@ -22,7 +29,8 @@ export interface HolidayRequest {
   rejectionReason?: string;
 }
 
-// Notice model
+// ===== NOTICE =====
+
 export interface Notice {
   id: number;
   title: string;
@@ -33,7 +41,12 @@ export interface Notice {
   priority?: 'Low' | 'Medium' | 'High';
 }
 
-// User model (rozšírený)
+// ===== USER (API) =====
+
+/**
+ * ApiUser - uzivatel z backendu
+ * Pozor: toto je iny model ako User v user.model.ts (ten je pre localStorage)
+ */
 export interface ApiUser {
   id: number;
   firstName: string;

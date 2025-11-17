@@ -12,6 +12,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { ApiService } from '../../services/api.service';
 import { HolidayRequest } from '../../models/api.models';
 
+/**
+ * Calendar komponent - planovanie dovoleniek
+ * Umoznuje prezerat existujuce dovolenky v kalendari a vytvorat nove ziadosti
+ */
 @Component({
   selector: 'app-calendar',
   standalone: true,
@@ -31,8 +35,8 @@ import { HolidayRequest } from '../../models/api.models';
   styleUrl: './calendar.component.css'
 })
 export class CalendarComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private apiService = inject(ApiService);
+  private readonly fb = inject(FormBuilder);
+  private readonly apiService = inject(ApiService);
 
   vacationForm: FormGroup;
   myRequests: HolidayRequest[] = [];
@@ -49,12 +53,16 @@ export class CalendarComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadMyRequests();
   }
 
-  loadMyRequests() {
+  /**
+   * Nacita ziadosti o dovolenku z backendu
+   */
+  private loadMyRequests(): void {
     this.loading = true;
+    
     this.apiService.getHolidayRequests().subscribe({
       next: (data) => {
         this.myRequests = data;
@@ -68,34 +76,52 @@ export class CalendarComponent implements OnInit {
     });
   }
 
-  updateMarkedDates() {
+  /**
+   * Aktualizuje oznacene datumy v kalendari na zaklade nacitanych dovoleniek
+   */
+  private updateMarkedDates(): void {
     this.markedDates = [];
+    
     this.myRequests.forEach(req => {
       const start = new Date(req.startDate);
       const end = new Date(req.endDate);
+      
+      // Pridaj vsetky dni medzi startDate a endDate
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         this.markedDates.push(new Date(d));
       }
     });
   }
 
+  /**
+   * Funkcia pre Angular Material calendar - prida CSS triedu pre oznacene dni
+   */
   dateClass = (date: Date): string => {
     const time = date.getTime();
     const isMarked = this.markedDates.some(d => d.getTime() === time);
     return isMarked ? 'marked-date' : '';
   }
 
-  onSubmit() {
-    if (this.vacationForm.valid) {
-      const formValue = this.vacationForm.value;
-      console.log('Vacation request:', formValue);
-      // TODO: API call to create vacation request
-      // this.apiService.createHolidayRequest(formValue).subscribe(...)
-      alert('Vacation request submitted! (API integration pending)');
-      this.vacationForm.reset();
+  /**
+   * Odoslanie formulara so ziadostou o dovolenku
+   */
+  onSubmit(): void {
+    if (!this.vacationForm.valid) {
+      return;
     }
+
+    const formValue = this.vacationForm.value;
+    
+    // TODO: Implementovat POST endpoint na backende
+    console.log('Vacation request:', formValue);
+    alert('Vacation request submitted! (API integration pending)');
+    
+    this.vacationForm.reset();
   }
 
+  /**
+   * Vrati CSS triedu podla statusu dovolenky
+   */
   getStatusClass(status: string): string {
     return status.toLowerCase();
   }
