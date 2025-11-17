@@ -1,0 +1,106 @@
+<div class="vacation-planning">
+  <div class="header">
+    <h1>Plan Your Vacation</h1>
+    <p class="subtitle">Request time off and view your vacation schedule</p>
+  </div>
+
+  <div class="content-grid">
+    <!-- Calendar Card -->
+    <mat-card class="calendar-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>event</mat-icon>
+          Calendar
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-calendar 
+          [dateClass]="dateClass"
+          [(selected)]="selectedStartDate">
+        </mat-calendar>
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot approved"></span>
+            <span>Approved vacation</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot pending"></span>
+            <span>Pending request</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Request Form Card -->
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>add_circle</mat-icon>
+          Request Vacation
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="vacationForm" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Start Date</mat-label>
+            <input 
+              matInput 
+              [matDatepicker]="startPicker" 
+              formControlName="startDate"
+              placeholder="Select start date">
+            <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-error *ngIf="vacationForm.get('startDate')?.hasError('required')">
+              Start date is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>End Date</mat-label>
+            <input 
+              matInput 
+              [matDatepicker]="endPicker" 
+              formControlName="endDate"
+              placeholder="Select end date">
+            <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-error *ngIf="vacationForm.get('endDate')?.hasError('required')">
+              End date is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Reason</mat-label>
+            <textarea 
+              matInput 
+              formControlName="reason"
+              rows="4"
+              placeholder="Describe the reason for your vacation request"></textarea>
+            <mat-error *ngIf="vacationForm.get('reason')?.hasError('required')">
+              Reason is required
+            </mat-error>
+            <mat-error *ngIf="vacationForm.get('reason')?.hasError('minlength')">
+              Reason must be at least 10 characters
+            </mat-error>
+          </mat-form-field>
+
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="!vacationForm.valid || loading"
+            class="submit-btn">
+            <mat-icon>send</mat-icon>
+            Submit Request
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-icon>hourglass_empty</mat-icon>
+    <p>Loading...</p>
+  </div>
+</div>
+
