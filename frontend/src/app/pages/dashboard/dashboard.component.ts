@@ -1,21 +1,61 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { ApiService } from '../../services/api.service';
+import { HolidayRequest, Notice } from '../../models/api.models';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatTableModule, MatChipsModule, MatCardModule, MatIconModule],
+  imports: [CommonModule, MatTableModule, MatChipsModule, MatCardModule, MatIconModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
+  private apiService = inject(ApiService);
+  
   displayedColumns = ['start', 'end', 'status'];
-  vacations = [
-    { start: 'December 8.', end: 'December 20.', status: 'Approved' },
-    { start: 'February 25.', end: 'February 28.', status: 'Declined' },
-    { start: 'April 3.', end: 'April 7.', status: 'Pending' },
-  ];
+  vacations: HolidayRequest[] = [];
+  notices: Notice[] = [];
+  loading = true;
+  error: string | null = null;
+
+  ngOnInit() {
+    this.loadDashboardData();
+  }
+
+  loadDashboardData() {
+    this.loading = true;
+    this.error = null;
+
+    // Load holiday requests
+    this.apiService.getHolidayRequests().subscribe({
+      next: (data) => {
+        this.vacations = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading holiday requests:', err);
+        this.error = 'Failed to load data from the backend';
+        this.loading = false;
+      }
+    });
+
+    // Load notices
+    this.apiService.getNotices().subscribe({
+      next: (data) => {
+        this.notices = data.filter(n => n.isActive).slice(0, 3);
+      },
+      error: (err) => {
+        console.error('Error loading notices:', err);
+      }
+    });
+  }
+
+  formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString('sk-SK', { month: 'long', day: 'numeric' });
+  }
 }
