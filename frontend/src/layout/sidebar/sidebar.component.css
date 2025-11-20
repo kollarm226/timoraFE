@@ -13,7 +13,7 @@
 
 .sidenav { 
   width: 240px;
-  max-height: 380px;
+  height: auto;
   background: #667EA7; 
   color: #e5e7eb; 
   padding: 0; 
@@ -65,30 +65,9 @@ mat-nav-list a[mat-list-item].mat-mdc-list-item {
   margin-top: 0; 
   background: transparent; 
   border-radius: 0 0 20px 0; 
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
   width: 100%; 
   flex: 1;
-  /* Custom scrollbar for better look */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.3) transparent;
-}
-
-.nav::-webkit-scrollbar {
-  width: 6px;
-}
-
-.nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.nav::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.3);
-  border-radius: 3px;
-}
-
-.nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.5);
 }
 /* Dark mode */
 :host-context(.dark-theme) .nav { background: #464646; }
