@@ -28,3 +28,8 @@ mat-card { background: var(--card-bg) !important; color: var(--text); border-col
 body, .layout, mat-card, .topbar, .table-card, table, .nav, .sidenav {
   transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease;
 }
+
+/* Disable page scroll on auth pages (login/register) without changing card design */
+body.auth-no-scroll {
+  overflow: hidden;
+}

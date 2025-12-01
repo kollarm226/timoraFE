@@ -1,0 +1,20 @@
+<div class="page">
+  <h1>Latest</h1>
+  <mat-card class="latest-card">
+    <div class="latest-header">
+      <div class="status-dot"></div>
+      <div class="latest-title">{{ latest.author }}</div>
+    </div>
+    <div class="latest-body">
+      {{ latest.body }}
+    </div>
+  </mat-card>
+
+  <h2>All</h2>
+  <mat-card class="all-card">
+    <div class="row" *ngFor="let a of all">
+      <div class="name">{{ a.author }}</div>
+      <div class="preview">{{ a.preview }}</div>
+    </div>
+  </mat-card>
+</div>

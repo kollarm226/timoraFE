@@ -1,4 +1,4 @@
-/* App Component Styles */
+
 .app-container {
   display: flex;
   flex-direction: column;
@@ -11,12 +11,12 @@
 }
 
 .main-content.with-sidebar {
-  margin-top: 64px; /* Height of topbar */
+  margin-top: 64px; 
 }
 
 .content-area {
   flex: 1;
-  margin-left: 240px; /* Full width of sidebar wrap */
+  margin-left: 240px; 
   padding: 20px;
   overflow-x: auto;
 }
@@ -26,7 +26,7 @@
 }
 
 
-/* App Component Styles */
+
 .app-container {
   display: flex;
   flex-direction: column;
