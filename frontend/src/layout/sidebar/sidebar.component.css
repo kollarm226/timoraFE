@@ -27,6 +27,9 @@
 /* Dark mode panel */
 :host-context(.dark-theme) .sidenav { background: #667EA7; }
 
+/* Make the top "brand" bar a neutral dark gray in dark mode */
+:host-context(.dark-theme) .brand { background: #292929; }
+
 .brand {
   display: flex;
   flex-direction: column;
