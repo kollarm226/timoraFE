@@ -3,6 +3,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+/**
+ * Topbar komponent - horny navigacny panel
+ * Obsahuje logo a toggle pre dark mode
+ */
 @Component({
   selector: 'app-topbar',
   standalone: true,
@@ -13,13 +17,17 @@ import { MatIconModule } from '@angular/material/icon';
 export class TopbarComponent {
   isDark = false;
 
-  toggleTheme() {
+  /**
+   * Prepne temu medzi svetlou a tmavou
+   * Pridava/odobera triedu 'dark-theme' na body elemente
+   */
+  toggleTheme(): void {
     this.isDark = !this.isDark;
-    const root = document.body.classList;
+    
     if (this.isDark) {
-      root.add('dark-theme');
+      document.body.classList.add('dark-theme');
     } else {
-      root.remove('dark-theme');
+      document.body.classList.remove('dark-theme');
     }
   }
 }

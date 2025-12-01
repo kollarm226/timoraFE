@@ -1,11 +1,14 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+/**
+ * Login komponent - prihlasovaci formular
+ * Validuje vstupne data a autentifikuje uzivatela
+ */
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -13,45 +16,45 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, OnDestroy {
-  private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private document = inject(DOCUMENT);
+export class LoginComponent {
+  private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   submitted = false;
   serverError: string | null = null;
   loading = false;
-  isDark = false;
 
   loginForm: FormGroup = this.fb.group({
-      companyId: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(10),
-          this.alphanumericValidator()
-        ]
-      ],
-      username: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(2),
-          Validators.maxLength(50)
-        ]
-      ],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8)
-        ]
+    companyId: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(10),
+        this.alphanumericValidator()
       ]
-    });
+    ],
+    username: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50)
+      ]
+    ],
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(8)
+      ]
+    ]
+  });
 
-  
+  /**
+   * Validator - povoli len alfanumericke znaky (bez diakritiky)
+   */
   private alphanumericValidator(): ValidatorFn {
     const regex = /^[A-Za-z0-9]+$/;
     return (control: AbstractControl): ValidationErrors | null => {
@@ -61,9 +64,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     };
   }
 
-  get f() { return this.loginForm.controls; }
+  get f() { 
+    return this.loginForm.controls; 
+  }
 
-  onSubmit() {
+  /**
+   * Odoslanie prihlasovacieho formulara
+   */
+  onSubmit(): void {
     this.submitted = true;
     this.serverError = null;
 
@@ -79,41 +87,18 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.loading = true;
 
-   
     this.auth.login(loginData).subscribe({
       next: () => {
         this.loading = false;
-       
         this.router.navigate(['/dashboard']);
       },
       error: (err: unknown) => {
         this.loading = false;
-        const message = (err instanceof Error) ? err.message : 'Login failed. Please check your credentials.';
+        const message = (err instanceof Error) 
+          ? err.message 
+          : 'Login failed. Please check your credentials.';
         this.serverError = message;
-        console.log('Login error:', err);
       }
     });
-  }
-
-  ngOnInit(): void {
-    
-    this.document.body.classList.add('auth-no-scroll');
-    this.isDark = this.document.body.classList.contains('dark-theme');
-  }
-
-  ngOnDestroy(): void {
-    
-    this.document.body.classList.remove('auth-no-scroll');
-  }
-
-  toggleTheme(): void {
-    const root = this.document.body.classList;
-    const willEnableDark = !root.contains('dark-theme');
-    if (willEnableDark) {
-      root.add('dark-theme');
-    } else {
-      root.remove('dark-theme');
-    }
-    this.isDark = willEnableDark;
   }
 }
