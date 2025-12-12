@@ -25,6 +25,19 @@ export class RegisterComponent {
   submitted = false;
   serverError: string | null = null;
   loading = false;
+  isDark = false;
+
+  /**
+   * Toggle dark theme: adds/removes `dark-theme` class on document body
+   */
+  toggleTheme(): void {
+    this.isDark = !this.isDark;
+    if (this.isDark) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+  }
 
   registerForm: FormGroup = this.fb.group({
     companyId: [
