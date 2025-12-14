@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { CalendarComponent } from './pages/calendar/calendar.component';
+import { AnnouncementsComponent } from './pages/announcements/announcements.component';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 
@@ -14,5 +15,6 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'calendar', component: CalendarComponent },
+  { path: 'announcements', component: AnnouncementsComponent },
   { path: '**', redirectTo: '/login' }  // Fallback na login
 ];
