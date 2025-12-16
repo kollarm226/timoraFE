@@ -48,6 +48,12 @@
   line-height: 1.2;
 }
 
+.logo img {
+  height: 48px;
+  width: auto;
+  display: block;
+}
+
 .subtitle {
   font-size: 11px;
   opacity: .9;

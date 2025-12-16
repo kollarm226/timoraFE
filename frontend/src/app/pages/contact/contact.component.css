@@ -1,0 +1,68 @@
+.contact-page {
+  padding: 24px;
+}
+
+.contact-list {
+  margin-top: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .032);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.contact-item:last-child {
+  border-bottom: none;
+}
+
+.contact-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: #d1d5db;
+}
+
+.text .name {
+  font-weight: 600;
+}
+
+.text .role {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.send-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+
+.send-btn mat-icon {
+  font-size: 24px;
+}
+
+/* Dark mode - rovnaký štýl boxu ako Documents */
+:host-context(.dark-theme) .contact-list {
+  background: #464646;
+  border-color: #d1d5db;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .28);
+}
