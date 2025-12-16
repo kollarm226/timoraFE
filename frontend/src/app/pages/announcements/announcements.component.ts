@@ -18,7 +18,8 @@ interface Announcement {
   styleUrl: './announcements.component.css'
 })
 export class AnnouncementsComponent {
-  selected: Announcement | null = null;
+  selected!: Announcement;  // always assigned before modalOpen = true
+  modalOpen = false;
 
   latest: Announcement = {
     author: 'Michael Barbados',
@@ -105,9 +106,10 @@ export class AnnouncementsComponent {
 
   select(announcement: Announcement): void {
     this.selected = announcement;
+    this.modalOpen = true;
   }
 
   close(): void {
-    this.selected = null;
+    this.modalOpen = false;
   }
 }

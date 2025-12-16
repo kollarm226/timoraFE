@@ -1,7 +1,7 @@
 <div class="page">
 
   <!-- Modal overlay with full announcement -->
-  <div class="detail-overlay" *ngIf="selected">
+  <div class="detail-overlay" *ngIf="modalOpen">
     <div
       class="detail-backdrop"
       (click)="close()"
@@ -11,10 +11,10 @@
     ></div>
     <div class="detail-modal">
       <div class="detail-header">
-        <div class="detail-title">{{ selected?.author }}</div>
+        <div class="detail-title">{{ selected.author }}</div>
         <button class="detail-close" type="button" (click)="close()">×</button>
       </div>
-      <div class="detail-body">{{ selected?.body }}</div>
+      <div class="detail-body">{{ selected.body }}</div>
     </div>
   </div>
 
