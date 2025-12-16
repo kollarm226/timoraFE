@@ -1,0 +1,68 @@
+.documents-page {
+  padding: 24px;
+}
+
+.documents-list {
+  margin-top: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .032);
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.document-item:last-child {
+  border-bottom: none;
+}
+
+.doc-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.doc-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--text);
+}
+
+.doc-title {
+  font-weight: 600;
+}
+
+.doc-description {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.download-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+
+.download-btn mat-icon {
+  font-size: 24px;
+}
+
+/* Zvýraznenie boxu v dark mode, aby bolo jasne vidno ohraničenie */
+:host-context(.dark-theme) .documents-list {
+  background: #464646; /* rovnaka tmava karta ako na Announcements */
+  border-color: #d1d5db; /* svetlejší okraj pre lepší kontrast */
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .28); /* silný tieň viditeľný v darkmode */
+}
