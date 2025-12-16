@@ -1,0 +1,18 @@
+<div class="page documents-page">
+  <h1>Documents</h1>
+
+  <div class="documents-list">
+    <div class="document-item" *ngFor="let doc of documents">
+      <div class="doc-left">
+        <mat-icon class="doc-icon" fontIcon="description"></mat-icon>
+        <div class="doc-text">
+          <div class="doc-title">{{ doc.title }}</div>
+          <div class="doc-description">{{ doc.description }}</div>
+        </div>
+      </div>
+      <button class="download-btn" type="button">
+        <mat-icon fontIcon="download"></mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
