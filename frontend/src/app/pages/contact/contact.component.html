@@ -1,0 +1,18 @@
+<div class="page contact-page">
+  <h1>Contact</h1>
+
+  <div class="contact-list">
+    <div class="contact-item" *ngFor="let c of contacts">
+      <div class="contact-left">
+        <div class="avatar"></div>
+        <div class="text">
+          <div class="name">{{ c.name }}</div>
+          <div class="role">{{ c.role }}</div>
+        </div>
+      </div>
+      <button class="send-btn" type="button">
+        <mat-icon fontIcon="send"></mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
