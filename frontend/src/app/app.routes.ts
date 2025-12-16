@@ -4,6 +4,7 @@ import { CalendarComponent } from './pages/calendar/calendar.component';
 import { AnnouncementsComponent } from './pages/announcements/announcements.component';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
+import { DocumentsComponent } from './pages/documents/documents.component';
 
 /**
  * Routing konfiguracia
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
   { path: 'calendar', component: CalendarComponent },
   { path: 'announcements', component: AnnouncementsComponent },
+  { path: 'documents', component: DocumentsComponent },
   { path: '**', redirectTo: '/login' }  // Fallback na login
 ];

@@ -19,7 +19,7 @@
 
 :host-context(.dark-theme) .latest-card {
   background: #3a3a3a;
-  border: none;
+  border-color: #d1d5db; /* svetlejší okraj ako pri Documents/All */
   box-shadow: 0 10px 26px rgba(0, 0, 0, .28);
 }
 
@@ -51,11 +51,13 @@
   background: var(--card-bg);
   color: var(--text);
   box-shadow: 0 8px 24px rgba(0, 0, 0, .032);
+  border: 1px solid var(--border);
 }
 
 :host-context(.dark-theme) .all-card {
   background: #464646;
   box-shadow: 0 10px 26px rgba(0, 0, 0, .28);
+  border-color: #d1d5db; /* svetlejší okraj pre lepší kontrast, rovnako ako Documents */
 }
 
 .row {
