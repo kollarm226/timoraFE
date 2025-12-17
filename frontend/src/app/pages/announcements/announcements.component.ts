@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { NgForOf } from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 
 interface Announcement {
   author: string;
@@ -13,25 +13,27 @@ interface Announcement {
 @Component({
   selector: 'app-announcements',
   standalone: true,
-  imports: [MatCardModule, NgForOf],
+  imports: [MatCardModule, NgForOf, NgIf],
   templateUrl: './announcements.component.html',
   styleUrl: './announcements.component.css'
 })
 export class AnnouncementsComponent {
+  selected: Announcement | null = null;
+
   latest: Announcement = {
     author: 'Michael Barbados',
     title: 'Hi hello bla blu be ba be poom',
-    preview: 'Hi hello bla blu be ba be poom romoko ci g a n 10.7.2025? tapa ram do toto ka be nu se pere mu de karanrama.',
-    body: 'Hi hello bla blu be ba be poom romoko ci g a n 10.7.2025? tapa ram do toto ka be nu se pere mu de karanrama. Accepted resume rerto petro USA Swalwalwatch Harlem Berlin MTV because money account remember.',
+    preview: 'Hi hello bla blu be ba be poom romoko ci g a n 10.7.2025? tapa Hi hello bla blu be ba be poom romoko ci g a n 10.7.2025? tapa ram do toto ka be nu se pere mu de karanrama ram do toto ka be nu se pere mu de karanrama.',
+    body: 'Hi hello bla blu be ba be poom  Hi hello bla blu be ba be poom romoko c Hi hello bla blu be ba be poom romoko ci g a n 10.7.2025? tapa ram do toto ka be nu se pere mu de karanr g a n 10.7.2025? tapa ram do toto ka be nu se pere mu de karanramaromoko ci Hi hello bla blu be ba be poom romoko ci g a n 10.7.2025? tapa ram do toto ka be nu se pere mu de karanrama g a n 10.7.2025? tapa ram do toto ka be nu se pere mu de karanrama. Accepted resume rerto petro USA Swalwalwatch Harlem Berlin MTV because money account Hi hello bla blu be ba be poom romoko ci g a n 10.7.2025? tapa ram do toto ka be nu se pere mu de karanrama remember.',
     isNew: true,
   };
 
   all: Announcement[] = [
     {
       author: 'Peter Oklahoma',
-      title: 'Hello, I just cigarette alcohol party vacay yesterday today next camera....',
-      preview: 'Hello, I just cigarette alcohol party vacay yesterday today next camera....',
-      body: 'Hello, I just cigarette alcohol party vacay yesterday today next camera....',
+      title: 'Hello, I just cigarette alcohol party vacay yesterday today next camera. Hello, I just cigarette alcohol party vacay yesterday today next camera. Hello, I just cigarette alcohol party vacay yesterday today next camera............',
+      preview: 'Hello, I just cigarette alcohol party vacay yesterday today next camera. Hello, I just cigarette alcohol party vacay yesterday today next camera. Hello, I just cigarette alcohol party vacay yesterday today next camera............',
+      body: 'Hello, I just cigarette alcohol party vacay yesterday today next camera. Hello, I just cigarette alcohol party vacay yesterday today next camera. Hello, I just cigarette alcohol party vacay yesterday today next camera............',
     },
     {
       author: 'Michael Byers',
@@ -100,4 +102,12 @@ export class AnnouncementsComponent {
       body: 'Hello, I just cigarette alcohol party vacay yesterday today next camera....',
     },
   ];
+
+  select(announcement: Announcement): void {
+    this.selected = announcement;
+  }
+
+  close(): void {
+    this.selected = null;
+  }
 }
