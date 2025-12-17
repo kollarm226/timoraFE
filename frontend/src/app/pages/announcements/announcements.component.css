@@ -8,6 +8,66 @@
   font-weight: 700;
 }
 
+/* Modal overlay s tmavym pozadim a kartou uprostred obrazovky */
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+}
+
+.detail-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.detail-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 700px;
+  width: calc(100% - 64px);
+  background: var(--card-bg);
+  color: var(--text);
+  border-radius: 18px;
+  padding: 20px 24px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.detail-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.detail-close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+.detail-body {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+:host-context(.dark-theme) .detail-modal {
+  background: #3a3a3a;
+  border-color: #d1d5db;
+}
+
 .latest-card {
   padding: 16px 20px;
   border-radius: 18px;
@@ -15,6 +75,7 @@
   color: var(--text);
   box-shadow: 0 8px 24px rgba(0, 0, 0, .032);
   border: 1px solid var(--border);
+  cursor: pointer;
 }
 
 :host-context(.dark-theme) .latest-card {
@@ -41,6 +102,12 @@
 .latest-body {
   font-size: 13px;
   line-height: 1.5;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .all-card {
@@ -65,10 +132,20 @@
   padding: 10px 16px;
   font-size: 13px;
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .row:last-child {
   border-bottom: none;
+}
+
+.row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+:host-context(.dark-theme) .row:hover {
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .name {
@@ -79,6 +156,12 @@
 .preview {
   flex: 1;
   color: #111827;
+  display: -webkit-box;
+  line-clamp: 1;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 :host-context(.dark-theme) .name,
