@@ -2,7 +2,12 @@
 
   <!-- Modal overlay s celou spravou uprostred obrazovky -->
   <div class="detail-overlay" *ngIf="selected as s">
-    <div class="detail-backdrop" (click)="close()"></div>
+    <div
+      class="detail-backdrop"
+      (click)="close()"
+      (keyup.enter)="close()"
+      tabindex="0"
+      role="button"></div>
     <div class="detail-modal">
       <div class="detail-header">
         <div class="detail-title">{{ s.author }}</div>
@@ -13,7 +18,12 @@
   </div>
 
   <h1>Latest</h1>
-  <mat-card class="latest-card" (click)="select(latest)">
+  <mat-card
+    class="latest-card"
+    (click)="select(latest)"
+    (keyup.enter)="select(latest)"
+    tabindex="0"
+    role="button">
     <div class="latest-header">
       <div class="status-dot"></div>
       <div class="latest-title">{{ latest.author }}</div>
@@ -25,7 +35,13 @@
 
   <h2>All</h2>
   <mat-card class="all-card">
-    <div class="row" *ngFor="let a of all" (click)="select(a)">
+    <div
+      class="row"
+      *ngFor="let a of all"
+      (click)="select(a)"
+      (keyup.enter)="select(a)"
+      tabindex="0"
+      role="button">
       <div class="name">{{ a.author }}</div>
       <div class="preview">{{ a.preview }}</div>
     </div>
