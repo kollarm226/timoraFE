@@ -1,0 +1,32 @@
+.about-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-card {
+  padding: 24px;
+  border-radius: 18px;
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .032);
+  border: 1px solid var(--border);
+}
+
+.about-section + .about-section {
+  margin-top: 24px;
+}
+
+.about-section h2 {
+  margin-bottom: 8px;
+}
+
+.about-section p {
+  margin: 4px 0;
+}
+
+:host-context(.dark-theme) .about-card {
+  background: #3a3a3a;
+  border-color: #d1d5db;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .28);
+}
