@@ -4,19 +4,41 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 :root {
+  /* Colors */
   --bg: #f3f4f6;
   --card-bg: #ffffff;
   --text: #111827;
   --muted: #6b7280;
   --border: #e5e7eb;
+  
+  /* Design Tokens */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.032);
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
 }
 
 .dark-theme {
   --bg: #545454;
-  --card-bg: #545454;
+  --card-bg: #464646;
   --text: #ffffff;
   --muted: #e3e5e8;
-  --border: #b8bdc4;
+  --border: #7b8086;
+  
+  /* Dark mode shadows */
+  --shadow-lg: 0 10px 26px rgba(0, 0, 0, 0.28);
 }
 
 body, .layout { background: var(--bg); color: var(--text); }

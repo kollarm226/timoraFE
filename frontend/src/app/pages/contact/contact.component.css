@@ -1,21 +1,21 @@
 .contact-page {
-  padding: 24px;
+  padding: var(--spacing-xl);
 }
 
 .contact-list {
-  margin-top: 16px;
-  border-radius: 16px;
+  margin-top: var(--spacing-lg);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--card-bg);
   border: 1px solid var(--border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .032);
+  box-shadow: var(--shadow-lg);
 }
 
 .contact-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: 1px solid var(--border);
   color: var(--text);
 }
@@ -27,7 +27,7 @@
 .contact-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--spacing-lg);
 }
 
 .avatar {
@@ -58,11 +58,4 @@
 
 .send-btn mat-icon {
   font-size: 24px;
-}
-
-/* Dark mode - rovnaký štýl boxu ako Documents */
-:host-context(.dark-theme) .contact-list {
-  background: #464646;
-  border-color: #d1d5db;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, .28);
 }

@@ -1,32 +1,26 @@
 .about-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-lg);
 }
 
 .about-card {
-  padding: 24px;
-  border-radius: 18px;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
   background: var(--card-bg);
   color: var(--text);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .032);
+  box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
 }
 
 .about-section + .about-section {
-  margin-top: 24px;
+  margin-top: var(--spacing-xl);
 }
 
 .about-section h2 {
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .about-section p {
-  margin: 4px 0;
-}
-
-:host-context(.dark-theme) .about-card {
-  background: #3a3a3a;
-  border-color: #d1d5db;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, .28);
+  margin: var(--spacing-xs) 0;
 }
