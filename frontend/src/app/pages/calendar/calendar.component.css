@@ -1,25 +1,25 @@
 .vacation-planning {
-  height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  overflow: hidden;
+  padding: var(--spacing-lg);
+  overflow: auto;
 }
 
 .header {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-lg);
   flex-shrink: 0;
 }
 
 .header h1 {
   font-size: 24px;
   font-weight: 700;
-  margin: 0 0 4px 0;
+  margin: 0 0 var(--spacing-xs) 0;
   color: var(--text);
 }
 
 .subtitle {
-  color: #6b7280;
+  color: var(--muted);
   margin: 0;
   font-size: 13px;
 }
@@ -27,7 +27,7 @@
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--spacing-lg);
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -40,8 +40,7 @@
   }
   
   .vacation-planning {
-    height: auto;
-    min-height: calc(100vh - 64px);
+    min-height: auto;
   }
   
   mat-card {
