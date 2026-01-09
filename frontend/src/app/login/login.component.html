@@ -3,33 +3,30 @@
     <button type="button" (click)="toggleTheme()" aria-label="Toggle dark mode" class="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200/60 active:bg-gray-300/60 z-10">
       <ng-container *ngIf="!isDark; else sunIcon">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5 text-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="auth-icon">
           <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79z" />
         </svg>
       </ng-container>
       <ng-template #sunIcon>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5 text-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="auth-icon">
           <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zm10.45 0l1.79-1.79 1.41 1.41-1.79 1.8-1.41-1.42zM12 4V1h-1v3h1zm0 19v-3h-1v3h1zm8-9h3v-1h-3v1zm-19 0h3v-1H1v1zm15.24 7.16l1.79 1.79 1.41-1.41-1.79-1.8-1.41 1.42zM4.22 17.95l-1.79 1.79 1.41 1.41 1.8-1.79-1.42-1.41zM12 6a6 6 0 100 12 6 6 0 000-12z"/>
         </svg>
       </ng-template>
     </button>
     
     
-    <div class="bg-slate-600 text-white text-center py-6 px-6">
-      <img src="assets/images/logo.png" alt="Timora" class="h-16 mx-auto" />
-      <div class="text-white/80 text-sm mt-1">Intranet & Vacation planner</div>
+    <div class="auth-header">
+      <img src="assets/images/logo.png" alt="Timora" class="auth-logo" />
+      <div class="auth-subtitle">Intranet & Vacation planner</div>
     </div>
     
     
-    <div class="bg-white px-6 py-5">
-      <h2 class="text-xl font-bold text-center mb-4">Login</h2>
+    <div class="auth-body">
+      <h2 class="auth-title">Login</h2>
 
       
-      <div
-        class="mb-3 p-2 bg-red-100 text-red-600 text-sm rounded"
-        *ngIf="serverError"
-      >
+      <div class="auth-error" *ngIf="serverError">
         {{ serverError }}
       </div>
 
@@ -37,7 +34,7 @@
         [formGroup]="loginForm"
         (ngSubmit)="onSubmit()"
         novalidate
-        class="space-y-2"
+        class="auth-form"
       >
         <input
           formControlName="email"
