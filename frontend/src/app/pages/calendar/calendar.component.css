@@ -48,6 +48,63 @@
   }
 }
 
+@media (max-width: 640px) {
+  .vacation-planning {
+    padding: var(--spacing-md);
+  }
+
+  .header {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .content-grid {
+    gap: var(--spacing-md);
+  }
+
+  mat-card-header {
+    padding: 8px 12px;
+  }
+
+  mat-card-title {
+    font-size: 14px;
+  }
+
+  mat-card-content {
+    padding: 12px;
+  }
+
+  .form-card mat-card-content {
+    padding: 12px;
+  }
+
+  .full-width {
+    margin-bottom: 6px;
+  }
+
+  .submit-btn {
+    height: 40px;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+
+  .legend {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legend-item {
+    font-size: 11px;
+  }
+}
+
 mat-card {
   background: var(--card-bg);
   color: var(--text);

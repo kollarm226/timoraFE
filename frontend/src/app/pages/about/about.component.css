@@ -24,3 +24,13 @@
 .about-section p {
   margin: var(--spacing-xs) 0;
 }
+/* Responsive Design */
+@media (max-width: 640px) {
+  .about-card {
+    padding: var(--spacing-lg);
+  }
+
+  .about-section + .about-section {
+    margin-top: var(--spacing-lg);
+  }
+}

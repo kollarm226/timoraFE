@@ -1,18 +1,63 @@
+:host-context(.dark-theme) {
+  --bg: #1a1a1a;
+  --text: #e0e0e0;
+  --border: #333;
+  --card-bg: #262626;
+}
 
+:host-context(.dark-theme) input {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #444;
+}
 
-:host-context(.dark-theme) .bg-gray-100 { background-color: var(--bg) !important; }
-:host-context(.dark-theme) .bg-white { background-color: #464646 !important; }
-:host-context(.dark-theme) .text-gray-600 { color: #ffffff !important; }
-:host-context(.dark-theme) .text-white { color: #ffffff !important; }
-:host-context(.dark-theme) input { background: #545454; color: #ffffff; border-color: #7b8086; }
-:host-context(.dark-theme) input::placeholder { color: #d1d5db; }
-:host-context(.dark-theme) .border-2 { border-color: #7b8086 !important; }
-:host-context(.dark-theme) .shadow-lg { box-shadow: 0 2px 8px rgba(255,255,255,0.08) !important; }
-:host-context(.dark-theme) .bg-slate-600 { background-color: #2f2f2f !important; }
-:host-context(.dark-theme) .text-red-600 { color: #fecaca !important; }
+:host-context(.dark-theme) input::placeholder {
+  color: #999;
+}
 
+:host-context(.dark-theme) button {
+  color: #e0e0e0;
+}
 
-input::placeholder { color: #6b7280; opacity: 1; }
-input::-webkit-input-placeholder { color: #6b7280; opacity: 1; }
-:host-context(.dark-theme) input::placeholder { color: #d1d5db; opacity: 1; }
-:host-context(.dark-theme) input::-webkit-input-placeholder { color: #d1d5db; opacity: 1; }
+:host-context(.dark-theme) .bg-slate-600 {
+  background-color: #3d3d3d;
+}
+
+:host-context(.dark-theme) .bg-white {
+  background-color: #262626;
+  color: #e0e0e0;
+}
+
+:host-context(.dark-theme) .bg-gray-100 {
+  background-color: #1a1a1a;
+}
+
+:host-context(.dark-theme) .text-gray-600 {
+  color: #b0b0b0;
+}
+
+:host-context(.dark-theme) input:focus {
+  border-color: #4a5f7a;
+}
+
+:host-context(.dark-theme) .text-gray-700 {
+  color: #d0d0d0;
+}
+
+:host-context(.dark-theme) .border-2 {
+  border-color: #444;
+}
+
+/* Responsive padding adjustments */
+@media (max-width: 640px) {
+  :host-context(.dark-theme) .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  :host-context(.dark-theme) .py-5 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+

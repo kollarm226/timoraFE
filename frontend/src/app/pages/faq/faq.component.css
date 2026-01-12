@@ -37,3 +37,22 @@
   border-color: var(--border);
   box-shadow: var(--shadow-lg);
 }
+/* Responsive Design */
+@media (max-width: 640px) {
+  .faq-card {
+    padding: var(--spacing-lg);
+  }
+
+  .faq-item + .faq-item {
+    margin-top: var(--spacing-lg);
+  }
+
+  .faq-item p,
+  .faq-item li {
+    font-size: 13px;
+  }
+
+  .faq-item ol {
+    padding-left: 16px;
+  }
+}
