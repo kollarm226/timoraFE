@@ -59,3 +59,29 @@
 .download-btn mat-icon {
   font-size: 24px;
 }
+/* Responsive Design */
+@media (max-width: 640px) {
+  .documents-page {
+    padding: var(--spacing-md);
+  }
+
+  .document-item {
+    padding: var(--spacing-md) var(--spacing-lg);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .doc-left {
+    width: 100%;
+    gap: var(--spacing-md);
+  }
+
+  .doc-icon {
+    flex-shrink: 0;
+  }
+
+  .download-btn {
+    align-self: flex-end;
+  }
+}

@@ -85,8 +85,28 @@ mat-chip.pending { background: rgba(251, 191, 36, 0.25); color: #374151; border:
 }
 
 @media (max-width: 640px) {
+  .page {
+    padding: var(--spacing-md);
+  }
+
   .grid {
     grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .mat-mdc-table .mdc-data-table__cell,
+  .mat-mdc-table .mdc-data-table__header-cell {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 12px;
+  }
+
+  .mat-mdc-table .mat-mdc-row {
+    height: auto;
+  }
+
+  mat-chip {
+    padding: 2px 8px;
+    font-size: 11px;
   }
 }
 

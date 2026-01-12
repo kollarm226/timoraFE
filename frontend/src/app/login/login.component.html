@@ -1,32 +1,35 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <button type="button" (click)="toggleTheme()" aria-label="Toggle dark mode" class="auth-theme-toggle">
+<div class="flex items-center justify-center min-h-screen bg-gray-100 overflow-auto px-4 py-4 sm:px-0">
+  <div class="w-full max-w-sm rounded-2xl shadow-lg overflow-hidden relative">
+    <button type="button" (click)="toggleTheme()" aria-label="Toggle dark mode" class="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200/60 active:bg-gray-300/60 z-10">
       <ng-container *ngIf="!isDark; else sunIcon">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="auth-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5 text-gray-700">
           <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79z" />
         </svg>
       </ng-container>
       <ng-template #sunIcon>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="auth-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5 text-gray-700">
           <path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zm10.45 0l1.79-1.79 1.41 1.41-1.79 1.8-1.41-1.42zM12 4V1h-1v3h1zm0 19v-3h-1v3h1zm8-9h3v-1h-3v1zm-19 0h3v-1H1v1zm15.24 7.16l1.79 1.79 1.41-1.41-1.79-1.8-1.41 1.42zM4.22 17.95l-1.79 1.79 1.41 1.41 1.8-1.79-1.42-1.41zM12 6a6 6 0 100 12 6 6 0 000-12z"/>
         </svg>
       </ng-template>
     </button>
     
     
-    <div class="auth-header">
-      <img src="assets/images/logo.png" alt="Timora" class="auth-logo" />
-      <div class="auth-subtitle">Intranet & Vacation planner</div>
+    <div class="bg-slate-600 text-white text-center py-6 px-6">
+      <img src="assets/images/logo.png" alt="Timora" class="h-16 mx-auto" />
+      <div class="text-white/80 text-sm mt-1">Intranet & Vacation planner</div>
     </div>
     
     
-    <div class="auth-body">
-      <h2 class="auth-title">Login</h2>
+    <div class="bg-white px-6 py-5">
+      <h2 class="text-xl font-bold text-center mb-4">Login</h2>
 
       
-      <div class="auth-error" *ngIf="serverError">
+      <div
+        class="mb-3 p-2 bg-red-100 text-red-600 text-sm rounded"
+        *ngIf="serverError"
+      >
         {{ serverError }}
       </div>
 
@@ -34,15 +37,15 @@
         [formGroup]="loginForm"
         (ngSubmit)="onSubmit()"
         novalidate
-        class="auth-form"
+        class="space-y-2"
       >
         <input
           formControlName="companyId"
           type="text"
           placeholder="Company ID *"
-          class="auth-input"
+          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
         />
-        <div class="auth-error-text">
+        <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['companyId'].touched) && f['companyId'].errors as e">
             <span *ngIf="e['required']">Company ID is required.</span>
             <span *ngIf="e['minlength']">Please enter at least 3 characters.</span>
@@ -55,9 +58,9 @@
           formControlName="username"
           type="text"
           placeholder="Username *"
-          class="auth-input"
+          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
         />
-        <div class="auth-error-text">
+        <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['username'].touched) && f['username'].errors as e">
             <span *ngIf="e['required']">Username is required.</span>
             <span *ngIf="e['minlength']">Please enter at least 2 characters.</span>
@@ -69,9 +72,9 @@
           formControlName="password"
           type="password"
           placeholder="Password *"
-          class="auth-input"
+          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
         />
-        <div class="auth-error-text">
+        <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['password'].touched) && f['password'].errors as e">
             <span *ngIf="e['required']">Password is required.</span>
             <span *ngIf="e['minlength']">Please enter at least 8 characters.</span>
@@ -79,26 +82,33 @@
         </div>
 
        
-        <div class="auth-links">
-          <span class="auth-link">Forgotten password?</span>
-          <span class="auth-link auth-link-underline">Reset password</span>
+        <div class="flex justify-between text-sm text-gray-600 py-2">
+          <span class="cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Forgotten password?</span>
+          <span class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Reset password</span>
         </div>
 
-        <div class="auth-buttons">
+        <div class="grid grid-cols-2 gap-3">
           <button
             type="submit"
             [disabled]="loginForm.invalid"
-            class="auth-btn auth-btn-primary">Sign In</button>
+            class="w-full h-10 flex items-center justify-center px-6 rounded-lg transition-all duration-150 disabled:opacity-50 text-sm text-white"
+            style="background-color: #0d2c5f;"
+            onmouseover="this.style.backgroundColor='#3a4b63'"
+            onmouseout="this.style.backgroundColor='#0d2c5f'"
+            onmousedown="this.style.backgroundColor='#2f3d52'"
+            onmouseup="this.style.backgroundColor='#3a4b63'"
+            ontouchstart="this.style.backgroundColor='#2f3d52'"
+            ontouchend="this.style.backgroundColor='#3a4b63'">Sign In</button>
 
-          <button type="button" class="auth-btn auth-btn-secondary">
-            <span class="auth-google-icon"></span>
+          <button type="button" class="w-full h-10 flex items-center justify-center gap-2 px-6 border rounded-lg text-sm hover:bg-gray-50 active:bg-gray-100 transition-colors">
+            <span aria-hidden="true" class="block h-4 w-4 bg-no-repeat bg-center bg-contain" style="background-image: url('/assets/images/1657955079google-icon-png.png');"></span>
             <span>Google</span>
           </button>
         </div>
       </form>
 
-      <div class="auth-footer">
-        Don't have an account? <a class="auth-link auth-link-underline">Sign up!</a>
+      <div class="text-center text-sm text-gray-600 mt-4">
+        Don't have an account? <a class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Sign up!</a>
       </div>
     </div>
   </div>

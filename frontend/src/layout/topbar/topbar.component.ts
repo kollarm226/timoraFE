@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
+import { SidebarService } from '../../app/services/sidebar.service';
 
 /**
  * Topbar komponent - horny navigacny panel
@@ -16,6 +17,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './topbar.component.css'
 })
 export class TopbarComponent {
+  private sidebarService = inject(SidebarService);
   isDark = false;
 
   /**
@@ -31,4 +33,12 @@ export class TopbarComponent {
       document.body.classList.remove('dark-theme');
     }
   }
+
+  /**
+   * Prepne sidebar
+   */
+  toggleSidebar(): void {
+    this.sidebarService.toggleSidebar();
+  }
 }
+

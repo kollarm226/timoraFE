@@ -1,5 +1,6 @@
 .page {
   padding-right: var(--spacing-2xl);
+  padding-left: 0;
 }
 
 .page h1,
@@ -145,4 +146,42 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page {
+    padding-right: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .name {
+    width: 80px;
+    font-size: 12px;
+  }
+
+  .row {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 12px;
+  }
+
+  .latest-card {
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: 0 var(--spacing-md);
+  }
+
+  .all-card {
+    margin-left: var(--spacing-md);
+    margin-right: var(--spacing-md);
+    margin-top: var(--spacing-md);
+  }
+
+  .detail-modal {
+    width: calc(100% - 32px);
+  }
 }

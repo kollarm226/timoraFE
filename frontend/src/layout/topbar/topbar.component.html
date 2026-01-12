@@ -1,5 +1,10 @@
 <mat-toolbar class="topbar">
-  <div class="left"></div>
+  <div class="left">
+    <!-- Mobile Hamburger Menu -->
+    <button mat-icon-button class="sidebar-toggle-mobile" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
   <div class="right">
     <button mat-stroked-button color="primary" routerLink="/calendar">Request vacation</button>
     <button mat-icon-button aria-label="theme toggle" (click)="toggleTheme()">
