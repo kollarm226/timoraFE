@@ -16,7 +16,8 @@
       <mat-card-content>
         <mat-calendar 
           [dateClass]="dateClass"
-          [(selected)]="selectedStartDate">
+          [(selected)]="selectedStartDate"
+          (selectedChange)="onDateSelected($event)">
         </mat-calendar>
         <div class="legend">
           <div class="legend-item">

@@ -55,16 +55,15 @@
         </div>
 
         <input
-          formControlName="username"
-          type="text"
-          placeholder="Username *"
+          formControlName="email"
+          type="email"
+          placeholder="Email *"
           class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
         />
         <div class="text-red-600 text-xs h-4 font-bold">
-          <ng-container *ngIf="(submitted || f['username'].touched) && f['username'].errors as e">
-            <span *ngIf="e['required']">Username is required.</span>
-            <span *ngIf="e['minlength']">Please enter at least 2 characters.</span>
-            <span *ngIf="e['maxlength']">Max 50 characters.</span>
+          <ng-container *ngIf="(submitted || f['email'].touched) && f['email'].errors as e">
+            <span *ngIf="e['required']">Email is required.</span>
+            <span *ngIf="e['email']">Please enter a valid email address.</span>
           </ng-container>
         </div>
 

@@ -43,17 +43,16 @@ export class LoginComponent {
       '',
       [
         Validators.required,
-        Validators.minLength(3),
+        Validators.minLength(1),
         Validators.maxLength(10),
         this.alphanumericValidator()
       ]
     ],
-    username: [
+    email: [
       '',
       [
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(50)
+        Validators.email
       ]
     ],
     password: [
@@ -77,8 +76,8 @@ export class LoginComponent {
     };
   }
 
-  get f() { 
-    return this.loginForm.controls; 
+  get f() {
+    return this.loginForm.controls;
   }
 
   /**
@@ -94,7 +93,7 @@ export class LoginComponent {
 
     const loginData = {
       companyId: String(this.f['companyId'].value).trim(),
-      username: String(this.f['username'].value).trim(),
+      username: String(this.f['email'].value).trim(), // Email pouzity ako username
       password: String(this.f['password'].value)
     };
 
@@ -107,8 +106,8 @@ export class LoginComponent {
       },
       error: (err: unknown) => {
         this.loading = false;
-        const message = (err instanceof Error) 
-          ? err.message 
+        const message = (err instanceof Error)
+          ? err.message
           : 'Login failed. Please check your credentials.';
         this.serverError = message;
       }

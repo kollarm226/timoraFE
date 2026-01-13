@@ -41,6 +41,13 @@ export class ApiService {
     return this.http.get<Company>(`${this.baseUrl}/Companies/${id}`, { headers: this.getHeaders() });
   }
 
+  /**
+   * Vytvori novu firmu
+   */
+  createCompany(company: { name: string }): Observable<Company> {
+    return this.http.post<Company>(`${this.baseUrl}/Companies`, company, { headers: this.getHeaders() });
+  }
+
   // ===== HOLIDAY REQUESTS =====
   
   /**
@@ -55,6 +62,28 @@ export class ApiService {
    */
   getHolidayRequestById(id: number): Observable<HolidayRequest> {
     return this.http.get<HolidayRequest>(`${this.baseUrl}/HolidayRequests/${id}`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Vytvori novu ziadost o dovolenku
+   */
+  createHolidayRequest(request: { userId: number; startDate: Date | string; endDate: Date | string; reason: string }): Observable<HolidayRequest> {
+    // Konvertuj Date objekty na ISO datetime format pre backend
+    const payload = {
+      userId: request.userId,
+      startDate: typeof request.startDate === 'string' 
+        ? request.startDate.includes('T') 
+          ? request.startDate 
+          : `${request.startDate}T00:00:00.000Z`
+        : request.startDate.toISOString(),
+      endDate: typeof request.endDate === 'string' 
+        ? request.endDate.includes('T') 
+          ? request.endDate 
+          : `${request.endDate}T23:59:59.999Z`
+        : request.endDate.toISOString(),
+      reason: request.reason
+    };
+    return this.http.post<HolidayRequest>(`${this.baseUrl}/HolidayRequests`, payload, { headers: this.getHeaders() });
   }
 
   // ===== NOTICES =====
@@ -94,5 +123,12 @@ export class ApiService {
    */
   getUserByEmail(email: string): Observable<ApiUser> {
     return this.http.get<ApiUser>(`${this.baseUrl}/Users/by-email/${encodeURIComponent(email)}`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Vytvori noveho uzivatela v backend databaze
+   */
+  createUser(user: { firebaseId: string; companyId: number; firstName: string; lastName: string; email: string; userName: string; role: number }): Observable<ApiUser> {
+    return this.http.post<ApiUser>(`${this.baseUrl}/Users`, user, { headers: this.getHeaders() });
   }
 }

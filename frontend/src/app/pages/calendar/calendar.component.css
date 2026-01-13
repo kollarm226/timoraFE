@@ -169,6 +169,10 @@ mat-card-content {
 }
 
 /* Dark mode for calendar */
+::ng-deep .mat-calendar {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 :host-context(.dark-theme) ::ng-deep .mat-calendar {
   background: #464646;
   color: #ffffff;
@@ -190,6 +194,21 @@ mat-card-content {
 
 :host-context(.dark-theme) ::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
   border-color: #ffffff;
+}
+
+/* Dark mode navigation arrows and period button */
+:host-context(.dark-theme) ::ng-deep .mat-calendar-previous-button,
+:host-context(.dark-theme) ::ng-deep .mat-calendar-next-button,
+:host-context(.dark-theme) ::ng-deep .mat-calendar-period-button {
+  color: #ffffff !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-calendar-arrow {
+  fill: #ffffff !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-calendar-period-button .mat-button-wrapper {
+  color: #ffffff !important;
 }
 
 .legend {
