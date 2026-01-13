@@ -66,7 +66,14 @@ export class DashboardComponent implements OnInit {
    */
   private handleError(message: string, error: unknown): void {
     console.error(message, error);
-    this.error = 'Failed to load data from the backend';
+    
+    // Extract user-friendly message from error
+    let userMessage = 'Failed to load data from the backend';
+    if (typeof error === 'object' && error !== null && 'message' in error) {
+      userMessage = (error as { message: string }).message;
+    }
+    
+    this.error = userMessage;
     this.loading = false;
   }
 

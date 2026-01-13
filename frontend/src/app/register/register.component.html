@@ -30,20 +30,68 @@
         novalidate
         class="space-y-2"
       >
-        <input
-          formControlName="companyId"
-          type="text"
-          placeholder="Company ID *"
-          minlength="3"
-          maxlength="10"
-          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-        />
-        <div class="text-red-600 text-xs h-4 font-bold">
-          <ng-container *ngIf="(submitted || f['companyId'].touched) && f['companyId'].errors as e">
-            <span *ngIf="e['minlength']">Please enter at least 3 characters.</span>
-            <span *ngIf="e['maxlength']">Max 10 characters.</span>
-            <span *ngIf="e['alphanumeric']">Letters & numbers only.</span>
-          </ng-container>
+        <!-- Toggle medzi join a create company -->
+        <div class="flex gap-2 mb-3">
+          <button
+            type="button"
+            (click)="toggleRegisterMode()"
+            [class.bg-blue-500]="registerMode === 'join'"
+            [class.text-white]="registerMode === 'join'"
+            [class.bg-gray-200]="registerMode !== 'join'"
+            class="flex-1 py-1 px-2 rounded text-xs font-semibold transition-colors"
+          >
+            Join Company
+          </button>
+          <button
+            type="button"
+            (click)="toggleRegisterMode()"
+            [class.bg-blue-500]="registerMode === 'create'"
+            [class.text-white]="registerMode === 'create'"
+            [class.bg-gray-200]="registerMode !== 'create'"
+            class="flex-1 py-1 px-2 rounded text-xs font-semibold transition-colors"
+          >
+            Create Company
+          </button>
+        </div>
+
+        <!-- Dynamické pole pre company -->
+        <div *ngIf="registerMode === 'join'">
+          <input
+            formControlName="companyId"
+            type="number"
+            placeholder="Company ID *"
+            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+          />
+          <div class="text-red-600 text-xs h-4 font-bold">
+            <ng-container *ngIf="(submitted || f['companyId'].touched) && f['companyId'].errors as e">
+              <span *ngIf="e['minlength']">Please enter a valid company ID.</span>
+            </ng-container>
+          </div>
+        </div>
+
+        <div *ngIf="registerMode === 'create'">
+          <input
+            formControlName="companyName"
+            type="text"
+            placeholder="Company Name *"
+            minlength="3"
+            maxlength="100"
+            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+          />
+          <div class="text-red-600 text-xs h-4 font-bold">
+            <ng-container *ngIf="(submitted || f['companyName'].touched) && f['companyName'].errors as e">
+              <span *ngIf="e['minlength']">Please enter at least 3 characters.</span>
+              <span *ngIf="e['maxlength']">Max 100 characters.</span>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Global company validation error -->
+        <div class="text-red-600 text-xs" *ngIf="submitted && registerForm.errors?.['companyRequired']">
+          Please select or create a company.
+        </div>
+        <div class="text-red-600 text-xs" *ngIf="submitted && registerForm.errors?.['companyConflict']">
+          Please select either join or create company, not both.
         </div>
 
         <input
@@ -79,6 +127,22 @@
         </div>
 
         <input
+          formControlName="userName"
+          type="text"
+          placeholder="Username *"
+          minlength="3"
+          maxlength="30"
+          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+        />
+        <div class="text-red-600 text-xs h-4 font-bold">
+          <ng-container *ngIf="(submitted || f['userName'].touched) && f['userName'].errors as e">
+            <span *ngIf="e['minlength']">Please enter at least 3 characters.</span>
+            <span *ngIf="e['maxlength']">Max 30 characters.</span>
+            <span *ngIf="e['alphanumeric']">Letters, numbers, - and _ only.</span>
+          </ng-container>
+        </div>
+
+        <input
           formControlName="email"
           type="email"
           placeholder="E-mail address *"
@@ -87,22 +151,6 @@
         <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['email'].touched) && f['email'].errors as e">
             <span *ngIf="e['email']">Invalid email.</span>
-          </ng-container>
-        </div>
-
-        <input
-          formControlName="address"
-          type="text"
-          placeholder="Address *"
-          minlength="5"
-          maxlength="100"
-          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-        />
-        <div class="text-red-600 text-xs h-4 font-bold">
-          <ng-container *ngIf="(submitted || f['address'].touched) && f['address'].errors as e">
-            <span *ngIf="e['minlength']">Please enter at least 5 characters.</span>
-            <span *ngIf="e['maxlength']">Max 100 characters.</span>
-            <span *ngIf="e['addressFormat']">Invalid characters.</span>
           </ng-container>
         </div>
 

@@ -1,8 +1,9 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { routes } from './app.routes';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 /**
  * Hlavna konfiguracia aplikacie
@@ -14,8 +15,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(
       withFetch(),                  // Moderny Fetch API namiesto XMLHttpRequest
-      withInterceptorsFromDi()      // Podpora pre DI interceptors
+      withInterceptors([authInterceptor])  // Pridanie Firebase auth interceptoru
     ),
-    provideClientHydration(withEventReplay())  // SSR support s event replay
+    provideClientHydration(withEventReplay()),  // SSR support s event replay
   ]
 };

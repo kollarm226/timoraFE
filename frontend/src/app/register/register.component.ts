@@ -27,6 +27,9 @@ export class RegisterComponent {
   loading = false;
   isDark = false;
 
+  // Toggle medzi join company a create company
+  registerMode: 'join' | 'create' = 'join';
+
   /**
    * Toggle dark theme: adds/removes `dark-theme` class on document body
    */
@@ -39,16 +42,18 @@ export class RegisterComponent {
     }
   }
 
+  /**
+   * Toggle medzi join (existujuca) a create (nova) company
+   */
+  toggleRegisterMode(): void {
+    this.registerMode = this.registerMode === 'join' ? 'create' : 'join';
+    this.registerForm.reset();
+    this.submitted = false;
+  }
+
   registerForm: FormGroup = this.fb.group({
-    companyId: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(10),
-        this.alphanumericValidator()
-      ]
-    ],
+    companyId: ['', [Validators.minLength(1), Validators.maxLength(10)]],
+    companyName: ['', [Validators.minLength(3), Validators.maxLength(100)]],
     firstName: [
       '',
       [
@@ -67,18 +72,18 @@ export class RegisterComponent {
         this.lettersOnlyValidator()
       ]
     ],
+    userName: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(30),
+        this.alphanumericValidator()
+      ]
+    ],
     email: [
       '',
       [Validators.required, Validators.email]
-    ],
-    address: [
-      '',
-      [
-        Validators.required, 
-        Validators.minLength(5), 
-        Validators.maxLength(100), 
-        this.addressValidator()
-      ]
     ],
     password: [
       '',
@@ -90,7 +95,12 @@ export class RegisterComponent {
       ]
     ],
     confirmPassword: ['', Validators.required]
-  }, { validators: this.passwordsMatchValidator });
+  }, {
+    validators: [
+      this.passwordsMatchValidator,
+      this.companySelectionValidator()
+    ]
+  });
 
   /**
    * Validator - kontrola zhody hesla a potvrdenia hesla
@@ -117,7 +127,7 @@ export class RegisterComponent {
    * Validator - povoli len alfanumericke znaky (bez diakritiky)
    */
   private alphanumericValidator(): ValidatorFn {
-    const regex = /^[A-Za-z0-9]+$/;
+    const regex = /^[A-Za-z0-9_-]*$/;
     return (control: AbstractControl): ValidationErrors | null => {
       const value = (control.value || '').trim();
       if (!value) return null;
@@ -126,14 +136,24 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - format adresy (pismena, cisla, zakladne interpunkcie)
+   * Validator - musí byť vybraná buď company alebo companyName
    */
-  private addressValidator(): ValidatorFn {
-    const regex = /^[A-Za-zÀ-ž0-9\s.,/-]{5,100}$/u;
-    return (control: AbstractControl): ValidationErrors | null => {
-      const value = (control.value || '').trim();
-      if (!value) return null;
-      return regex.test(value) ? null : { addressFormat: true };
+  private companySelectionValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const companyId = group.get('companyId')?.value;
+      const companyName = group.get('companyName')?.value;
+
+      // Aspoň jeden musí byť vyplnený
+      if (!companyId && !companyName) {
+        return { companyRequired: true };
+      }
+
+      // Oba nesmú byť vyplnené zároveň
+      if (companyId && companyName) {
+        return { companyConflict: true };
+      }
+
+      return null;
     };
   }
 
@@ -145,23 +165,23 @@ export class RegisterComponent {
     const lower = /[a-z]/;
     const digit = /[0-9]/;
     const special = /[^A-Za-z0-9]/;
-    
+
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value || '';
       if (!value) return null;
-      
+
       const hasUpper = upper.test(value);
       const hasLower = lower.test(value);
       const hasDigit = digit.test(value);
       const hasSpecial = special.test(value);
-      
+
       const isStrong = hasUpper && hasLower && hasDigit && hasSpecial;
       return isStrong ? null : { weakPassword: true };
     };
   }
 
-  get f() { 
-    return this.registerForm.controls; 
+  get f() {
+    return this.registerForm.controls;
   }
 
   /**
@@ -175,27 +195,43 @@ export class RegisterComponent {
       return;
     }
 
-    const user: User = {
-      companyId: String(this.f['companyId'].value).trim(),
+    const registrationData: any = {
       firstName: String(this.f['firstName'].value).trim(),
       lastName: String(this.f['lastName'].value).trim(),
+      userName: String(this.f['userName'].value).trim().toLowerCase(),
       email: String(this.f['email'].value).trim().toLowerCase(),
-      address: String(this.f['address'].value).trim(),
       password: String(this.f['password'].value)
     };
 
+    // Podľa módu pridaj companyId alebo companyName
+    if (this.registerMode === 'join') {
+      const parsedId = parseInt(String(this.f['companyId'].value).trim(), 10);
+      if (isNaN(parsedId)) {
+        this.serverError = 'Invalid Company ID format';
+        this.loading = false;
+        return;
+      }
+      registrationData.companyId = parsedId;
+    } else {
+      registrationData.companyName = String(this.f['companyName'].value).trim();
+    }
+
     this.loading = true;
 
-    this.auth.register(user).subscribe({
-      next: () => {
+    this.auth.register(registrationData).subscribe({
+      next: (response) => {
         this.loading = false;
-        alert('Uspesne registrovany uzivatel: ' + user.firstName + ' ' + user.lastName);
+
+        // Ziskaj Company ID z roznych moznych ciest v odpovedi
+        const companyId = response.user?.companyId || (response as any).companyId || 'N/A';
+
+        alert(`Uspesne registrovany uzivatel: ${registrationData.firstName} ${registrationData.lastName}\n\nVASE COMPANY ID JE: ${companyId}\n\nProsim ulozte si toto ID, budete ho potrebovat pre prihlasenie!`);
         this.router.navigate(['/login']);
       },
       error: (err: unknown) => {
         this.loading = false;
-        const message = (err instanceof Error) 
-          ? err.message 
+        const message = (err instanceof Error)
+          ? err.message
           : 'Nastala chyba pocas registracie';
         this.serverError = message;
       }
