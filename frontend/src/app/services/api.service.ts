@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Company, HolidayRequest, Notice, ApiUser } from '../models/api.models';
+import { Company, HolidayRequest, Notice, ApiUser, CreateNoticeRequest, UpdateNoticeRequest } from '../models/api.models';
 import { environment } from '../../environments/environment';
 
 /**
@@ -122,6 +122,27 @@ export class ApiService {
    */
   getNoticeById(id: number): Observable<Notice> {
     return this.http.get<Notice>(`${this.baseUrl}/Notices/${id}`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Vytvori nove oznamenie
+   */
+  createNotice(notice: CreateNoticeRequest): Observable<Notice> {
+    return this.http.post<Notice>(`${this.baseUrl}/Notices`, notice, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Aktualizuje existujuce oznamenie
+   */
+  updateNotice(id: number, notice: UpdateNoticeRequest): Observable<Notice> {
+    return this.http.patch<Notice>(`${this.baseUrl}/Notices/${id}`, notice, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Vymaze oznamenie
+   */
+  deleteNotice(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/Notices/${id}`, { headers: this.getHeaders() });
   }
 
   // ===== USERS =====
