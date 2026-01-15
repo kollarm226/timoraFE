@@ -10,40 +10,85 @@
       role="button"></div>
     <div class="detail-modal">
       <div class="detail-header">
-        <div class="detail-title">{{ s.author }}</div>
+        <div class="detail-title">{{ s.title }}</div>
         <button class="detail-close" type="button" (click)="close()">×</button>
+      </div>
+      <div class="detail-meta">
+        <small>Od: {{ s.author }} | {{ s.createdAt | date:'dd.MM.yyyy HH:mm' }}</small>
       </div>
       <div class="detail-body">{{ s.body }}</div>
     </div>
   </div>
 
-  <h1>Latest</h1>
-  <mat-card
-    class="latest-card"
-    (click)="select(latest)"
-    (keyup.enter)="select(latest)"
-    tabindex="0"
-    role="button">
-    <div class="latest-header">
-      <div class="status-dot"></div>
-      <div class="latest-title">{{ latest.author }}</div>
-    </div>
-    <div class="latest-body">
-      {{ latest.body }}
-    </div>
-  </mat-card>
+  <!-- Error message -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+    <button mat-button (click)="loadNotices()">Try again</button>
+  </div>
 
-  <h2>All</h2>
-  <mat-card class="all-card">
-    <div
-      class="row"
-      *ngFor="let a of all"
-      (click)="select(a)"
-      (keyup.enter)="select(a)"
+  <!-- Header with title and create button -->
+  <div class="header">
+    <h1>Announcements</h1>
+    <button mat-raised-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Create Announcement
+    </button>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading">
+    Loading...
+  </div>
+
+  <!-- Content when not loading -->
+  <div *ngIf="!loading">
+    <!-- Latest announcement -->
+    <h2 *ngIf="latest">Latest</h2>
+    <mat-card
+      *ngIf="latest"
+      class="latest-card"
+      (click)="select(latest)"
+      (keyup.enter)="select(latest)"
       tabindex="0"
       role="button">
-      <div class="name">{{ a.author }}</div>
-      <div class="preview">{{ a.preview }}</div>
+      <div class="latest-header">
+        <div class="status-dot" *ngIf="isNoticeUnread(latest.id)"></div>
+        <div class="latest-title">{{ latest.title }}</div>
+      </div>
+      <div class="latest-meta">
+        <small>{{ latest.author }} | {{ latest.createdAt | date:'dd.MM.yyyy HH:mm' }}</small>
+      </div>
+      <div class="latest-body">
+        {{ latest.preview }}
+      </div>
+    </mat-card>
+
+    <!-- All announcements -->
+    <h2 *ngIf="all.length > 0">All Announcements</h2>
+    <mat-card class="all-card" *ngIf="all.length > 0">
+      <div
+        class="row"
+        *ngFor="let a of all"
+        (click)="select(a)"
+        (keyup.enter)="select(a)"
+        tabindex="0"
+        role="button">
+        <div class="row-header">
+          <div class="name">{{ a.title }}</div>
+          <div class="date">{{ a.createdAt | date:'dd.MM.yyyy' }}</div>
+        </div>
+        <div class="author">{{ a.author }}</div>
+        <div class="preview">{{ a.preview }}</div>
+      </div>
+    </mat-card>
+
+    <!-- Empty state -->
+    <div *ngIf="all.length === 0" class="empty-state">
+      <mat-icon>info</mat-icon>
+      <p>No announcements yet.</p>
+      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        Create First Announcement
+      </button>
     </div>
-  </mat-card>
+  </div>
 </div>

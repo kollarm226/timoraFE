@@ -1,23 +1,23 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../services/api.service';
-import { HolidayRequest, Notice } from '../../models/api.models';
+import { HolidayRequest, Notice, ApiUser } from '../../models/api.models';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user.model';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, forkJoin } from 'rxjs';
 
 /**
  * Dashboard komponent - hlavna stranka po prihlaseni
- * Zobrazuje prehled dovoleniek a aktualnych oznameni
+ * Zobrazuje prehlad dovoleniek a aktualnych oznameni
  */
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatChipsModule, MatCardModule, MatIconModule],
+  imports: [CommonModule, MatTableModule, MatChipsModule, MatCardModule, MatIconModule, DatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -31,6 +31,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private allVacations: HolidayRequest[] = [];
   private currentUser: User | null = null;
   notices: Notice[] = [];
+  employer: ApiUser | null = null;
   loading = true;
   error: string | null = null;
 
@@ -40,7 +41,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe(user => {
         this.currentUser = user;
 
-        // If we have user without id, try to enrich from backend by email
+        // Ak mame usera bez id, skus obohacit z backendu cez email
         if (user && !user.id && user.email) {
           this.apiService.getUserByEmail(user.email).subscribe({
             next: apiUser => {
@@ -48,7 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
               this.filterVacations();
             },
             error: () => {
-              // silent fallback; keep filtering best-effort
+              // tichy fallback; pokracuj s filtrom co sa da
               this.filterVacations();
             }
           });
@@ -63,44 +64,45 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.loadDashboardData();
     
-    // Refresh dashboard data každých 10 sekúnd aby sa zobrazili nové dovolenky
+    // Obnov dashboard data kazdych 10 sekund aby sa zobrazili nove dovolenky
     const refreshInterval = setInterval(() => {
       this.loadDashboardData();
     }, 10000);
     
-    // Vyčisti interval pri destroy
+    // Vycisti interval pri destroy
     this.destroy$.subscribe(() => {
       clearInterval(refreshInterval);
     });
   }
 
   /**
-   * Nacita data z backendu (dovolenky a oznamenia)
+   * Nacita data z backendu (dovolenky, oznamenia, users a companies)
    */
   private loadDashboardData(): void {
     this.loading = true;
     this.error = null;
 
-    // Nacitanie dovoleniek
-    this.apiService.getHolidayRequests().subscribe({
-      next: (data) => {
-        this.allVacations = data;
+    // Nacitanie vsetkych dat naraz
+    forkJoin({
+      holidayRequests: this.apiService.getHolidayRequests(),
+      notices: this.apiService.getNotices(),
+      users: this.apiService.getUsers()
+    }).subscribe({
+      next: ({ holidayRequests, notices, users }) => {
+        // Dovolenky
+        this.allVacations = holidayRequests;
         this.filterVacations();
+
+        // Oznamenia
+        this.notices = notices.slice(0, 3);
+
+        // Najdi zamestnavatela
+        this.findEmployer(users);
+        
         this.loading = false;
       },
       error: (err) => {
-        this.handleError('Error loading holiday requests', err);
-      }
-    });
-
-    // Nacitanie oznameni
-    this.apiService.getNotices().subscribe({
-      next: (data) => {
-        // Zobraz len aktivne oznamenia, max 3
-        this.notices = data.filter(n => n.isActive).slice(0, 3);
-      },
-      error: (err) => {
-        this.handleError('Error loading notices', err);
+        this.handleError('Error loading dashboard data', err);
       }
     });
   }
@@ -128,6 +130,92 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Fallback: if no user id, attempt to keep list empty to avoid exposing others
     console.warn('No userId available, vacations list will be empty');
     this.vacations = [];
+  }
+
+  /**
+   * Vrati meno autora oznamenia
+   */
+  getAuthorName(notice: Notice): string {
+    if (notice.user) {
+      return `${notice.user.firstName} ${notice.user.lastName}`;
+    }
+    return 'Unknown author';
+  }
+
+  /**
+   * Skrati text oznamenia na max pocet znakov
+   */
+  truncateContent(content: string, maxLength = 100): string {
+    if (content.length <= maxLength) {
+      return content;
+    }
+    return content.substring(0, maxLength).trim() + '...';
+  }
+
+  /**
+   * Skontroluje ci je notice neprecitane (nove)
+   */
+  isNoticeUnread(noticeId: number): boolean {
+    const readNotices = this.getReadNotices();
+    return !readNotices.includes(noticeId);
+  }
+
+  /**
+   * Oznaci notice ako precitane
+   */
+  markNoticeAsRead(noticeId: number): void {
+    const readNotices = this.getReadNotices();
+    if (!readNotices.includes(noticeId)) {
+      readNotices.push(noticeId);
+      localStorage.setItem('readNotices', JSON.stringify(readNotices));
+    }
+  }
+
+  /**
+   * Ziska zoznam precitanych notices z localStorage
+   */
+  private getReadNotices(): number[] {
+    const stored = localStorage.getItem('readNotices');
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  /**
+   * Handler pre kliknutie na notice - oznaci ako precitane a zobrazi detail
+   */
+  onNoticeClick(notice: Notice, event: Event): void {
+    event.preventDefault();
+    this.markNoticeAsRead(notice.id);
+    
+    // Mozete pridat dalsiu logiku - napr. navigacia na detail alebo modal
+    console.log('Notice clicked:', notice.title);
+  }
+
+  /**
+   * Najdi zamestnavatela pre aktualneho pouzivatela
+   */
+  private findEmployer(users: ApiUser[]): void {
+    const currentUser = this.auth.getCurrentUser();
+    if (!currentUser) {
+      return;
+    }
+
+    // Najdi zamestnavatelov v tej istej spolocnosti
+    const user = users.find(u => u.id === currentUser.id);
+    if (user) {
+      const employer = users.find(u => u.companyId === user.companyId && u.role === 1); // 1 = Employer
+      if (employer) {
+        this.employer = employer;
+      }
+    }
+  }
+
+  /**
+   * Otvori email klienta s emailom zamestnavatela
+   */
+  openEmployerEmail(): void {
+    if (this.employer && this.employer.email) {
+      window.open(`mailto:${this.employer.email}`, '_blank');
+    }
   }
 
   ngOnDestroy(): void {
