@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 
 /**
- * Service na správu stavu sidebaru
- * Umožňuje otvorenie/zatvorenie z rôznych komponentov
+ * Sidebar state service
+ * Allows opening/closing from multiple components
  */
 @Injectable({
   providedIn: 'root'

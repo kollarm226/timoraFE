@@ -19,8 +19,8 @@
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef class="status-header">Status</th>
         <td mat-cell *matCellDef="let v" class="status-cell">
-          <mat-chip-set class="status-chips">
-            <mat-chip [class.approved]="v.status==='Approved'" [class.declined]="v.status==='Rejected'" [class.pending]="v.status==='Pending'">{{ v.status }}</mat-chip>
+          <mat-chip-set class="status-chips" *ngIf="getStatusView(v.status) as statusView">
+            <mat-chip [ngClass]="statusView.class">{{ statusView.label }}</mat-chip>
           </mat-chip-set>
         </td>
       </ng-container>

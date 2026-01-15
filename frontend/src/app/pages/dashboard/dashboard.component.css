@@ -56,19 +56,22 @@ mat-chip { border-radius: 9999px; padding: 2px 12px; line-height: 18px; font-siz
 .mat-mdc-standard-chip .mdc-evolution-chip__overlay { border: none; }
 .mat-mdc-standard-chip .mdc-evolution-chip__ripple::before,
 .mat-mdc-standard-chip .mdc-evolution-chip__ripple::after { border: none; }
-/* Light mode: gray text */
+/* Light mode styling */
 mat-chip.approved { background: rgba(52, 211, 153, 0.25); color: #374151; border: 2px solid #10b981; font-weight: 700; }
-mat-chip.declined { background: rgba(248, 113, 113, 0.25); color: #374151; border: 2px solid #ef4444; font-weight: 700; }
+mat-chip.denied { background: rgba(248, 113, 113, 0.25); color: #374151; border: 2px solid #ef4444; font-weight: 700; }
+mat-chip.cancelled { background: rgba(156, 163, 175, 0.25); color: #374151; border: 2px solid #9ca3af; font-weight: 700; }
 mat-chip.pending { background: rgba(251, 191, 36, 0.25); color: #374151; border: 2px solid #f59e0b; font-weight: 700; }
 
 /* Dark mode: force white text */
 :host-context(.dark-theme) mat-chip.approved,
-:host-context(.dark-theme) mat-chip.declined,
+:host-context(.dark-theme) mat-chip.denied,
+:host-context(.dark-theme) mat-chip.cancelled,
 :host-context(.dark-theme) mat-chip.pending { color: #ffffff; --mdc-chip-label-text-color: #ffffff; --mdc-chip-with-icon-label-text-color: #ffffff; }
 
 .mat-mdc-standard-chip .mdc-evolution-chip__text-label { color: inherit !important; opacity: 1 !important; }
 :host-context(.dark-theme) mat-chip.approved .mdc-evolution-chip__text-label,
-:host-context(.dark-theme) mat-chip.declined .mdc-evolution-chip__text-label,
+:host-context(.dark-theme) mat-chip.denied .mdc-evolution-chip__text-label,
+:host-context(.dark-theme) mat-chip.cancelled .mdc-evolution-chip__text-label,
 :host-context(.dark-theme) mat-chip.pending .mdc-evolution-chip__text-label { color: #ffffff !important; }
 
 .grid {

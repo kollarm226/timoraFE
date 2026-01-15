@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Company, HolidayRequest, Notice, ApiUser } from '../models/api.models';
 import { environment } from '../../environments/environment';
 
@@ -54,7 +55,21 @@ export class ApiService {
    * Nacita vsetky ziadosti o dovolenky
    */
   getHolidayRequests(): Observable<HolidayRequest[]> {
-    return this.http.get<HolidayRequest[]>(`${this.baseUrl}/HolidayRequests`, { headers: this.getHeaders() });
+    return this.http.get<any[]>(`${this.baseUrl}/HolidayRequests`, { headers: this.getHeaders() })
+      .pipe(
+        map(data => data.map(item => ({
+          id: item.id,
+          userId: item.userId || item.UserId, // Handle both camelCase and PascalCase
+          startDate: item.startDate || item.StartDate,
+          endDate: item.endDate || item.EndDate,
+          requestDate: item.requestDate || item.RequestDate,
+          status: item.status || item.Status,
+          reason: item.reason || item.Reason,
+          approvedBy: item.approvedBy || item.ApprovedBy,
+          approvedDate: item.approvedDate || item.ApprovedDate,
+          rejectionReason: item.rejectionReason || item.RejectionReason
+        })))
+      );
   }
 
   /**
@@ -84,6 +99,13 @@ export class ApiService {
       reason: request.reason
     };
     return this.http.post<HolidayRequest>(`${this.baseUrl}/HolidayRequests`, payload, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Aktualizuje dovolenku (napr. zmena statusu)
+   */
+  updateHolidayRequestStatus(id: number, payload: { status: number; resolvedByUserId?: number; resolverComment?: string }): Observable<HolidayRequest> {
+    return this.http.patch<HolidayRequest>(`${this.baseUrl}/HolidayRequests/${id}`, payload, { headers: this.getHeaders() });
   }
 
   // ===== NOTICES =====
@@ -130,5 +152,12 @@ export class ApiService {
    */
   createUser(user: { firebaseId: string; companyId: number; firstName: string; lastName: string; email: string; userName: string; role: number }): Observable<ApiUser> {
     return this.http.post<ApiUser>(`${this.baseUrl}/Users`, user, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Vymaze uzivatela z systemu
+   */
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/Users/${id}`, { headers: this.getHeaders() });
   }
 }

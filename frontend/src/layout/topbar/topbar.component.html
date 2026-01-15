@@ -6,15 +6,19 @@
     </button>
   </div>
   <div class="right">
+    <button mat-stroked-button color="accent" routerLink="/admin" *ngIf="canSeeAdmin">Administration</button>
     <button mat-stroked-button color="primary" routerLink="/calendar">Request vacation</button>
     <button mat-icon-button aria-label="theme toggle" (click)="toggleTheme()">
       <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
     </button>
-    <div class="user">
+    <div class="user" (click)="toggleUserMenu()">
       <div class="avatar"></div>
       <div class="info">
-        <div class="name">Peter Doe</div>
-        <div class="role">Employee</div>
+        <div class="name">{{ displayName }}</div>
+        <div class="role" *ngIf="role">{{ role }}</div>
+      </div>
+      <div class="user-menu" *ngIf="showMenu">
+        <button mat-button color="primary" (click)="logout()">Log out</button>
       </div>
     </div>
   </div>

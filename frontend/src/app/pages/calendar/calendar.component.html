@@ -68,6 +68,9 @@
             <mat-error *ngIf="vacationForm.get('endDate')?.hasError('required')">
               End date is required
             </mat-error>
+            <mat-error *ngIf="vacationForm.get('endDate')?.hasError('invalidDateOrder')">
+              End date must be on or after the start date
+            </mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="full-width">
