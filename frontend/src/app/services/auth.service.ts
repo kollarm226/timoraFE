@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, from, throwError, BehaviorSubject, Subscription } from 'rxjs';
-import { map, catchError, switchMap, tap, filter, take } from 'rxjs/operators';
+import { map, catchError, switchMap, filter, take } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { ApiUser } from '../models/api.models';
 import { environment } from '../../environments/environment';
@@ -56,7 +56,7 @@ export class AuthService {
     onAuthStateChanged(auth, (firebaseUser) => {
       console.log('onAuthStateChanged triggered, firebaseUser:', firebaseUser?.email || 'null');
       
-      // Ak existuje starý subscription, zruš ho - aby sa nenačítavali stare údaje
+      // Ak existuje stary subscription, zrus ho - aby sa nenacitavali stare udaje
       if (this.currentUserSubscription) {
         console.log('Unsubscribing from previous user fetch...');
         this.currentUserSubscription.unsubscribe();
@@ -64,14 +64,14 @@ export class AuthService {
       }
       
       if (firebaseUser && firebaseUser.email) {
-        // CRITICAL: Najskôr vyčisti currentUser aby sa predišlo race condition so starými datami
+        // CRITICAL: Najskor vycisti currentUser aby sa predislo race condition so starymi datami
         console.log('Clearing old user data before fetching new user...');
         this.currentUser.next(null);
         
         // User je prihlaseny - nacitaj jeho data z backendu cez /api/auth/me endpoint
         console.log('User logged in:', firebaseUser.email, '- fetching user data from backend...');
         
-        const expectedEmail = firebaseUser.email; // Ulož email na validáciu
+        const expectedEmail = firebaseUser.email; // Uloz email na validaciu
         
         const userSubscription = from(firebaseUser.getIdToken(true)).pipe( // true = force refresh token
           switchMap((token: string) => {

@@ -1,5 +1,5 @@
 <div class="page">
-  <h1>Upcoming vacations</h1>
+  <h1>Upcoming Vacations</h1>
   
   <div *ngIf="loading" class="loading">Loading data...</div>
   <div *ngIf="error" class="error">{{ error }}</div>
@@ -31,21 +31,49 @@
   </mat-card>
 
   <div class="grid">
-    <mat-card>
+    <mat-card class="contact-card">
       <h2>Contact</h2>
-      <div class="muted">Michael Jisacle</div>
-      <div class="avatar"></div>
-      <div class="muted role">CEO</div>
+      <div *ngIf="employer" class="employer-contact">
+        <div class="employer-name clickable" 
+             (click)="openEmployerEmail()" 
+             (keyup.enter)="openEmployerEmail()"
+             title="Send email"
+             tabindex="0"
+             role="button">
+          {{ employer.firstName }} {{ employer.lastName }}
+        </div>
+        <div class="muted role">{{ (employer.role ?? 0) === 1 ? 'Employer' : 'Employee' }}</div>
+      </div>
+      <div *ngIf="!employer" class="no-contact">
+        <mat-icon>contact_mail</mat-icon>
+        <span>No employer found</span>
+      </div>
     </mat-card>
 
-    <mat-card>
-      <h2>Announcements</h2>
-      <div *ngIf="notices.length > 0">
-        <div class="muted">{{ notices[0].title }}</div>
-        <div class="dot"></div>
-        <p class="announcement">{{ notices[0].content }}</p>
+    <mat-card class="announcements-card">
+      <h2>Latest Announcements</h2>
+      <div *ngIf="notices.length > 0" class="notices-list">
+        <div *ngFor="let notice of notices" 
+             class="notice-item clickable"
+             (click)="onNoticeClick(notice, $event)"
+             (keyup.enter)="onNoticeClick(notice, $event)"
+             tabindex="0"
+             role="button">
+          <div class="notice-header">
+            <div class="notice-title-wrapper">
+              <div class="unread-dot" *ngIf="isNoticeUnread(notice.id)"></div>
+              <h3 class="notice-title">{{ notice.title }}</h3>
+            </div>
+            <span class="notice-date">{{ notice.createdAt | date:'dd.MM.yyyy' }}</span>
+          </div>
+          <div class="notice-author">{{ getAuthorName(notice) }}</div>
+          <p class="notice-content">{{ truncateContent(notice.content, 120) }}</p>
+        </div>
       </div>
-  <div *ngIf="notices.length === 0" class="muted">No notices</div>
+      <div *ngIf="notices.length === 0" class="no-notices">
+        <mat-icon>info</mat-icon>
+        <span>No announcements</span>
+      </div>
     </mat-card>
 
     <mat-card class="docs">
