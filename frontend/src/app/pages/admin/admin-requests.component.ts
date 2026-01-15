@@ -128,6 +128,7 @@ export class AdminRequestsComponent implements OnInit {
   }
 
   statusLabel(status: HolidayRequest['status']): string {
+    if (status === undefined || status === null) return 'Pending';
     const val = typeof status === 'number' ? status : status.toString().toLowerCase();
     if (val === 0 || val === 'pending') return 'Pending';
     if (val === 1 || val === 'approved') return 'Approved';
@@ -137,6 +138,7 @@ export class AdminRequestsComponent implements OnInit {
   }
 
   statusClass(status: HolidayRequest['status']): string {
+    if (status === undefined || status === null) return 'status pending';
     const val = typeof status === 'number' ? status : status.toString().toLowerCase();
     if (val === 1 || val === 'approved') return 'status approved';
     if (val === 2 || val === 'denied' || val === 'rejected') return 'status denied';
@@ -145,6 +147,7 @@ export class AdminRequestsComponent implements OnInit {
   }
 
   canResolve(status: HolidayRequest['status']): boolean {
+    if (status === undefined || status === null) return true; // undefined status = pending = can resolve
     const val = typeof status === 'number' ? status : status.toString().toLowerCase();
     return val === 0 || val === 'pending';
   }

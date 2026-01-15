@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, from, throwError, BehaviorSubject } from 'rxjs';
-import { map, catchError, switchMap, filter, take } from 'rxjs/operators';
+import { map, catchError, switchMap, tap, filter, take } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { ApiUser } from '../models/api.models';
 import { environment } from '../../environments/environment';
@@ -324,8 +324,8 @@ export class AuthService {
    */
   logout(): Observable<void> {
     return from(signOut(auth)).pipe(
-      switchMap(() => {
-        // Vyčisti currentUser
+      tap(() => {
+        // Vyčisti currentUser HNEĎ - pre okamžité UI update
         this.currentUser.next(null);
         console.log('User logged out and currentUser cleared');
         
@@ -335,8 +335,12 @@ export class AuthService {
           this.currentUserSubscription = null;
         }
         
-        // Vyčisti všetky typy cache a POČKAJ na dokončenie
-        return from(this.clearAllCache());
+        // Spusti cache cleaning na pozadí (neblokuje presmerovanie)
+        this.clearAllCache().then(() => {
+          console.log('Cache cleared after logout');
+        }).catch(e => {
+          console.warn('Cache clearing failed after logout:', e);
+        });
       }),
       catchError(error => {
         console.error('Logout error:', error);
@@ -346,9 +350,11 @@ export class AuthService {
           this.currentUserSubscription.unsubscribe();
           this.currentUserSubscription = null;
         }
-        return from(this.clearAllCache()).pipe(
-          switchMap(() => throwError(() => error))
-        );
+        // Cache cleaning na pozadí aj pri chybe
+        this.clearAllCache().catch(e => {
+          console.warn('Cache clearing failed after logout error:', e);
+        });
+        return throwError(() => error);
       })
     );
   }
