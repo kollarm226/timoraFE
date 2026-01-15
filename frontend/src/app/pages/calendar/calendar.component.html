@@ -16,7 +16,8 @@
       <mat-card-content>
         <mat-calendar 
           [dateClass]="dateClass"
-          [(selected)]="selectedStartDate">
+          [(selected)]="selectedStartDate"
+          (selectedChange)="onDateSelected($event)">
         </mat-calendar>
         <div class="legend">
           <div class="legend-item">
@@ -66,6 +67,9 @@
             <mat-datepicker #endPicker></mat-datepicker>
             <mat-error *ngIf="vacationForm.get('endDate')?.hasError('required')">
               End date is required
+            </mat-error>
+            <mat-error *ngIf="vacationForm.get('endDate')?.hasError('invalidDateOrder')">
+              End date must be on or after the start date
             </mat-error>
           </mat-form-field>
 
