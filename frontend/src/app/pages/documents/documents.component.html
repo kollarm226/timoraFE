@@ -1,18 +1,44 @@
 <div class="page documents-page">
-  <h1>Documents</h1>
+  <div class="header">
+    <h1>Documents</h1>
+    <button mat-raised-button color="primary" *ngIf="isEmployer" (click)="openUploadDialog()">
+      <mat-icon>upload</mat-icon>
+      Upload Document
+    </button>
+  </div>
 
-  <div class="documents-list">
+  <div *ngIf="loading" class="loading">Loading documents...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="documents-list" *ngIf="!loading && !error">
+    <div class="empty-state" *ngIf="documents.length === 0">
+      <mat-icon>description</mat-icon>
+      <p>No documents available</p>
+      <button mat-raised-button color="primary" *ngIf="isEmployer" (click)="openUploadDialog()">
+        Upload First Document
+      </button>
+    </div>
+
     <div class="document-item" *ngFor="let doc of documents">
       <div class="doc-left">
         <mat-icon class="doc-icon" fontIcon="description"></mat-icon>
         <div class="doc-text">
           <div class="doc-title">{{ doc.title }}</div>
-          <div class="doc-description">{{ doc.description }}</div>
+          <div class="doc-description" *ngIf="doc.description">{{ doc.description }}</div>
+          <div class="doc-meta">
+            <span *ngIf="doc.user">Uploaded by {{ doc.user.firstName }} {{ doc.user.lastName }}</span>
+            <span *ngIf="doc.createdAt"> • {{ doc.createdAt | date:'dd.MM.yyyy' }}</span>
+          </div>
         </div>
       </div>
-      <button class="download-btn" type="button">
-        <mat-icon fontIcon="download"></mat-icon>
-      </button>
+      <div class="doc-actions">
+        <button class="download-btn" type="button" (click)="downloadDocument(doc)" title="Download">
+          <mat-icon fontIcon="download"></mat-icon>
+        </button>
+        <button class="delete-btn" type="button" *ngIf="isEmployer" (click)="deleteDocument(doc)" title="Delete">
+          <mat-icon fontIcon="delete"></mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 </div>

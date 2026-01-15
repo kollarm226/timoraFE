@@ -1,23 +1,226 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
+import { Document } from '../../models/api.models';
 
+/**
+ * Documents komponent - zobrazenie a sprava dokumentov
+ * Employer moze pridavat dokumenty cez externy link (napr. nahrajsoubor.cz)
+ */
 @Component({
   selector: 'app-documents',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule, DatePipe],
   templateUrl: './documents.component.html',
   styleUrl: './documents.component.css'
 })
-export class DocumentsComponent {
-  documents = [
-    { title: 'Summer Newsletter', description: 'This is a overview from this summer.' },
-    { title: 'Updated Policy - November 25', description: 'This is updated policy about sales.' },
-    { title: 'Company Magasine - November 25', description: 'This is new company magasine for month November.' },
-    { title: 'Annual Report', description: 'This is the annual report.' },
-    { title: 'Company Magasine - October 25', description: 'This is new company magasine for month October.' },
-    { title: 'Employee Handbook', description: 'This is the basic employee handbook.' },
-    { title: 'New Payroll policy', description: 'This is the new payroll policy.' },
-    { title: 'Company Magasine - September 25', description: 'This is company magasine for month September.' }
-  ];
+export class DocumentsComponent implements OnInit {
+  private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+  private dialog = inject(MatDialog);
+
+  documents: Document[] = [];
+  loading = true;
+  error: string | null = null;
+  currentUser: any = null;
+  isEmployer = false;
+
+  ngOnInit(): void {
+    // Ziskaj aktualneho pouzivatela z localStorage
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      this.currentUser = JSON.parse(userStr);
+      this.isEmployer = this.currentUser?.role === 1;
+    }
+    
+    this.loadDocuments();
+  }
+
+  /**
+   * Nacita dokumenty pre firmu aktualneho pouzivatela
+   */
+  private loadDocuments(): void {
+    this.loading = true;
+    this.error = null;
+
+    const companyId = this.currentUser?.companyId;
+    if (!companyId) {
+      this.error = 'No company ID found';
+      this.loading = false;
+      return;
+    }
+
+    this.apiService.getDocumentsByCompanyId(Number(companyId)).subscribe({
+      next: (docs) => {
+        this.documents = docs;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading documents:', err);
+        this.error = 'Failed to load documents';
+        this.loading = false;
+      }
+    });
+  }
+
+  /**
+   * Otvori dialog pre pridanie noveho dokumentu
+   */
+  openUploadDialog(): void {
+    const dialogRef = this.dialog.open(UploadDocumentDialogComponent, {
+      width: '500px',
+      data: {
+        userId: this.currentUser?.id,
+        companyId: this.currentUser?.companyId
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadDocuments();
+      }
+    });
+  }
+
+  /**
+   * Stiahne dokument z externeho linku
+   */
+  downloadDocument(doc: Document): void {
+    window.open(doc.fileUrl, '_blank');
+  }
+
+  /**
+   * Vymaze dokument (len pre employera)
+   */
+  deleteDocument(doc: Document): void {
+    if (!confirm(`Are you sure you want to delete "${doc.title}"?`)) {
+      return;
+    }
+
+    this.apiService.deleteDocument(doc.id).subscribe({
+      next: () => {
+        this.loadDocuments();
+      },
+      error: (err) => {
+        console.error('Error deleting document:', err);
+        alert('Failed to delete document');
+      }
+    });
+  }
+}
+
+/**
+ * Dialog komponent pre upload dokumentu
+ */
+@Component({
+  selector: 'app-upload-document-dialog',
+  standalone: true,
+  imports: [CommonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, FormsModule],
+  template: `
+    <h2 mat-dialog-title>Upload Document</h2>
+    <mat-dialog-content>
+      <p class="info-text">Upload your file to <a href="https://nahrajsoubor.cz" target="_blank">nahrajsoubor.cz</a> and paste the link here</p>
+      
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Document Title</mat-label>
+        <input matInput [(ngModel)]="title" placeholder="e.g. Summer Newsletter" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description (optional)</mat-label>
+        <textarea matInput [(ngModel)]="description" placeholder="Brief description of the document" rows="2"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>File URL</mat-label>
+        <input matInput [(ngModel)]="fileUrl" placeholder="https://nahrajsoubor.cz/..." required>
+        <mat-hint>Paste the download link from nahrajsoubor.cz</mat-hint>
+      </mat-form-field>
+
+      <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="upload()" [disabled]="isUploading || !title || !fileUrl">
+        {{ isUploading ? 'Uploading...' : 'Upload' }}
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .full-width {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .info-text {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .info-text a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .info-text a:hover {
+      text-decoration: underline;
+    }
+    .error-message {
+      color: #ef4444;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+  `]
+})
+export class UploadDocumentDialogComponent {
+  private apiService = inject(ApiService);
+  private dialogRef = inject(MatDialogRef<UploadDocumentDialogComponent>);
+  private data = inject(MAT_DIALOG_DATA) as { userId: number; companyId: number };
+  
+  title = '';
+  description = '';
+  fileUrl = '';
+  isUploading = false;
+  errorMessage = '';
+
+  userId = this.data.userId;
+  companyId = this.data.companyId;
+
+  cancel(): void {
+    this.dialogRef.close();
+  }
+
+  upload(): void {
+    if (!this.title || !this.fileUrl) {
+      this.errorMessage = 'Title and File URL are required';
+      return;
+    }
+
+    this.isUploading = true;
+    this.errorMessage = '';
+
+    const documentData = {
+      title: this.title,
+      description: this.description || undefined,
+      fileUrl: this.fileUrl,
+      uploadedBy: this.userId,
+      companyId: this.companyId
+    };
+
+    this.apiService.createDocument(documentData).subscribe({
+      next: () => {
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        console.error('Error uploading document:', err);
+        this.errorMessage = 'Failed to upload document. Please try again.';
+        this.isUploading = false;
+      }
+    });
+  }
 }
