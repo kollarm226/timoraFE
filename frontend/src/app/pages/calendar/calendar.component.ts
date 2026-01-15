@@ -1,8 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,6 +35,7 @@ import { auth } from '../../config/firebase.config';
     MatIconModule,
     MatChipsModule
   ],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'en-US' }],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
@@ -50,16 +51,25 @@ export class CalendarComponent implements OnInit {
   selectedStartDate: Date | null = null;
   selectedEndDate: Date | null = null;
   isSelectingEndDate = false;
+  currentUserId: number | null = null;
 
   constructor() {
     this.vacationForm = this.fb.group({
       startDate: [null, Validators.required],
       endDate: [null, Validators.required],
       reason: ['', [Validators.required, Validators.minLength(10)]]
-    });
+    }, { validators: this.dateRangeValidator() });
   }
 
   ngOnInit(): void {
+    // Ziskaj aktuálneho usera z AuthService
+    this.authService.currentUser$.subscribe(user => {
+      if (user && user.id) {
+        this.currentUserId = user.id;
+        console.log('Current user ID set:', this.currentUserId);
+      }
+    });
+    
     this.loadMyRequests();
   }
 
@@ -116,156 +126,40 @@ export class CalendarComponent implements OnInit {
 
   /**
    * Odoslanie formulara so ziadostou o dovolenku
+   * Teraz používa user ID z AuthService - bez komplikovaného getUser volania
    */
   onSubmit(): void {
     if (!this.vacationForm.valid) {
       return;
     }
 
-    const formValue = this.vacationForm.value;
-    this.loading = true;
-
-    // Ziskaj email z Firebase auth
-    const firebaseUser = auth.currentUser;
-
-    if (!firebaseUser || !firebaseUser.email) {
-      this.loading = false;
-      alert('Nie ste prihlaseny');
+    // Skontroluj či máme user ID
+    if (!this.currentUserId) {
+      alert('You are not properly logged in. Please refresh the page.');
       return;
     }
 
-    // Ziskaj Firebase ID token pred volanim API
-    from(firebaseUser.getIdToken(true)).pipe(
-      switchMap(token => {
-        console.log('Firebase token obtained, proceeding with holiday request...');
-        
-        // Teraz mozeme bezpecne volat API s platnym tokenom (interceptor ho pridam do headera)
-        return this.apiService.getUserByEmail(firebaseUser.email!);
-      }),
-      catchError((error) => {
-        console.error('GetUserByEmail error:', error);
+    const formValue = this.vacationForm.value;
+    this.loading = true;
 
-        // Ak API vrati 500 (asi bug v backende), skusme najst usera v zozname vsetkych userov
-        if (error.status === 500) {
-          console.log('Backend returned 500, trying to find user in full list...');
-          return this.apiService.getUsers().pipe(
-            map(users => {
-              const foundUser = users.find(u => u.email && u.email.toLowerCase() === firebaseUser.email!.toLowerCase());
-              if (foundUser) {
-                console.log('User found in full list:', foundUser);
-                return foundUser; // Vratime najdeneho usera
-              }
-              // Ak nenajdeme, vyhodime 404 aby sa spustila logika pre vytvorenie
-              throw { status: 404, message: 'User not found in list' };
-            }),
-            catchError(usersError => {
-              console.error('Error fetching users list:', usersError);
-              // Ak aj getUsers zlyha (napr. na 500), hodime 404 aby sme prinutili frontend vytvorit usera nanovo
-              // Toto je posledna zachrana ked backend fakt nefunguje
-              throw { status: 404, message: 'Fallback to creation' };
-            })
-          );
-        }
-        return throwError(() => error);
-      }),
-      catchError((error) => {
-        // Ak user neexistuje v backendu (404), vytvor ho
-        if (error.status === 404) {
-          console.log('User not found in backend (404), creating...');
+    // Prepare backend payload with UTC-normalized dates
+    const startDate = this.toUtcIso(formValue.startDate, false);
+    const endDate = this.toUtcIso(formValue.endDate, true);
 
-          // Parse displayName alebo pouzij defaults
-          let firstName = 'User';
-          let lastName = 'User';
+    const requestData = {
+      userId: Number(this.currentUserId),  // Ensure it's a number, not a string
+      startDate: startDate,
+      endDate: endDate,
+      reason: formValue.reason
+    };
 
-          if (firebaseUser.displayName) {
-            const parts = firebaseUser.displayName.split('|');
-            if (parts.length > 1) {
-              const nameParts = parts[1].split(' ');
-              firstName = nameParts[0] || 'User';
-              lastName = nameParts[1] || 'User';
-            }
-          }
+    console.log('Sending holiday request:', requestData);
 
-          // Najskor ziskaj prvu company z backendu
-          return this.apiService.getCompanies().pipe(
-            switchMap(companies => {
-              // Ak neexistuju companies, vytvor default
-              if (companies.length === 0) {
-                console.log('No companies found, creating default company...');
-                return this.apiService.createCompany({ name: 'Default Company' }).pipe(
-                  switchMap(newCompany => {
-                    const newUser = {
-                      firebaseId: firebaseUser.uid,
-                      companyId: newCompany.id,
-                      firstName: firstName,
-                      lastName: lastName,
-                      email: firebaseUser.email!,
-                      userName: firebaseUser.email!.split('@')[0],
-                      role: 0 // Employee enum value
-                    };
-
-                    console.log('Creating user with data:', newUser);
-                    return this.apiService.createUser(newUser);
-                  })
-                );
-              }
-
-              const newUser = {
-                firebaseId: firebaseUser.uid,
-                companyId: companies[0].id, // Pouzij ID prvej company
-                firstName: firstName,
-                lastName: lastName,
-                email: firebaseUser.email!,
-                userName: firebaseUser.email!.split('@')[0],
-                role: 0 // Employee enum value
-              };
-
-              console.log('Creating user with data:', newUser);
-
-              // Vytvor usera a vrat ho
-              return this.apiService.createUser(newUser);
-            })
-          );
-        }
-        return throwError(() => error);
-      }),
-      switchMap(user => {
-        // Pripravi data pre backend s realnym userId
-        // Konvertuj Date objekty na ISO datetime format
-        let startDate: string;
-        let endDate: string;
-
-        if (formValue.startDate instanceof Date) {
-          startDate = formValue.startDate.toISOString();
-        } else {
-          startDate = formValue.startDate.includes('T') 
-            ? formValue.startDate 
-            : `${formValue.startDate}T00:00:00.000Z`;
-        }
-
-        if (formValue.endDate instanceof Date) {
-          endDate = formValue.endDate.toISOString();
-        } else {
-          endDate = formValue.endDate.includes('T') 
-            ? formValue.endDate 
-            : `${formValue.endDate}T23:59:59.999Z`;
-        }
-
-        const requestData = {
-          userId: user.id,
-          startDate: startDate,
-          endDate: endDate,
-          reason: formValue.reason
-        };
-
-        console.log('Sending holiday request:', requestData);
-        // Posli request na vytvorenie holiday requestu
-        return this.apiService.createHolidayRequest(requestData);
-      })
-    ).subscribe({
+    // Posli request na vytvorenie holiday requestu
+    this.apiService.createHolidayRequest(requestData).subscribe({
       next: (response) => {
         this.loading = false;
-        alert('Ziadost o dovolenku bola uspesne odoslana!');
+        alert('Vacation request sent successfully!');
         this.vacationForm.reset();
         this.loadMyRequests(); // Obnov zoznam requestov
       },
@@ -276,14 +170,12 @@ export class CalendarComponent implements OnInit {
         // Vypisuj detailne validacne chyby z backendu
         if (err.error && err.error.errors) {
           console.error('Validation errors:', JSON.stringify(err.error.errors, null, 2));
-
-          // Vypis kazdu validacnu chybu samostatne
           Object.keys(err.error.errors).forEach(key => {
             console.error(`Field "${key}":`, err.error.errors[key]);
           });
         }
 
-        let userMessage = 'Nepodarilo sa odoslat ziadost';
+        let userMessage = 'Failed to submit the request';
         if (typeof err === 'object' && err !== null && 'error' in err) {
           const errorObj = err as { error?: { message?: string; title?: string } };
           userMessage = errorObj.error?.message || errorObj.error?.title || userMessage;
@@ -291,6 +183,79 @@ export class CalendarComponent implements OnInit {
         alert(userMessage);
       }
     });
+  }
+
+  /**
+   * Validator - start date must be strictly before end date
+   */
+  private dateRangeValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const startControl = group.get('startDate');
+      const endControl = group.get('endDate');
+      const start = startControl?.value as Date | string | null;
+      const end = endControl?.value as Date | string | null;
+
+      if (!start || !end) {
+        this.clearInvalidDateError(endControl);
+        return null;
+      }
+
+      const startTime = new Date(start).getTime();
+      const endTime = new Date(end).getTime();
+
+      if (isNaN(startTime) || isNaN(endTime)) {
+        this.clearInvalidDateError(endControl);
+        return null;
+      }
+
+      const invalid = startTime > endTime;
+      if (invalid) {
+        this.applyInvalidDateError(endControl);
+        return { invalidDateOrder: true };
+      }
+
+      this.clearInvalidDateError(endControl);
+      return null;
+    };
+  }
+
+  private toUtcIso(dateValue: Date | string, endOfDay: boolean): string {
+    if (!dateValue) return '';
+
+    // If already an ISO datetime string, keep as is
+    if (typeof dateValue === 'string' && dateValue.includes('T')) {
+      return dateValue;
+    }
+
+    const d = new Date(dateValue);
+    if (isNaN(d.getTime())) return '';
+
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    const day = d.getDate();
+
+    const hours = endOfDay ? 23 : 0;
+    const minutes = endOfDay ? 59 : 0;
+    const seconds = endOfDay ? 59 : 0;
+    const ms = endOfDay ? 999 : 0;
+
+    return new Date(Date.UTC(year, month, day, hours, minutes, seconds, ms)).toISOString();
+  }
+
+  private applyInvalidDateError(control?: AbstractControl | null): void {
+    if (!control) return;
+    const current = control.errors || {};
+    control.setErrors({ ...current, invalidDateOrder: true });
+  }
+
+  private clearInvalidDateError(control?: AbstractControl | null): void {
+    if (!control || !control.errors) return;
+    const { invalidDateOrder, ...rest } = control.errors;
+    if (Object.keys(rest).length === 0) {
+      control.setErrors(null);
+    } else {
+      control.setErrors(rest);
+    }
   }
 
   /**

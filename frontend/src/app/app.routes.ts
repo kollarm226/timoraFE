@@ -8,6 +8,7 @@ import { LoginComponent } from './login/login.component';
 import { DocumentsComponent } from './pages/documents/documents.component';
 import { AboutComponent } from './pages/about/about.component';
 import { FaqComponent } from './pages/faq/faq.component';
+import { AdminRequestsComponent } from './pages/admin/admin-requests.component';
 
 /**
  * Routing konfiguracia
@@ -24,5 +25,6 @@ export const routes: Routes = [
   { path: 'documents', component: DocumentsComponent },
   { path: 'about', component: AboutComponent },
   { path: 'faq', component: FaqComponent },
+  { path: 'admin', component: AdminRequestsComponent },
   { path: '**', redirectTo: '/login' }  // Fallback na login
 ];

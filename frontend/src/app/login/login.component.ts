@@ -39,15 +39,6 @@ export class LoginComponent {
   }
 
   loginForm: FormGroup = this.fb.group({
-    companyId: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(1),
-        Validators.maxLength(10),
-        this.alphanumericValidator()
-      ]
-    ],
     email: [
       '',
       [
@@ -64,18 +55,6 @@ export class LoginComponent {
     ]
   });
 
-  /**
-   * Validator - povoli len alfanumericke znaky (bez diakritiky)
-   */
-  private alphanumericValidator(): ValidatorFn {
-    const regex = /^[A-Za-z0-9]+$/;
-    return (control: AbstractControl): ValidationErrors | null => {
-      const value = (control.value || '').trim();
-      if (!value) return null;
-      return regex.test(value) ? null : { alphanumeric: true };
-    };
-  }
-
   get f() {
     return this.loginForm.controls;
   }
@@ -91,15 +70,14 @@ export class LoginComponent {
       return;
     }
 
-    const loginData = {
-      companyId: String(this.f['companyId'].value).trim(),
-      username: String(this.f['email'].value).trim(), // Email pouzity ako username
+    const credentials = {
+      username: String(this.f['email'].value).trim(), // Email used as username
       password: String(this.f['password'].value)
     };
 
     this.loading = true;
 
-    this.auth.login(loginData).subscribe({
+    this.auth.login(credentials).subscribe({
       next: () => {
         this.loading = false;
         this.router.navigate(['/dashboard']);
@@ -109,6 +87,39 @@ export class LoginComponent {
         const message = (err instanceof Error)
           ? err.message
           : 'Login failed. Please check your credentials.';
+        this.serverError = message;
+      }
+    });
+  }
+
+  /** Router register page */
+  goToRegister(): void {
+    this.router.navigate(['/register']);
+  }
+
+  /** reset hesla */
+  onResetPassword(): void {
+    this.serverError = null;
+
+    const emailControl = this.f['email'];
+    if (!emailControl || emailControl.invalid) {
+      this.serverError = 'Enter a valid email to reset your password.';
+      return;
+    }
+
+    const email = String(emailControl.value).trim();
+    this.loading = true;
+
+    this.auth.resetPassword(email).subscribe({
+      next: () => {
+        this.loading = false;
+        alert('A reset link has been sent to your email.');
+      },
+      error: (err: unknown) => {
+        this.loading = false;
+        const message = (err instanceof Error)
+          ? err.message
+          : 'Unable to send the password reset.';
         this.serverError = message;
       }
     });

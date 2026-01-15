@@ -1,0 +1,169 @@
+<div class="page admin-page">
+  <header class="admin-header">
+    <div>
+      <h1>Administration</h1>
+      <p class="muted">Review and manage vacation requests and users</p>
+    </div>
+    <button type="button" class="refresh" (click)="loadData()" [disabled]="loading">
+      Refresh
+    </button>
+  </header>
+
+  <!-- Tab navigation -->
+  <div class="tab-navigation">
+    <button 
+      type="button" 
+      class="tab-button" 
+      [class.active]="activeTab === 'vacations'"
+      (click)="setActiveTab('vacations')"
+    >
+      Vacations
+    </button>
+    <!-- Users tab visible only for Admin (role 2) -->
+    <button 
+      type="button" 
+      class="tab-button" 
+      [class.active]="activeTab === 'users'"
+      (click)="setActiveTab('users')"
+      *ngIf="isAdmin()"
+    >
+      Users
+    </button>
+  </div>
+
+  <!-- Vacations Tab -->
+  <ng-container *ngIf="activeTab === 'vacations'">
+    <!-- Filter section -->
+  <div class="filter-section">
+    <div class="filter-row">
+      <input 
+        type="text" 
+        [(ngModel)]="filterText" 
+        (input)="onFilterChange()"
+        placeholder="Search by employee name, company, or reason..."
+        class="filter-input"
+      />
+      <select 
+        [(ngModel)]="filterStatus" 
+        (change)="onFilterChange()"
+        class="filter-select"
+      >
+        <option [value]="null">All statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Denied">Denied</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+      <button type="button" class="clear-filters" (click)="clearFilters()">Clear filters</button>
+    </div>
+    <p class="filter-info">Showing {{ requests.length }} of {{ allRequests.length }} requests</p>
+  </div>
+
+  <div *ngIf="loading" class="state">Loading requests...</div>
+  <div *ngIf="error && !loading" class="state error">{{ error }}</div>
+
+  <div class="table-wrapper" *ngIf="!loading && !error">
+    <table class="requests-table">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Company</th>
+          <th>Period</th>
+          <th>Days</th>
+          <th>Status</th>
+          <th>Reason</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of requests">
+          <td>{{ r.userName }}</td>
+          <td>{{ r.companyName }}</td>
+          <td>{{ formatDate(r.startDate) }} – {{ formatDate(r.endDate) }}</td>
+          <td>{{ r.days }}</td>
+          <td><span [class]="statusClass(r.status)">{{ statusLabel(r.status) }}</span></td>
+          <td class="reason">{{ r.reason || '—' }}</td>
+          <td class="actions">
+            <button type="button" class="approve" (click)="updateStatus(r, 1)" [disabled]="!canResolve(r.status) || actionLoading[r.id]">Approve</button>
+            <button type="button" class="deny" (click)="updateStatus(r, 2)" [disabled]="!canResolve(r.status) || actionLoading[r.id]">Deny</button>
+            <button type="button" class="cancel" (click)="updateStatus(r, 3)" [disabled]="!canResolve(r.status) || actionLoading[r.id]">Cancel</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="no-results">No vacation requests match your filters</div>
+  </div>
+  </ng-container>
+
+  <!-- Users Tab -->
+  <ng-container *ngIf="activeTab === 'users'">
+    <div class="filter-section">
+      <div class="filter-row">
+        <input 
+          type="text" 
+          [(ngModel)]="userFilterText" 
+          (input)="applyFilters()"
+          placeholder="Search by name, company, or email..."
+          class="filter-input"
+        />
+        <button type="button" class="clear-filters" (click)="clearUserFilters()">Clear filters</button>
+      </div>
+      <p class="filter-info">Showing {{ users.length }} of {{ allUsers.length }} users</p>
+    </div>
+
+    <div *ngIf="loading" class="state">Loading users...</div>
+    <div *ngIf="error && !loading" class="state error">{{ error }}</div>
+
+    <div class="table-wrapper" *ngIf="!loading && !error">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Role</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of users">
+            <td>{{ u.firstName }} {{ u.lastName }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.companyName }}</td>
+            <td><span class="role-badge" [class]="'role-' + u.role">{{ u.role === 0 ? 'Employee' : u.role === 1 ? 'Employer' : 'Admin' }}</span></td>
+            <td class="user-actions">
+              <div class="action-menu-container">
+                <button 
+                  type="button" 
+                  class="info-button" 
+                  (click)="toggleUserMenu(u.id)"
+                  [class.active]="openMenuId === u.id"
+                  [attr.data-user-id]="u.id"
+                >
+                  ⓘ
+                </button>
+                <div 
+                  class="action-menu" 
+                  *ngIf="openMenuId === u.id"
+                  [style.top]="menuPosition.top"
+                  [style.left]="menuPosition.left"
+                  (click)="$event.stopPropagation()"
+                >
+                  <button 
+                    type="button" 
+                    class="menu-item delete"
+                    (click)="deleteUser(u)"
+                    [disabled]="userActionLoading[u.id]"
+                  >
+                    {{ userActionLoading[u.id] ? 'Deleting...' : 'Delete user' }}
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="users.length === 0" class="no-results">No users match your filters</div>
+    </div>
+  </ng-container>
+</div>

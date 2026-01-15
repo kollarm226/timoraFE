@@ -7,8 +7,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 /**
- * Register komponent - registracny formular pre novych uzivatelov
- * Validuje vsetky vstupne polia a vytvara novy ucet
+ * Register component - onboarding form for new users
+ * Validates all inputs and creates a new account
  */
 @Component({
   selector: 'app-register',
@@ -27,7 +27,7 @@ export class RegisterComponent {
   loading = false;
   isDark = false;
 
-  // Toggle medzi join company a create company
+  // Toggle between joining an existing company and creating a new one
   registerMode: 'join' | 'create' = 'join';
 
   /**
@@ -43,7 +43,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Toggle medzi join (existujuca) a create (nova) company
+   * Toggle between join (existing) and create (new) company modes
    */
   toggleRegisterMode(): void {
     this.registerMode = this.registerMode === 'join' ? 'create' : 'join';
@@ -103,7 +103,7 @@ export class RegisterComponent {
   });
 
   /**
-   * Validator - kontrola zhody hesla a potvrdenia hesla
+   * Validator - ensures password and confirmation match
    */
   private passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
     const pw = group.get('password')?.value;
@@ -112,7 +112,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - povoli len pismena (vratane diakritiky)
+   * Validator - allows letters only (diacritics allowed)
    */
   private lettersOnlyValidator(): ValidatorFn {
     const regex = /^[A-Za-zÀ-ž]+(?:[\s'-][A-Za-zÀ-ž]+)*$/u;
@@ -124,7 +124,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - povoli len alfanumericke znaky (bez diakritiky)
+   * Validator - allows alphanumeric characters (no diacritics)
    */
   private alphanumericValidator(): ValidatorFn {
     const regex = /^[A-Za-z0-9_-]*$/;
@@ -136,19 +136,19 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - musí byť vybraná buď company alebo companyName
+   * Validator - requires either companyId or companyName to be set
    */
   private companySelectionValidator(): ValidatorFn {
     return (group: AbstractControl): ValidationErrors | null => {
       const companyId = group.get('companyId')?.value;
       const companyName = group.get('companyName')?.value;
 
-      // Aspoň jeden musí byť vyplnený
+      // Require at least one field
       if (!companyId && !companyName) {
         return { companyRequired: true };
       }
 
-      // Oba nesmú byť vyplnené zároveň
+      // Disallow filling both fields at once
       if (companyId && companyName) {
         return { companyConflict: true };
       }
@@ -158,7 +158,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - sila hesla (velke/male pismena, cislo, specialny znak)
+   * Validator - enforces password strength (upper/lowercase, number, special)
    */
   private passwordStrengthValidator(): ValidatorFn {
     const upper = /[A-Z]/;
@@ -185,7 +185,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Odoslanie registracneho formulara
+   * Submit registration form
    */
   onSubmit(): void {
     this.submitted = true;
@@ -203,7 +203,7 @@ export class RegisterComponent {
       password: String(this.f['password'].value)
     };
 
-    // Podľa módu pridaj companyId alebo companyName
+    // Add companyId or companyName based on mode
     if (this.registerMode === 'join') {
       const parsedId = parseInt(String(this.f['companyId'].value).trim(), 10);
       if (isNaN(parsedId)) {
@@ -222,19 +222,28 @@ export class RegisterComponent {
       next: (response) => {
         this.loading = false;
 
-        // Ziskaj Company ID z roznych moznych ciest v odpovedi
+        console.log('🎉 Registration response:', response);
+        console.log('Role from response:', response.user?.role || (response as any).role);
+        
+        // Retrieve Company ID from possible response shapes
         const companyId = response.user?.companyId || (response as any).companyId || 'N/A';
 
-        alert(`Uspesne registrovany uzivatel: ${registrationData.firstName} ${registrationData.lastName}\n\nVASE COMPANY ID JE: ${companyId}\n\nProsim ulozte si toto ID, budete ho potrebovat pre prihlasenie!`);
+        alert(`User registered successfully: ${registrationData.firstName} ${registrationData.lastName}\n\nYOUR COMPANY ID IS: ${companyId}\n\nPlease save this ID; you will need it to sign in.`);
         this.router.navigate(['/login']);
       },
       error: (err: unknown) => {
         this.loading = false;
+        console.error('❌ Registration error:', err);
         const message = (err instanceof Error)
           ? err.message
-          : 'Nastala chyba pocas registracie';
+          : 'An error occurred during registration';
         this.serverError = message;
       }
     });
+  }
+
+  /** Navigate to login page */
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }
