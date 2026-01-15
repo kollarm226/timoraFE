@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production --optimization --extract-licenses=false",
+    "build:azure": "ng build --configuration production --optimization --extract-licenses=false --source-map=false",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
@@ -53,5 +54,9 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "8.40.0"
+  },
+  "engines": {
+    "node": ">=20.11.1",
+    "npm": ">=10.0.0"
   }
 }
