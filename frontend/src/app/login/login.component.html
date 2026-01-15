@@ -67,8 +67,8 @@
 
        
         <div class="flex justify-between text-sm text-gray-600 py-2">
-          <span class="cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150" (click)="onResetPassword()">Forgotten password?</span>
-          <span class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150" (click)="onResetPassword()">Reset password</span>
+          <span class="cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150" (click)="onResetPassword()" (keyup.enter)="onResetPassword()" tabindex="0">Forgotten password?</span>
+          <span class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150" (click)="onResetPassword()" (keyup.enter)="onResetPassword()" tabindex="0">Reset password</span>
         </div>
 
         <div class="grid grid-cols-1 gap-3">
@@ -87,7 +87,7 @@
       </form>
 
       <div class="text-center text-sm text-gray-600 mt-4">
-        Don't have an account? <a (click)="goToRegister()" class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Sign up!</a>
+        Don't have an account? <a (click)="goToRegister()" (keyup.enter)="goToRegister()" tabindex="0" class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Sign up!</a>
       </div>
     </div>
   </div>

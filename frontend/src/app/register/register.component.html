@@ -198,7 +198,7 @@
       </form>
 
       <div class="text-center text-sm text-gray-600 mt-4">
-        Already have an account? <a (click)="goToLogin()" class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Sign in!</a>
+        Already have an account? <a (click)="goToLogin()" (keyup.enter)="goToLogin()" tabindex="0" class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Sign in!</a>
       </div>
     </div>
   </div>

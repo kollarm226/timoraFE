@@ -283,7 +283,7 @@ export class AdminRequestsComponent implements OnInit {
     this.actionLoading[request.id] = true;
 
     const resolverUser = this.auth.getCurrentUser();
-    const resolvedByUserId = (resolverUser as any)?.id ?? undefined;
+    const resolvedByUserId = resolverUser?.id ?? undefined;
 
     this.api.updateHolidayRequestStatus(request.id, {
       status,

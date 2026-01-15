@@ -147,7 +147,7 @@
                   *ngIf="openMenuId === u.id"
                   [style.top]="menuPosition.top"
                   [style.left]="menuPosition.left"
-                  (click)="$event.stopPropagation()"
+                  (click)="$event.stopPropagation()" (keyup.enter)="$event.stopPropagation()" tabindex="0"
                 >
                   <button 
                     type="button" 

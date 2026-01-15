@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { User } from '../models/user.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -195,7 +194,7 @@ export class RegisterComponent {
       return;
     }
 
-    const registrationData: any = {
+    const registrationData: Record<string, string> = {
       firstName: String(this.f['firstName'].value).trim(),
       lastName: String(this.f['lastName'].value).trim(),
       userName: String(this.f['userName'].value).trim().toLowerCase(),
@@ -211,9 +210,9 @@ export class RegisterComponent {
         this.loading = false;
         return;
       }
-      registrationData.companyId = parsedId;
+      registrationData['companyId'] = String(parsedId);
     } else {
-      registrationData.companyName = String(this.f['companyName'].value).trim();
+      registrationData['companyName'] = String(this.f['companyName'].value).trim();
     }
 
     this.loading = true;
@@ -223,12 +222,12 @@ export class RegisterComponent {
         this.loading = false;
 
         console.log('🎉 Registration response:', response);
-        console.log('Role from response:', response.user?.role || (response as any).role);
+        console.log('Role from response:', response.user?.role || (response as Record<string, unknown>)['role']);
         
         // Retrieve Company ID from possible response shapes
-        const companyId = response.user?.companyId || (response as any).companyId || 'N/A';
+        const companyId = response.user?.companyId || (response as Record<string, unknown>)['companyId'] || 'N/A';
 
-        alert(`User registered successfully: ${registrationData.firstName} ${registrationData.lastName}\n\nYOUR COMPANY ID IS: ${companyId}\n\nPlease save this ID; you will need it to sign in.`);
+        alert(`User registered successfully: ${registrationData['firstName']} ${registrationData['lastName']}\n\nYOUR COMPANY ID IS: ${companyId}\n\nPlease save this ID; you will need it to sign in.`);
         this.router.navigate(['/login']);
       },
       error: (err: unknown) => {

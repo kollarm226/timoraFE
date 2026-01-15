@@ -55,19 +55,19 @@ export class ApiService {
    * Nacita vsetky ziadosti o dovolenky
    */
   getHolidayRequests(): Observable<HolidayRequest[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/HolidayRequests`, { headers: this.getHeaders() })
+    return this.http.get<Record<string, unknown>[]>(`${this.baseUrl}/HolidayRequests`, { headers: this.getHeaders() })
       .pipe(
         map(data => data.map(item => ({
-          id: item.id,
-          userId: item.userId || item.UserId, // Handle both camelCase and PascalCase
-          startDate: item.startDate || item.StartDate,
-          endDate: item.endDate || item.EndDate,
-          requestDate: item.requestDate || item.RequestDate,
-          status: item.status || item.Status,
-          reason: item.reason || item.Reason,
-          approvedBy: item.approvedBy || item.ApprovedBy,
-          approvedDate: item.approvedDate || item.ApprovedDate,
-          rejectionReason: item.rejectionReason || item.RejectionReason
+          id: item['id'] as number,
+          userId: (item['userId'] || item['UserId']) as number, // Handle both camelCase and PascalCase
+          startDate: new Date((item['startDate'] || item['StartDate']) as string),
+          endDate: new Date((item['endDate'] || item['EndDate']) as string),
+          requestDate: new Date((item['requestDate'] || item['RequestDate']) as string),
+          status: (item['status'] || item['Status']) as 'Pending' | 'Approved' | 'Rejected' | 'Denied' | 'Cancelled' | number,
+          reason: (item['reason'] || item['Reason']) as string,
+          approvedBy: (item['approvedBy'] || item['ApprovedBy']) as number | undefined,
+          approvedDate: item['approvedDate'] || item['ApprovedDate'] ? new Date((item['approvedDate'] || item['ApprovedDate']) as string) : undefined,
+          rejectionReason: (item['rejectionReason'] || item['RejectionReason']) as string | undefined
         })))
       );
   }
