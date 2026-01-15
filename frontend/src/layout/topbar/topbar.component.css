@@ -15,6 +15,12 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .right { 
   display: flex; 
   align-items: center; 
@@ -57,12 +63,24 @@
   opacity: .7; 
 }
 
+.user .company { 
+  font-size: 11px; 
+  opacity: .6; 
+  font-style: italic;
+}
+
 .avatar { 
   width: 36px; 
   height: 36px; 
   border-radius: 50%; 
   background: #d1d5db;
   flex-shrink: 0;
+}
+
+/* Mobile Hamburger Menu Button */
+.sidebar-toggle-mobile {
+  display: none;
+  color: var(--text);
 }
 
 /* Dark mode-specific topbar */
@@ -73,3 +91,23 @@
 :host-context(.dark-theme) .mat-mdc-icon-button mat-icon { color: #ffffff !important; }
 body.dark-theme .topbar button[mat-icon-button] mat-icon { color: #ffffff; }
 
+/* Responsive Design */
+@media (max-width: 640px) {
+  .sidebar-toggle-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user {
+    display: none;
+  }
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .right button[mat-stroked-button] {
+    display: none;
+  }
+}

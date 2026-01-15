@@ -22,7 +22,7 @@ export interface HolidayRequest {
   startDate: Date;
   endDate: Date;
   requestDate: Date;
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: 'Pending' | 'Approved' | 'Rejected' | 'Denied' | 'Cancelled' | number;
   reason?: string;
   approvedBy?: number;
   approvedDate?: Date;
@@ -48,12 +48,13 @@ export interface Notice {
  * Pozor: toto je iny model ako User v user.model.ts (ten je pre localStorage)
  */
 export interface ApiUser {
+  [key: string]: unknown;
   id: number;
   firstName: string;
   lastName: string;
   email: string;
   companyId: number;
-  role?: string;
+  role?: number;
   isActive?: boolean;
   createdAt?: Date;
 }

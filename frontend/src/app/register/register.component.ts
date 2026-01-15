@@ -2,13 +2,12 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { User } from '../models/user.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 /**
- * Register komponent - registracny formular pre novych uzivatelov
- * Validuje vsetky vstupne polia a vytvara novy ucet
+ * Register component - onboarding form for new users
+ * Validates all inputs and creates a new account
  */
 @Component({
   selector: 'app-register',
@@ -27,6 +26,9 @@ export class RegisterComponent {
   loading = false;
   isDark = false;
 
+  // Toggle between joining an existing company and creating a new one
+  registerMode: 'join' | 'create' = 'join';
+
   /**
    * Toggle dark theme: adds/removes `dark-theme` class on document body
    */
@@ -39,16 +41,18 @@ export class RegisterComponent {
     }
   }
 
+  /**
+   * Toggle between join (existing) and create (new) company modes
+   */
+  toggleRegisterMode(): void {
+    this.registerMode = this.registerMode === 'join' ? 'create' : 'join';
+    this.registerForm.reset();
+    this.submitted = false;
+  }
+
   registerForm: FormGroup = this.fb.group({
-    companyId: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(10),
-        this.alphanumericValidator()
-      ]
-    ],
+    companyId: ['', [Validators.minLength(1), Validators.maxLength(10)]],
+    companyName: ['', [Validators.minLength(3), Validators.maxLength(100)]],
     firstName: [
       '',
       [
@@ -67,18 +71,18 @@ export class RegisterComponent {
         this.lettersOnlyValidator()
       ]
     ],
+    userName: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(30),
+        this.alphanumericValidator()
+      ]
+    ],
     email: [
       '',
       [Validators.required, Validators.email]
-    ],
-    address: [
-      '',
-      [
-        Validators.required, 
-        Validators.minLength(5), 
-        Validators.maxLength(100), 
-        this.addressValidator()
-      ]
     ],
     password: [
       '',
@@ -90,10 +94,15 @@ export class RegisterComponent {
       ]
     ],
     confirmPassword: ['', Validators.required]
-  }, { validators: this.passwordsMatchValidator });
+  }, {
+    validators: [
+      this.passwordsMatchValidator,
+      this.companySelectionValidator()
+    ]
+  });
 
   /**
-   * Validator - kontrola zhody hesla a potvrdenia hesla
+   * Validator - ensures password and confirmation match
    */
   private passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
     const pw = group.get('password')?.value;
@@ -102,7 +111,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - povoli len pismena (vratane diakritiky)
+   * Validator - allows letters only (diacritics allowed)
    */
   private lettersOnlyValidator(): ValidatorFn {
     const regex = /^[A-Za-zÀ-ž]+(?:[\s'-][A-Za-zÀ-ž]+)*$/u;
@@ -114,10 +123,10 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - povoli len alfanumericke znaky (bez diakritiky)
+   * Validator - allows alphanumeric characters (no diacritics)
    */
   private alphanumericValidator(): ValidatorFn {
-    const regex = /^[A-Za-z0-9]+$/;
+    const regex = /^[A-Za-z0-9_-]*$/;
     return (control: AbstractControl): ValidationErrors | null => {
       const value = (control.value || '').trim();
       if (!value) return null;
@@ -126,46 +135,56 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - format adresy (pismena, cisla, zakladne interpunkcie)
+   * Validator - requires either companyId or companyName to be set
    */
-  private addressValidator(): ValidatorFn {
-    const regex = /^[A-Za-zÀ-ž0-9\s.,/-]{5,100}$/u;
-    return (control: AbstractControl): ValidationErrors | null => {
-      const value = (control.value || '').trim();
-      if (!value) return null;
-      return regex.test(value) ? null : { addressFormat: true };
+  private companySelectionValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const companyId = group.get('companyId')?.value;
+      const companyName = group.get('companyName')?.value;
+
+      // Require at least one field
+      if (!companyId && !companyName) {
+        return { companyRequired: true };
+      }
+
+      // Disallow filling both fields at once
+      if (companyId && companyName) {
+        return { companyConflict: true };
+      }
+
+      return null;
     };
   }
 
   /**
-   * Validator - sila hesla (velke/male pismena, cislo, specialny znak)
+   * Validator - enforces password strength (upper/lowercase, number, special)
    */
   private passwordStrengthValidator(): ValidatorFn {
     const upper = /[A-Z]/;
     const lower = /[a-z]/;
     const digit = /[0-9]/;
     const special = /[^A-Za-z0-9]/;
-    
+
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value || '';
       if (!value) return null;
-      
+
       const hasUpper = upper.test(value);
       const hasLower = lower.test(value);
       const hasDigit = digit.test(value);
       const hasSpecial = special.test(value);
-      
+
       const isStrong = hasUpper && hasLower && hasDigit && hasSpecial;
       return isStrong ? null : { weakPassword: true };
     };
   }
 
-  get f() { 
-    return this.registerForm.controls; 
+  get f() {
+    return this.registerForm.controls;
   }
 
   /**
-   * Odoslanie registracneho formulara
+   * Submit registration form
    */
   onSubmit(): void {
     this.submitted = true;
@@ -175,30 +194,55 @@ export class RegisterComponent {
       return;
     }
 
-    const user: User = {
-      companyId: String(this.f['companyId'].value).trim(),
+    const registrationData: Record<string, string> = {
       firstName: String(this.f['firstName'].value).trim(),
       lastName: String(this.f['lastName'].value).trim(),
+      userName: String(this.f['userName'].value).trim().toLowerCase(),
       email: String(this.f['email'].value).trim().toLowerCase(),
-      address: String(this.f['address'].value).trim(),
       password: String(this.f['password'].value)
     };
 
+    // Add companyId or companyName based on mode
+    if (this.registerMode === 'join') {
+      const parsedId = parseInt(String(this.f['companyId'].value).trim(), 10);
+      if (isNaN(parsedId)) {
+        this.serverError = 'Invalid Company ID format';
+        this.loading = false;
+        return;
+      }
+      registrationData['companyId'] = String(parsedId);
+    } else {
+      registrationData['companyName'] = String(this.f['companyName'].value).trim();
+    }
+
     this.loading = true;
 
-    this.auth.register(user).subscribe({
-      next: () => {
+    this.auth.register(registrationData).subscribe({
+      next: (response) => {
         this.loading = false;
-        alert('Uspesne registrovany uzivatel: ' + user.firstName + ' ' + user.lastName);
+
+        console.log('🎉 Registration response:', response);
+        console.log('Role from response:', response.user?.role || (response as Record<string, unknown>)['role']);
+        
+        // Retrieve Company ID from possible response shapes
+        const companyId = response.user?.companyId || (response as Record<string, unknown>)['companyId'] || 'N/A';
+
+        alert(`User registered successfully: ${registrationData['firstName']} ${registrationData['lastName']}\n\nYOUR COMPANY ID IS: ${companyId}\n\nPlease save this ID; you will need it to sign in.`);
         this.router.navigate(['/login']);
       },
       error: (err: unknown) => {
         this.loading = false;
-        const message = (err instanceof Error) 
-          ? err.message 
-          : 'Nastala chyba pocas registracie';
+        console.error('❌ Registration error:', err);
+        const message = (err instanceof Error)
+          ? err.message
+          : 'An error occurred during registration';
         this.serverError = message;
       }
     });
+  }
+
+  /** Navigate to login page */
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 }
