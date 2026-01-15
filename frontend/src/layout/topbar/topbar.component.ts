@@ -7,8 +7,10 @@ import { RouterLink } from '@angular/router';
 import { SidebarService } from '../../app/services/sidebar.service';
 import { AuthService } from '../../app/services/auth.service';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ApiService } from '../../app/services/api.service';
+import { Company } from '../../app/models/api.models';
 
 /**
  * Topbar komponent - horny navigacny panel
@@ -25,6 +27,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   private sidebarService = inject(SidebarService);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private api = inject(ApiService);
   private destroy$ = new Subject<void>();
 
   isDark = false;
@@ -32,6 +35,9 @@ export class TopbarComponent implements OnInit, OnDestroy {
   role = '';
   roleId: number | undefined;
   showMenu = false;
+  companyName = '';
+  companyId: string | number | undefined;
+  companies: Company[] = [];
 
   /**
    * Prepne temu medzi svetlou a tmavou
@@ -55,6 +61,16 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Load companies first
+    this.api.getCompanies().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (companies) => {
+        this.companies = companies;
+      },
+      error: (err) => {
+        console.warn('Failed to load companies for topbar:', err);
+      }
+    });
+
     this.auth.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
@@ -63,10 +79,24 @@ export class TopbarComponent implements OnInit, OnDestroy {
           this.displayName = fullName || user.email || 'User';
           this.role = this.getRoleText(user.role);
           this.roleId = user.role;
+          this.companyId = user.companyId;
+          
+          // Find company name
+          if (user.companyId && this.companies.length > 0) {
+            const companyIdNum = typeof user.companyId === 'string' ? parseInt(user.companyId) : user.companyId;
+            const company = this.companies.find(c => c.id === companyIdNum);
+            this.companyName = company ? company.name : `Company #${user.companyId}`;
+          } else if (user.companyId) {
+            this.companyName = `Company #${user.companyId}`;
+          } else {
+            this.companyName = '';
+          }
         } else {
           this.displayName = 'Guest';
           this.role = '';
           this.roleId = undefined;
+          this.companyName = '';
+          this.companyId = undefined;
         }
       });
   }

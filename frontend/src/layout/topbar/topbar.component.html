@@ -16,6 +16,7 @@
       <div class="info">
         <div class="name">{{ displayName }}</div>
         <div class="role" *ngIf="role">{{ role }}</div>
+        <div class="company" *ngIf="companyName">{{ companyName }} ({{ companyId }})</div>
       </div>
       <div class="user-menu" *ngIf="showMenu">
         <button mat-button color="primary" (click)="logout()">Log out</button>

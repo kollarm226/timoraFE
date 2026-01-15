@@ -63,6 +63,12 @@
   opacity: .7; 
 }
 
+.user .company { 
+  font-size: 11px; 
+  opacity: .6; 
+  font-style: italic;
+}
+
 .avatar { 
   width: 36px; 
   height: 36px; 
