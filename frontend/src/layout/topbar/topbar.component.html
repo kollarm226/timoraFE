@@ -11,7 +11,7 @@
     <button mat-icon-button aria-label="theme toggle" (click)="toggleTheme()">
       <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
     </button>
-    <div class="user" (click)="toggleUserMenu()">
+    <div class="user" (click)="toggleUserMenu()" (keyup.enter)="toggleUserMenu()" tabindex="0">
       <div class="avatar"></div>
       <div class="info">
         <div class="name">{{ displayName }}</div>

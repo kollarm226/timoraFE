@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
 import { SidebarService } from '../../app/services/sidebar.service';
 import { AuthService } from '../../app/services/auth.service';
 import { Router } from '@angular/router';
-import { Subject, forkJoin } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ApiService } from '../../app/services/api.service';
 import { Company } from '../../app/models/api.models';
@@ -102,9 +102,18 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
+    console.log('🔄 Starting logout...');
+    this.showMenu = false;
+    
     this.auth.logout().subscribe({
-      next: () => this.router.navigate(['/login']),
-      error: () => this.router.navigate(['/login'])
+      next: () => {
+        console.log('✅ Logout OK, navigating to /login');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.log('❌ Logout error but still navigating:', err);
+        this.router.navigate(['/login']);
+      }
     });
   }
 

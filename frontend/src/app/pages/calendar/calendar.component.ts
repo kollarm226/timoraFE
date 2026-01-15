@@ -12,9 +12,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { HolidayRequest } from '../../models/api.models';
-import { switchMap, catchError, map } from 'rxjs/operators';
-import { throwError, from } from 'rxjs';
-import { auth } from '../../config/firebase.config';
 
 /**
  * Calendar komponent - planovanie dovoleniek
@@ -157,7 +154,7 @@ export class CalendarComponent implements OnInit {
 
     // Posli request na vytvorenie holiday requestu
     this.apiService.createHolidayRequest(requestData).subscribe({
-      next: (response) => {
+      next: () => {
         this.loading = false;
         alert('Vacation request sent successfully!');
         this.vacationForm.reset();
@@ -250,6 +247,7 @@ export class CalendarComponent implements OnInit {
 
   private clearInvalidDateError(control?: AbstractControl | null): void {
     if (!control || !control.errors) return;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { invalidDateOrder, ...rest } = control.errors;
     if (Object.keys(rest).length === 0) {
       control.setErrors(null);

@@ -19,4 +19,4 @@
 </div>
 
 <!-- Mobile Backdrop -->
-<div class="sidebar-backdrop" *ngIf="isOpen()" (click)="closeSidebar()"></div>
+<div class="sidebar-backdrop" *ngIf="isOpen()" (click)="closeSidebar()" (keyup.escape)="closeSidebar()" tabindex="0"></div>

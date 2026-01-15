@@ -1,11 +1,10 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { from, switchMap, of } from 'rxjs';
+import { from, switchMap } from 'rxjs';
 import { auth } from '../config/firebase.config';
 
 // Cache pre Firebase token
 let cachedToken: string | null = null;
-let tokenExpiration: number = 0;
+let tokenExpiration = 0;
 
 /**
  * HTTP Interceptor pre pridanie Firebase ID tokenu do kazdeho requestu

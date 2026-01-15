@@ -48,6 +48,7 @@ export interface Notice {
  * Pozor: toto je iny model ako User v user.model.ts (ten je pre localStorage)
  */
 export interface ApiUser {
+  [key: string]: unknown;
   id: number;
   firstName: string;
   lastName: string;
