@@ -65,6 +65,8 @@ export class TopbarComponent implements OnInit, OnDestroy {
     this.api.getCompanies().pipe(takeUntil(this.destroy$)).subscribe({
       next: (companies) => {
         this.companies = companies;
+        // Update company name if user is already loaded
+        this.updateCompanyName();
       },
       error: (err) => {
         console.warn('Failed to load companies for topbar:', err);
@@ -81,16 +83,8 @@ export class TopbarComponent implements OnInit, OnDestroy {
           this.roleId = user.role;
           this.companyId = user.companyId;
           
-          // Find company name
-          if (user.companyId && this.companies.length > 0) {
-            const companyIdNum = typeof user.companyId === 'string' ? parseInt(user.companyId) : user.companyId;
-            const company = this.companies.find(c => c.id === companyIdNum);
-            this.companyName = company ? company.name : `Company #${user.companyId}`;
-          } else if (user.companyId) {
-            this.companyName = `Company #${user.companyId}`;
-          } else {
-            this.companyName = '';
-          }
+          // Update company name
+          this.updateCompanyName();
         } else {
           this.displayName = 'Guest';
           this.role = '';
@@ -136,6 +130,18 @@ export class TopbarComponent implements OnInit, OnDestroy {
         return 'Admin';
       default:
         return 'Employee';
+    }
+  }
+
+  private updateCompanyName(): void {
+    if (this.companyId && this.companies.length > 0) {
+      const companyIdNum = typeof this.companyId === 'string' ? parseInt(this.companyId) : this.companyId;
+      const company = this.companies.find(c => c.id === companyIdNum);
+      this.companyName = company ? company.name : `Company #${this.companyId}`;
+    } else if (this.companyId) {
+      this.companyName = `Company #${this.companyId}`;
+    } else {
+      this.companyName = '';
     }
   }
 

@@ -33,12 +33,27 @@ export interface HolidayRequest {
 
 export interface Notice {
   id: number;
+  userId: number;
   title: string;
   content: string;
-  createdBy: number;
   createdAt: Date;
-  isActive: boolean;
-  priority?: 'Low' | 'Medium' | 'High';
+  user?: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
+
+export interface CreateNoticeRequest {
+  userId: number;
+  title: string;
+  content: string;
+}
+
+export interface UpdateNoticeRequest {
+  title?: string;
+  content?: string;
 }
 
 // ===== USER (API) =====
