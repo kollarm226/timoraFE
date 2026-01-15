@@ -73,3 +73,34 @@ export interface ApiUser {
   isActive?: boolean;
   createdAt?: Date;
 }
+
+// ===== DOCUMENT =====
+
+export interface Document {
+  id: number;
+  title: string;
+  description?: string;
+  fileUrl: string;
+  uploadedBy: number;
+  companyId: number;
+  createdAt: Date;
+  updatedAt?: Date;
+  user?: {
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export interface CreateDocumentRequest {
+  title: string;
+  description?: string;
+  fileUrl: string;
+  uploadedBy: number;
+  companyId: number;
+}
+
+export interface UpdateDocumentRequest {
+  title?: string;
+  description?: string;
+  fileUrl?: string;
+}
