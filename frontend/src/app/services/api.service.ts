@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Company, HolidayRequest, Notice, ApiUser, CreateNoticeRequest, UpdateNoticeRequest } from '../models/api.models';
+import { Company, HolidayRequest, Notice, ApiUser, CreateNoticeRequest, UpdateNoticeRequest, Document, CreateDocumentRequest, UpdateDocumentRequest } from '../models/api.models';
 import { environment } from '../../environments/environment';
 
 /**
@@ -108,6 +108,13 @@ export class ApiService {
     return this.http.patch<HolidayRequest>(`${this.baseUrl}/HolidayRequests/${id}`, payload, { headers: this.getHeaders() });
   }
 
+  /**
+   * Vymaze ziadost o dovolenku
+   */
+  deleteHolidayRequest(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/HolidayRequests/${id}`, { headers: this.getHeaders() });
+  }
+
   // ===== NOTICES =====
   
   /**
@@ -180,5 +187,49 @@ export class ApiService {
    */
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/Users/${id}`, { headers: this.getHeaders() });
+  }
+
+  // ===== DOCUMENTS =====
+
+  /**
+   * Nacita vsetky dokumenty
+   */
+  getDocuments(): Observable<Document[]> {
+    return this.http.get<Document[]>(`${this.baseUrl}/Documents`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Nacita dokumenty pre konkretnu firmu
+   */
+  getDocumentsByCompanyId(companyId: number): Observable<Document[]> {
+    return this.http.get<Document[]>(`${this.baseUrl}/Documents/company/${companyId}`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Nacita detaily konkretneho dokumentu
+   */
+  getDocumentById(id: number): Observable<Document> {
+    return this.http.get<Document>(`${this.baseUrl}/Documents/${id}`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Vytvori novy dokument
+   */
+  createDocument(document: CreateDocumentRequest): Observable<Document> {
+    return this.http.post<Document>(`${this.baseUrl}/Documents`, document, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Aktualizuje existujuci dokument
+   */
+  updateDocument(id: number, document: UpdateDocumentRequest): Observable<Document> {
+    return this.http.put<Document>(`${this.baseUrl}/Documents/${id}`, document, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Vymaze dokument
+   */
+  deleteDocument(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/Documents/${id}`, { headers: this.getHeaders() });
   }
 }

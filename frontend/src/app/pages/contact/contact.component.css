@@ -190,48 +190,89 @@
   font-size: 24px;
 }
 /* Responsive Design */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .contact-page {
-    padding: var(--spacing-md);
+    padding: 16px;
   }
 
   .filter-section {
-    padding: var(--spacing-md);
+    padding: 12px;
   }
 
   .filter-row {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--spacing-sm);
+    gap: 8px;
+  }
+
+  .filter-input,
+  .filter-select,
+  .clear-filters {
+    min-width: unset;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-page {
+    padding: 12px;
+  }
+
+  .filter-section {
+    padding: 10px;
   }
 
   .filter-input,
   .filter-select {
-    min-width: unset;
-    width: 100%;
+    padding: 9px 10px;
+    font-size: 13px;
   }
 
   .clear-filters {
-    align-self: flex-start;
+    padding: 9px 14px;
+    font-size: 13px;
   }
 
   .contact-item {
-    padding: var(--spacing-md) var(--spacing-lg);
+    padding: 12px 14px;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-md);
+    gap: 12px;
   }
 
   .contact-left {
     width: 100%;
-    gap: var(--spacing-md);
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
   }
 
   .text {
     flex: 1;
   }
 
+  .text .name {
+    font-size: 15px;
+  }
+
+  .text .role {
+    font-size: 13px;
+  }
+
+  .text .company {
+    font-size: 11px;
+  }
+
   .send-btn {
     align-self: flex-end;
+    padding: 6px;
+  }
+
+  .send-btn mat-icon {
+    font-size: 22px;
   }
 }

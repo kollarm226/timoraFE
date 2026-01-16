@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { NgIf } from '@angular/common';
@@ -19,6 +19,7 @@ import { SidebarService } from '../../app/services/sidebar.service';
 })
 export class SidebarComponent {
   private sidebarService = inject(SidebarService);
+  private router = inject(Router);
   isOpen = this.sidebarService.isOpen;
 
   toggleSidebar() {
@@ -27,6 +28,14 @@ export class SidebarComponent {
 
   closeSidebar() {
     this.sidebarService.closeSidebar();
+  }
+
+  /**
+   * Navigate to dashboard when logo is clicked
+   */
+  navigateToDashboard() {
+    this.router.navigate(['/dashboard']);
+    this.closeSidebar();
   }
 }
 
