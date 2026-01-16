@@ -86,7 +86,6 @@
           <td class="actions">
             <button type="button" class="approve" (click)="updateStatus(r, 1)" [disabled]="!canResolve(r.status) || actionLoading[r.id]">Approve</button>
             <button type="button" class="deny" (click)="updateStatus(r, 2)" [disabled]="!canResolve(r.status) || actionLoading[r.id]">Deny</button>
-            <button type="button" class="cancel" (click)="updateStatus(r, 3)" [disabled]="!canResolve(r.status) || actionLoading[r.id]">Cancel</button>
           </td>
         </tr>
       </tbody>

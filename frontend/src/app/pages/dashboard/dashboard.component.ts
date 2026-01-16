@@ -4,6 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { ApiService } from '../../services/api.service';
 import { HolidayRequest, Notice, ApiUser } from '../../models/api.models';
 import { AuthService } from '../../services/auth.service';
@@ -17,7 +18,7 @@ import { Subject, takeUntil, forkJoin } from 'rxjs';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatChipsModule, MatCardModule, MatIconModule, DatePipe],
+  imports: [CommonModule, MatTableModule, MatChipsModule, MatCardModule, MatIconModule, MatButtonModule, DatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -26,14 +27,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private destroy$ = new Subject<void>();
   
-  displayedColumns = ['start', 'end', 'status'];
   vacations: HolidayRequest[] = [];
   private allVacations: HolidayRequest[] = [];
   private currentUser: User | null = null;
   notices: Notice[] = [];
+  allNotices: Notice[] = [];
   employer: ApiUser | null = null;
   loading = true;
   error: string | null = null;
+  noticesLimit = 4;
+  vacationsLimit = 4;
+  showAllNotices = false;
+  showAllVacations = false;
+  cancelingId: number | null = null;
+  cancelError: string | null = null;
+
+  get displayedColumns(): string[] {
+    const hasPendingVacations = this.getDisplayedVacations().some(v => 
+      v.status === 0 || v.status === 'Pending' || this.getStatusView(v.status).class === 'pending'
+    );
+    return hasPendingVacations ? ['start', 'end', 'status', 'actions'] : ['start', 'end', 'status'];
+  }
 
   ngOnInit(): void {
     this.auth.currentUser$
@@ -94,7 +108,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.filterVacations();
 
         // Oznamenia
-        this.notices = notices.slice(0, 3);
+        this.allNotices = notices;
+        this.updateNoticesDisplay();
 
         // Najdi zamestnavatela
         this.findEmployer(users);
@@ -118,11 +133,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.log(`  Vacation[${idx}]: userId=${v.userId} (type: ${typeof v.userId}), currentUserId=${userId} (type: ${typeof userId}), match=${v.userId === userId || String(v.userId) === String(userId)}`);
       });
       
-      // Try both number and string comparison
-      this.vacations = this.allVacations.filter(v => {
-        const isMatch = v.userId === userId || String(v.userId) === String(userId);
-        return isMatch;
-      });
+      // Skus porovnat cislo aj string, potom zorad od najnovsich po najstarsie
+      this.vacations = this.allVacations
+        .filter(v => {
+          const isMatch = v.userId === userId || String(v.userId) === String(userId);
+          return isMatch;
+        })
+        .sort((a, b) => b.id - a.id); // Zoradit od najnovsich po najstarsie
       console.log('Filtered vacations:', this.vacations);
       return;
     }
@@ -268,5 +285,72 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     return { label: 'Pending', class: 'pending' };
+  }
+
+  /**
+   * Zrusi (vymaze) ziadost o dovolenku
+   */
+  cancelVacation(vacation: HolidayRequest): void {
+    const message = `Are you sure you want to cancel this vacation request (${this.formatDate(vacation.startDate)} - ${this.formatDate(vacation.endDate)})?`;
+    if (confirm(message)) {
+      this.cancelingId = vacation.id;
+      this.cancelError = null;
+      
+      // Nastav status na Cancelled (3)
+      this.apiService.updateHolidayRequestStatus(vacation.id, { status: 3 }).subscribe({
+        next: () => {
+          console.log('Vacation cancelled successfully');
+          this.cancelingId = null;
+          // Obnov data
+          this.loadDashboardData();
+        },
+        error: (err: unknown) => {
+          console.error('Error cancelling vacation:', err);
+          this.cancelError = 'Failed to cancel vacation request. Please try again.';
+          this.cancelingId = null;
+        }
+      });
+    }
+  }
+
+  /**
+   * Kontroluje ci je holiday request pending a moze sa zrusit
+   */
+  canCancelVacation(vacation: HolidayRequest): boolean {
+    // Status moze byt string alebo number
+    const statusStr = String(vacation.status).toLowerCase();
+    const statusNum = typeof vacation.status === 'number' ? vacation.status : parseInt(vacation.status as string);
+    
+    // Pending moze byt reprezentovane ako: 0, "0", "Pending", "pending"
+    return statusNum === 0 || statusStr === 'pending' || vacation.status === 'Pending';
+  }
+
+  /**
+   * Aktualizuje zobrazenie notices na zaklade nastavenia
+   */
+  private updateNoticesDisplay(): void {
+    this.notices = this.showAllNotices ? this.allNotices : this.allNotices.slice(0, this.noticesLimit);
+  }
+
+  /**
+   * Toggles zobrazenie vsetkych notices
+   */
+  toggleAllNotices(): void {
+    this.showAllNotices = !this.showAllNotices;
+    this.updateNoticesDisplay();
+  }
+
+  /**
+   * Toggles zobrazenie vsetkych vacation records
+   */
+  toggleAllVacations(): void {
+    this.showAllVacations = !this.showAllVacations;
+  }
+
+  /**
+   * Vracia vacation records na zobrazenie
+   */
+  getDisplayedVacations(): HolidayRequest[] {
+    return this.showAllVacations ? this.vacations : this.vacations.slice(0, this.vacationsLimit);
   }
 }

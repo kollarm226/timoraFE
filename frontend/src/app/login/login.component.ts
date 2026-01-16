@@ -25,6 +25,11 @@ export class LoginComponent {
   serverError: string | null = null;
   loading = false;
   isDark = false;
+  showPassword = false;
+
+  constructor() {
+    this.initializeTheme();
+  }
 
   /**
    * Toggle dark theme: adds/removes `dark-theme` class on document body
@@ -33,9 +38,32 @@ export class LoginComponent {
     this.isDark = !this.isDark;
     if (this.isDark) {
       document.body.classList.add('dark-theme');
+      localStorage.setItem('theme', 'dark');
     } else {
       document.body.classList.remove('dark-theme');
+      localStorage.setItem('theme', 'light');
     }
+  }
+
+  /**
+   * Initialize theme from localStorage or system preference
+   */
+  private initializeTheme(): void {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      this.isDark = true;
+      document.body.classList.add('dark-theme');
+    } else {
+      this.isDark = false;
+      document.body.classList.remove('dark-theme');
+    }
+  }
+
+  /**
+   * Toggle password visibility
+   */
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   loginForm: FormGroup = this.fb.group({
@@ -97,7 +125,7 @@ export class LoginComponent {
     this.router.navigate(['/register']);
   }
 
-  /** reset hesla */
+  /** Reset hesla */
   onResetPassword(): void {
     this.serverError = null;
 

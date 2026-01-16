@@ -1,5 +1,5 @@
-<div class="flex items-center justify-center min-h-screen bg-gray-100 overflow-auto px-4 py-4 sm:px-0">
-  <div class="w-full max-w-sm rounded-2xl shadow-lg overflow-hidden relative">
+<div class="flex items-center justify-center min-h-screen auth-page-bg overflow-auto px-4 py-4 sm:px-0">
+  <div class="w-full max-w-sm rounded-2xl shadow-lg overflow-hidden relative auth-card">
     <button type="button" (click)="toggleTheme()" aria-label="Toggle dark mode" class="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200/60 active:bg-gray-300/60 z-10">
       <ng-container *ngIf="!isDark; else sunIcon">
         
@@ -52,12 +52,28 @@
           </ng-container>
         </div>
 
-        <input
-          formControlName="password"
-          type="password"
-          placeholder="Password *"
-          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-        />
+        <div class="password-input-wrapper">
+          <input
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Password *"
+            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+          />
+          <button type="button" 
+                  (click)="togglePasswordVisibility()" 
+                  class="password-toggle"
+                  aria-label="Toggle password visibility"
+                  tabindex="-1">
+            <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
         <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['password'].touched) && f['password'].errors as e">
             <span *ngIf="e['required']">Password is required.</span>
@@ -75,14 +91,8 @@
           <button
             type="submit"
             [disabled]="loginForm.invalid"
-            class="w-full h-10 flex items-center justify-center px-6 rounded-lg transition-all duration-150 disabled:opacity-50 text-sm text-white"
-            style="background-color: #0d2c5f;"
-            onmouseover="this.style.backgroundColor='#3a4b63'"
-            onmouseout="this.style.backgroundColor='#0d2c5f'"
-            onmousedown="this.style.backgroundColor='#2f3d52'"
-            onmouseup="this.style.backgroundColor='#3a4b63'"
-            ontouchstart="this.style.backgroundColor='#2f3d52'"
-            ontouchend="this.style.backgroundColor='#3a4b63'">Sign In</button>
+            class="w-full h-10 flex items-center justify-center px-6 rounded-lg transition-all duration-150 disabled:opacity-50 text-sm text-white submit-button"
+            >Sign In</button>
         </div>
       </form>
 

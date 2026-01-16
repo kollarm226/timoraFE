@@ -1,31 +1,59 @@
 :host-context(.dark-theme) {
-  --bg: #1a1a1a;
+  --bg: #2a2a2a;
   --text: #e0e0e0;
-  --border: #333;
-  --card-bg: #262626;
+  --border: #444;
+  --card-bg: #353535;
+}
+.auth-page-bg {
+  background-color: #f3f4f6;
+}
+
+:host-context(.dark-theme) .auth-page-bg {
+  background-color: #2a2a2a;
+}
+
+.auth-card {
+  border: 1px solid transparent;
+}
+
+:host-context(.dark-theme) .auth-card {
+  border: 1px solid #555;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 :host-context(.dark-theme) input {
-  background-color: #333;
-  color: #e0e0e0;
-  border-color: #444;
+  background-color: var(--card-bg) !important;
+  color: #d0d0d0 !important;
+  border-color: #888888 !important;
 }
 
 :host-context(.dark-theme) input::placeholder {
-  color: #999;
+  color: #999999 !important;
 }
 
 :host-context(.dark-theme) button {
-  color: #e0e0e0;
+  color: #ffffff !important;
 }
 
 :host-context(.dark-theme) .bg-slate-600 {
-  background-color: #3d3d3d;
+  background-color: var(--bg) !important;
 }
 
 :host-context(.dark-theme) .bg-white {
-  background-color: #262626;
-  color: #e0e0e0;
+  background-color: var(--card-bg) !important;
+  color: #ffffff !important;
+}
+
+.bg-white {
+  color: #111827 !important;
+}
+
+.text-gray-700 {
+  color: #111827 !important;
+}
+
+.text-gray-600 {
+  color: #374151 !important;
 }
 
 :host-context(.dark-theme) .bg-gray-100 {
@@ -33,19 +61,92 @@
 }
 
 :host-context(.dark-theme) .text-gray-600 {
-  color: #b0b0b0;
+  color: #ffffff !important;
 }
 
 :host-context(.dark-theme) input:focus {
-  border-color: #4a5f7a;
+  border-color: #aaaaaa !important;
 }
 
 :host-context(.dark-theme) .text-gray-700 {
-  color: #d0d0d0;
+  color: #ffffff !important;
 }
 
 :host-context(.dark-theme) .border-2 {
   border-color: #444;
+}
+
+:host-context(.dark-theme) .dark-mode-button {
+  background-color: #4a5568 !important;
+  color: #ffffff !important;
+}
+
+:host-context(.dark-theme) .dark-mode-button:hover {
+  background-color: #5a6678 !important;
+}
+
+.submit-button {
+  background-color: #0d2c5f;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #3a4b63;
+}
+
+.submit-button:active:not(:disabled) {
+  background-color: #2f3d52;
+}
+
+:host-context(.dark-theme) .submit-button {
+  background-color: #2563eb !important;
+}
+
+:host-context(.dark-theme) .submit-button:hover:not(:disabled) {
+  background-color: #1d4ed8 !important;
+}
+
+:host-context(.dark-theme) .submit-button:active:not(:disabled) {
+  background-color: #1e40af !important;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field button {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+:host-context(.dark-theme) .password-toggle {
+  color: #ffffff !important;
+}
+
+.password-toggle:hover {
+  color: #666;
+}
+
+:host-context(.dark-theme) .password-toggle:hover {
+  color: #bbb !important;
 }
 
 /* Responsive padding adjustments */
@@ -60,4 +161,3 @@
     padding-bottom: 1rem;
   }
 }
-

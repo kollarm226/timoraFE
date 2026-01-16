@@ -6,20 +6,32 @@
     </button>
   </div>
   <div class="right">
-    <button mat-stroked-button color="accent" routerLink="/admin" *ngIf="canSeeAdmin">Administration</button>
-    <button mat-stroked-button color="primary" routerLink="/calendar">Request vacation</button>
+    <!-- Always visible: Theme toggle -->
     <button mat-icon-button aria-label="theme toggle" (click)="toggleTheme()">
       <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
     </button>
-    <div class="user" (click)="toggleUserMenu()" (keyup.enter)="toggleUserMenu()" tabindex="0">
+    <!-- User info with dropdown -->
+    <div class="user" 
+         (click)="toggleUserMenu()" 
+         (keyup.enter)="toggleUserMenu()" 
+         tabindex="0" 
+         role="button">
       <div class="avatar"></div>
       <div class="info">
         <div class="name">{{ displayName }}</div>
         <div class="role" *ngIf="role">{{ role }}</div>
-        <div class="company" *ngIf="companyName">{{ companyName }} ({{ companyId }})</div>
+        <div class="company" *ngIf="companyName">{{ companyName }}</div>
       </div>
+      <mat-icon class="dropdown-icon">{{ showMenu ? 'expand_less' : 'expand_more' }}</mat-icon>
       <div class="user-menu" *ngIf="showMenu">
-        <button mat-button color="primary" (click)="logout()">Log out</button>
+        <button mat-button routerLink="/admin" *ngIf="canSeeAdmin" (click)="showMenu = false">
+          <mat-icon>admin_panel_settings</mat-icon>
+          Administration
+        </button>
+        <button mat-button color="primary" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Log out
+        </button>
       </div>
     </div>
   </div>

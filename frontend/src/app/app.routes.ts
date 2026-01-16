@@ -9,6 +9,7 @@ import { DocumentsComponent } from './pages/documents/documents.component';
 import { AboutComponent } from './pages/about/about.component';
 import { FaqComponent } from './pages/faq/faq.component';
 import { AdminRequestsComponent } from './pages/admin/admin-requests.component';
+import { authGuard } from './guards/auth.guard';
 
 /**
  * Routing konfiguracia
@@ -18,13 +19,13 @@ export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'calendar', component: CalendarComponent },
-  { path: 'announcements', component: AnnouncementsComponent },
-  { path: 'contact', component: ContactComponent },
-  { path: 'documents', component: DocumentsComponent },
-  { path: 'about', component: AboutComponent },
-  { path: 'faq', component: FaqComponent },
-  { path: 'admin', component: AdminRequestsComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { path: 'calendar', component: CalendarComponent, canActivate: [authGuard] },
+  { path: 'announcements', component: AnnouncementsComponent, canActivate: [authGuard] },
+  { path: 'contact', component: ContactComponent, canActivate: [authGuard] },
+  { path: 'documents', component: DocumentsComponent, canActivate: [authGuard] },
+  { path: 'about', component: AboutComponent, canActivate: [authGuard] },
+  { path: 'faq', component: FaqComponent, canActivate: [authGuard] },
+  { path: 'admin', component: AdminRequestsComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '/login' }  // Fallback na login
 ];
