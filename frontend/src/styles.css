@@ -31,18 +31,18 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .dark-theme {
-  --bg: #545454;
-  --card-bg: #464646;
-  --text: #ffffff;
-  --muted: #e3e5e8;
-  --border: #7b8086;
+  --bg: #2a2a2a;
+  --card-bg: #353535;
+  --text: #e0e0e0;
+  --muted: #999999;
+  --border: #444444;
   
   /* Dark mode shadows */
   --shadow-lg: 0 10px 26px rgba(0, 0, 0, 0.28);
 }
 
 body, .layout { background: var(--bg); color: var(--text); }
-mat-card { background: var(--card-bg) !important; color: var(--text); border-color: var(--border) !important; }
+mat-card { background: var(--card-bg) !important; color: var(--text); border: none !important; }
 .muted { color: var(--muted) !important; }
 .mat-mdc-table .mdc-data-table__header-row, .mat-mdc-table .mdc-data-table__row, .mat-mdc-table .mdc-data-table__cell, .mat-mdc-table .mdc-data-table__header-cell { border-color: var(--border); }
 

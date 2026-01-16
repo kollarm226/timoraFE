@@ -108,6 +108,13 @@ export class ApiService {
     return this.http.patch<HolidayRequest>(`${this.baseUrl}/HolidayRequests/${id}`, payload, { headers: this.getHeaders() });
   }
 
+  /**
+   * Vymaze ziadost o dovolenku
+   */
+  deleteHolidayRequest(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/HolidayRequests/${id}`, { headers: this.getHeaders() });
+  }
+
   // ===== NOTICES =====
   
   /**

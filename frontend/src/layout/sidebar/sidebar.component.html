@@ -1,9 +1,14 @@
 <div class="sidebar-wrap" [class.open]="isOpen()">
   <div class="sidenav">
     <div class="brand">
-      <div class="logo">
-        <img src="assets/images/logo.png" alt="Timora" />
-      </div>
+      <button (click)="navigateToDashboard()" 
+              class="logo-button"
+              title="Go to dashboard"
+              aria-label="Go to dashboard">
+        <div class="logo">
+          <img src="assets/images/logo.png" alt="Timora" />
+        </div>
+      </button>
       <div class="subtitle">Intranet & Vacation planner</div>
     </div>
     <mat-nav-list class="nav">

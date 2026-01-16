@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { Document } from '../../models/api.models';
+import { Subject, takeUntil } from 'rxjs';
 
 /**
  * Documents komponent - zobrazenie a sprava dokumentov
@@ -21,10 +22,11 @@ import { Document } from '../../models/api.models';
   templateUrl: './documents.component.html',
   styleUrl: './documents.component.css'
 })
-export class DocumentsComponent implements OnInit {
+export class DocumentsComponent implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
+  private destroy$ = new Subject<void>();
 
   documents: Document[] = [];
   loading = true;
@@ -33,14 +35,29 @@ export class DocumentsComponent implements OnInit {
   isEmployer = false;
 
   ngOnInit(): void {
-    // Ziskaj aktualneho pouzivatela z localStorage
-    const userStr = localStorage.getItem('currentUser');
-    if (userStr) {
-      this.currentUser = JSON.parse(userStr);
-      this.isEmployer = this.currentUser?.role === 1;
-    }
-    
-    this.loadDocuments();
+    // Subscribe na aktualneho pouzivatela z AuthService
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.currentUser = user;
+        this.isEmployer = user?.role === 1;
+        
+        // Nacitaj dokumenty len ak mame pouzivatela
+        if (user && user.companyId) {
+          this.loadDocuments();
+        } else if (!user) {
+          this.error = 'Please log in to view documents';
+          this.loading = false;
+        } else if (!user.companyId) {
+          this.error = 'No company assigned to your account';
+          this.loading = false;
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -52,7 +69,7 @@ export class DocumentsComponent implements OnInit {
 
     const companyId = this.currentUser?.companyId;
     if (!companyId) {
-      this.error = 'No company ID found';
+      this.error = 'No company assigned to your account';
       this.loading = false;
       return;
     }
@@ -64,7 +81,7 @@ export class DocumentsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading documents:', err);
-        this.error = 'Failed to load documents';
+        this.error = 'Failed to load documents from server';
         this.loading = false;
       }
     });
