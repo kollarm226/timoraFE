@@ -10,6 +10,7 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { Document } from '../../models/api.models';
 import { Subject, takeUntil } from 'rxjs';
+import { User } from '../../models/user.model';
 
 /**
  * Documents komponent - zobrazenie a sprava dokumentov
@@ -31,7 +32,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
   documents: Document[] = [];
   loading = true;
   error: string | null = null;
-  currentUser: any = null;
+  currentUser: User | null = null;
   isEmployer = false;
 
   ngOnInit(): void {
