@@ -63,6 +63,14 @@ export class AdminRequestsComponent implements OnInit {
     return user?.role === 2;
   }
 
+  /**
+   * Kontroluje či môže užívateľ spravovať userov (Employer alebo Admin)
+   */
+  canManageUsers(): boolean {
+    const user = this.auth.getCurrentUser();
+    return user?.role === 1 || user?.role === 2;
+  }
+
   loadData(): void {
     this.loading = true;
     this.error = null;
@@ -226,9 +234,9 @@ export class AdminRequestsComponent implements OnInit {
   }
 
   setActiveTab(tab: 'vacations' | 'users'): void {
-    // Prevent non-admin users from accessing Users tab
-    if (tab === 'users' && !this.isAdmin()) {
-      console.warn('Access denied: Users tab is only available for Admin users');
+    // Prevent users without management permissions from accessing Users tab
+    if (tab === 'users' && !this.canManageUsers()) {
+      console.warn('Access denied: Users tab is only available for Employer and Admin users');
       return;
     }
     

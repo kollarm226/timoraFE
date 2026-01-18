@@ -19,13 +19,13 @@
     >
       Vacations
     </button>
-    <!-- Users tab visible only for Admin (role 2) -->
+    <!-- Users tab visible for Employer (role 1) and Admin (role 2) -->
     <button 
       type="button" 
       class="tab-button" 
       [class.active]="activeTab === 'users'"
       (click)="setActiveTab('users')"
-      *ngIf="isAdmin()"
+      *ngIf="canManageUsers()"
     >
       Users
     </button>

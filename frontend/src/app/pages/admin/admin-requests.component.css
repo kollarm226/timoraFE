@@ -1,6 +1,6 @@
 .admin-page {
   padding: 24px;
-  background: #f6f8fb;
+  background: var(--bg);
   min-height: 100vh;
 }
 
@@ -14,17 +14,19 @@
 .admin-header h1 {
   margin: 0;
   font-size: 24px;
+  color: var(--text);
 }
 
 .muted {
-  color: #6b7280;
+  color: var(--muted);
   margin: 4px 0 0;
 }
 
 .refresh {
   padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  background: white;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
   border-radius: 6px;
   cursor: pointer;
 }
@@ -39,7 +41,7 @@
   display: flex;
   gap: 0;
   margin-bottom: 24px;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--border);
 }
 
 .tab-button {
@@ -49,14 +51,14 @@
   cursor: pointer;
   font-size: 15px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--muted);
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
   transition: all 0.2s ease;
 }
 
 .tab-button:hover {
-  color: #374151;
+  color: var(--text);
 }
 
 .tab-button.active {
@@ -65,11 +67,11 @@
 }
 
 .filter-section {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 .filter-row {
@@ -84,11 +86,11 @@
   flex: 1;
   min-width: 250px;
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 14px;
-  background: white;
-  color: #1f2937;
+  background: var(--card-bg);
+  color: var(--text);
 }
 
 .filter-input:focus {
@@ -99,11 +101,11 @@
 
 .filter-select {
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 14px;
-  background: white;
-  color: #1f2937;
+  background: var(--card-bg);
+  color: var(--text);
   cursor: pointer;
   min-width: 150px;
 }
@@ -116,31 +118,31 @@
 
 .clear-filters {
   padding: 10px 16px;
-  border: 1px solid #d1d5db;
-  background: white;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
   border-radius: 6px;
   cursor: pointer;
-  color: #1f2937;
+  color: var(--text);
   font-weight: 600;
   font-size: 14px;
   transition: all 0.2s ease;
 }
 
 .clear-filters:hover {
-  background: #f3f4f6;
-  border-color: #1f2937;
+  background: var(--bg);
+  border-color: var(--text);
 }
 
 .filter-info {
   margin: 0;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .table-wrapper {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
@@ -152,13 +154,14 @@
 .requests-table th,
 .requests-table td {
   padding: 12px 14px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   text-align: left;
   font-size: 14px;
+  color: var(--text);
 }
 
 .requests-table th {
-  background: #f3f4f6;
+  background: var(--bg);
   font-weight: 600;
 }
 
@@ -175,13 +178,14 @@
 .users-table th,
 .users-table td {
   padding: 12px 14px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   text-align: left;
   font-size: 14px;
+  color: var(--text);
 }
 
 .users-table th {
-  background: #f3f4f6;
+  background: var(--bg);
   font-weight: 600;
 }
 
@@ -227,8 +231,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid #d1d5db;
-  background: white;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
   color: #3b82f6;
   font-size: 18px;
   font-weight: bold;
@@ -252,8 +256,8 @@
 
 .action-menu {
   position: fixed;
-  background: white;
-  border: 1px solid #d1d5db;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 160px;
@@ -269,7 +273,7 @@
   text-align: left;
   cursor: pointer;
   font-size: 13px;
-  color: #1f2937;
+  color: var(--text);
   transition: all 0.15s ease;
 }
 
@@ -282,7 +286,7 @@
 }
 
 .menu-item:hover:not(:disabled) {
-  background: #f3f4f6;
+  background: var(--bg);
 }
 
 .menu-item.delete {
@@ -381,7 +385,7 @@
 .no-results {
   padding: 24px;
   text-align: center;
-  color: #6b7280;
+  color: var(--muted);
   font-size: 14px;
 }
 

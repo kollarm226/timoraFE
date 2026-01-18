@@ -48,8 +48,10 @@ export class TopbarComponent implements OnInit, OnDestroy {
     
     if (this.isDark) {
       document.body.classList.add('dark-theme');
+      try { localStorage.setItem('theme', 'dark'); } catch {}
     } else {
       document.body.classList.remove('dark-theme');
+      try { localStorage.setItem('theme', 'light'); } catch {}
     }
   }
 
@@ -61,6 +63,20 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Initialize theme from localStorage or system preference so topbar reflects current theme
+    try {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        this.isDark = true;
+        document.body.classList.add('dark-theme');
+      } else {
+        this.isDark = false;
+        document.body.classList.remove('dark-theme');
+      }
+    } catch (e) {
+      // ignore storage errors
+    }
+
     // Load companies first
     this.api.getCompanies().pipe(takeUntil(this.destroy$)).subscribe({
       next: (companies) => {
