@@ -45,7 +45,7 @@
           placeholder="Email *"
           class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
         />
-        <div class="text-red-600 text-xs h-4 font-bold">
+        <div class="text-red-600 text-xs min-h-4 font-bold">
           <ng-container *ngIf="(submitted || f['email'].touched) && f['email'].errors as e">
             <span *ngIf="e['required']">Email is required.</span>
             <span *ngIf="e['email']">Please enter a valid email address.</span>
@@ -74,7 +74,7 @@
             </svg>
           </button>
         </div>
-        <div class="text-red-600 text-xs h-4 font-bold">
+        <div class="text-red-600 text-xs min-h-4 font-bold">
           <ng-container *ngIf="(submitted || f['password'].touched) && f['password'].errors as e">
             <span *ngIf="e['required']">Password is required.</span>
             <span *ngIf="e['minlength']">Please enter at least 8 characters.</span>
@@ -82,12 +82,11 @@
         </div>
 
        
-        <div class="flex justify-between text-sm text-gray-600 py-2">
-          <span class="cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150" (click)="onResetPassword()" (keyup.enter)="onResetPassword()" tabindex="0">Forgotten password?</span>
-          <span class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150" (click)="onResetPassword()" (keyup.enter)="onResetPassword()" tabindex="0">Reset password</span>
+        <div class="flex justify-start text-sm text-gray-600 -mt-2">
+          <span class="cursor-pointer forgotten-password hover:text-slate-600 active:text-slate-800 transition-colors duration-150" (click)="onResetPassword()" (keyup.enter)="onResetPassword()" tabindex="0">Forgotten password?</span>
         </div>
 
-        <div class="grid grid-cols-1 gap-3">
+        <div class="grid grid-cols-1 gap-3 mt-4">
           <button
             type="submit"
             [disabled]="loginForm.invalid"

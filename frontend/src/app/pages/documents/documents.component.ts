@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -80,7 +81,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
         this.documents = docs;
         this.loading = false;
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Error loading documents:', err);
         this.error = 'Failed to load documents';
         this.loading = false;

@@ -141,6 +141,18 @@
   color: #bbb !important;
 }
 
+.forgotten-password {
+  color: #374151;
+}
+
+:host-context(.dark-theme) .forgotten-password {
+  color: #ffffff !important;
+}
+
+:host-context(.dark-theme) .forgotten-password:hover {
+  color: #e0e0e0 !important;
+}
+
 /* Responsive padding adjustments */
 @media (max-width: 640px) {
   :host-context(.dark-theme) .px-6 {

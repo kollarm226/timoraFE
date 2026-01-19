@@ -1,8 +1,9 @@
-import { Component, inject, OnDestroy, OnInit, HostListener, ElementRef } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, HostListener, ElementRef, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
 import { SidebarService } from '../../app/services/sidebar.service';
 import { AuthService } from '../../app/services/auth.service';
@@ -19,7 +20,7 @@ import { Company } from '../../app/models/api.models';
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterLink],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatDialogModule, RouterLink],
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.css'
 })
@@ -29,6 +30,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private router = inject(Router);
   private api = inject(ApiService);
+  private dialog = inject(MatDialog);
   private destroy$ = new Subject<void>();
 
   isDark = false;
@@ -176,6 +178,110 @@ export class TopbarComponent implements OnInit, OnDestroy {
 
   get canSeeAdmin(): boolean {
     return this.roleId === 1 || this.roleId === 2;
+  }
+
+  /**
+   * Zobraz popup s Company ID pri kliknutí na názov firmy
+   */
+  showCompanyIdDialog(): void {
+    if (!this.companyId) return;
+
+    const dialogRef = this.dialog.open(CompanyIdDialogComponent, {
+      width: '400px',
+      data: {
+        companyId: this.companyId,
+        companyName: this.companyName
+      },
+      disableClose: false
+    });
+  }
+}
+
+/**
+ * Dialog komponent na zobrazenie Company ID
+ */
+@Component({
+  selector: 'app-company-id-dialog',
+  standalone: true,
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatDialogModule],
+  template: `
+    <div class="company-id-dialog" [ngClass]="{'dark-mode': isDarkMode}">
+      <div class="dialog-header">
+        <h2>Company Information</h2>
+        <button mat-icon-button [mat-dialog-close]="true" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <div class="dialog-content">
+        <div class="company-info-item">
+          <span class="label">Company Name:</span>
+          <span class="value">{{ data.companyName }}</span>
+        </div>
+        
+        <div class="company-info-item">
+          <span class="label">Company ID:</span>
+          <span class="value company-id">{{ data.companyId }}</span>
+        </div>
+      </div>
+      
+      <div class="dialog-actions">
+        <button mat-stroked-button (click)="copyToClipboard()">
+          <mat-icon>content_copy</mat-icon>
+          Copy ID
+        </button>
+        <button mat-raised-button color="primary" [mat-dialog-close]="true">
+          Done
+        </button>
+      </div>
+      
+      <div class="copy-notification" *ngIf="copiedMessage">
+        {{ copiedMessage }}
+      </div>
+    </div>
+  `,
+  styleUrl: './topbar.component.css'
+})
+export class CompanyIdDialogComponent {
+  copiedMessage: string | null = null;
+  isDarkMode = false;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { companyId: number | string; companyName: string }
+  ) {
+    // Detekuj či je dark theme aktívny
+    this.isDarkMode = document.body.classList.contains('dark-theme');
+  }
+
+  copyToClipboard(): void {
+    const text = String(this.data.companyId);
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.copiedMessage = 'Company ID copied to clipboard!';
+        setTimeout(() => {
+          this.copiedMessage = null;
+        }, 2000);
+      }).catch(() => {
+        this.fallbackCopy(text);
+      });
+    } else {
+      this.fallbackCopy(text);
+    }
+  }
+
+  private fallbackCopy(text: string): void {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    
+    this.copiedMessage = 'Company ID copied!';
+    setTimeout(() => {
+      this.copiedMessage = null;
+    }, 2000);
   }
 }
 

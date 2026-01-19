@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -29,6 +29,19 @@ export class LoginComponent {
 
   constructor() {
     this.initializeTheme();
+  }
+
+  /**
+   * Check if user is already logged in on component init
+   * If yes, redirect to dashboard
+   */
+  ngOnInit(): void {
+    this.auth.currentUser$.subscribe(user => {
+      if (user && user.email) {
+        console.log('User already logged in, redirecting to dashboard:', user.email);
+        this.router.navigate(['/dashboard']);
+      }
+    });
   }
 
   /**

@@ -4,8 +4,8 @@
     <button mat-icon-button class="sidebar-toggle-mobile" (click)="toggleSidebar()" aria-label="Toggle sidebar">
       <mat-icon>menu</mat-icon>
     </button>
-    <!-- Nazov firmy - vyrazne zobrazeny -->
-    <span class="company-title" *ngIf="companyName">{{ companyName }}</span>
+    <!-- Nazov firmy - vyrazne zobrazeny, klikatelny na zobrazenie ID -->
+    <span class="company-title" *ngIf="companyName" (click)="showCompanyIdDialog()" role="button" tabindex="0" title="Click to view Company ID">{{ companyName }}</span>
   </div>
   <div class="right">
     <!-- Vzdy viditelne: Prepinac temy -->
