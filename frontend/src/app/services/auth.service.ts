@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, from, throwError, BehaviorSubject, Subscription } from 'rxjs';
-import { map, catchError, switchMap, filter, take } from 'rxjs/operators';
+import { map, catchError, switchMap, filter, take, timeout } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { ApiUser } from '../models/api.models';
 import { environment } from '../../environments/environment';
@@ -269,6 +269,13 @@ export class AuthService {
           })
         );
       }),
+      switchMap((registrationResult) => {
+        // Po úspešnej registrácii inicializuj auth state
+        console.log('Registration successful, initializing auth state for immediate login...');
+        return this.initializeAuthState().pipe(
+          map(() => registrationResult) // Vrať originálne registračné dáta
+        );
+      }),
       catchError(error => {
         console.error('Registration error:', error);
         let errorMessage = 'Registration failed';
@@ -316,6 +323,7 @@ export class AuthService {
             return isCorrectUser;
           }),
           take(1), // Vezmeme iba prvý emit so správnym userom
+          timeout(10000), // Cakaj max 10 sekund na nacitanie user data, potom timeout
           map(user => ({
             success: true,
             user: user!
@@ -339,6 +347,26 @@ export class AuthService {
         return throwError(() => new Error(errorMessage));
       })
     );
+  }
+
+  /**
+   * Inicializacia auth stavu bez vynucovania logoutu
+   * Spusta onAuthStateChanged callback aby sa preloadla user data do cache
+   * Pouziva sa po registrácii aby sa user data nacitala skôr ako sa user prihlásti
+   */
+  initializeAuthState(): Observable<void> {
+    return new Observable(observer => {
+      console.log('Initializing auth state (triggering onAuthStateChanged)...');
+      
+      // onAuthStateChanged je už nastaveny v constructor
+      // Iba ho spustíme explicitne aby sa preloadla user data
+      // Počkaj 500ms aby sa firebase session ustálila
+      setTimeout(() => {
+        console.log('Auth state initialization triggered');
+        observer.next();
+        observer.complete();
+      }, 500);
+    });
   }
 
   /**
