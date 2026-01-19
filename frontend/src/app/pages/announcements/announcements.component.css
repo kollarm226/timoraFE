@@ -76,17 +76,45 @@
   color: var(--text);
 }
 
-/* Dark mode: avoid white button in empty-state */
+/* Dark mode: jednotný štýl tlačidiel na Announcements stránke */
+:host-context(.dark-theme) .announcements-header button.mat-mdc-raised-button,
+:host-context(.dark-theme) .announcements-header button[mat-raised-button],
 :host-context(.dark-theme) .empty-state button.mat-mdc-raised-button,
 :host-context(.dark-theme) .empty-state button[mat-raised-button] {
-  background: transparent !important;
-  color: var(--text) !important;
-  border: 1px solid var(--border);
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #ffffff;
 }
 
+:host-context(.dark-theme) .announcements-header button.mat-mdc-raised-button:hover,
+:host-context(.dark-theme) .announcements-header button[mat-raised-button]:hover,
 :host-context(.dark-theme) .empty-state button.mat-mdc-raised-button:hover,
 :host-context(.dark-theme) .empty-state button[mat-raised-button]:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+:host-context(.dark-theme) .empty-state button.mat-mdc-stroked-button,
+:host-context(.dark-theme) .empty-state button[mat-stroked-button] {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #ffffff;
+}
+
+:host-context(.dark-theme) .empty-state button.mat-mdc-stroked-button:hover,
+:host-context(.dark-theme) .empty-state button[mat-stroked-button]:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+:host-context(.dark-theme) .error-message button.mat-mdc-button,
+:host-context(.dark-theme) .error-message button[mat-button] {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-radius: var(--radius-sm);
+}
+
+:host-context(.dark-theme) .error-message button.mat-mdc-button:hover,
+:host-context(.dark-theme) .error-message button[mat-button]:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Modal overlay s tmavym pozadim a kartou uprostred obrazovky */
