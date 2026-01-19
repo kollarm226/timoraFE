@@ -75,12 +75,12 @@ export class DocumentsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.apiService.getDocumentsByCompanyId().subscribe({
-      next: (docs) => {
+    this.apiService.getDocuments().subscribe({
+      next: (docs: Document[]) => {
         this.documents = docs;
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading documents:', err);
         this.error = 'Failed to load documents';
         this.loading = false;
