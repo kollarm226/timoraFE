@@ -42,7 +42,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
       .subscribe(user => {
         this.currentUser = user;
         this.isEmployer = user?.role === 1;
-        
+
         // Nacitaj dokumenty len ak mame pouzivatela
         if (user && user.companyId) {
           this.loadDocuments();
@@ -70,19 +70,19 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
     const companyId = this.currentUser?.companyId;
     if (!companyId) {
-      this.error = 'No company assigned to your account';
+      this.error = 'No company ID found';
       this.loading = false;
       return;
     }
 
-    this.apiService.getDocumentsByCompanyId(Number(companyId)).subscribe({
+    this.apiService.getDocumentsByCompanyId().subscribe({
       next: (docs) => {
         this.documents = docs;
         this.loading = false;
       },
       error: (err) => {
         console.error('Error loading documents:', err);
-        this.error = 'Failed to load documents from server';
+        this.error = 'Failed to load documents';
         this.loading = false;
       }
     });
@@ -143,28 +143,24 @@ export class DocumentsComponent implements OnInit, OnDestroy {
   imports: [CommonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, FormsModule],
   template: `
     <h2 mat-dialog-title>Upload Document</h2>
-    <mat-dialog-content>
-      <p class="info-text">Upload your file to <a href="https://nahrajsoubor.cz" target="_blank">nahrajsoubor.cz</a> and paste the link here</p>
-      
+    <mat-dialog-content class="dialog-content-center">
+      <p class="info-text">Upload your file (for example) <a href="https://nahrajsoubor.cz" target="_blank">nahrajsoubor.cz</a> and paste the link here</p>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Document Title</mat-label>
         <input matInput [(ngModel)]="title" placeholder="e.g. Summer Newsletter" required>
       </mat-form-field>
-
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Description (optional)</mat-label>
         <textarea matInput [(ngModel)]="description" placeholder="Brief description of the document" rows="2"></textarea>
       </mat-form-field>
-
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>File URL</mat-label>
         <input matInput [(ngModel)]="fileUrl" placeholder="https://nahrajsoubor.cz/..." required>
         <mat-hint>Paste the download link from nahrajsoubor.cz</mat-hint>
       </mat-form-field>
-
       <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
     </mat-dialog-content>
-    <mat-dialog-actions align="end">
+    <mat-dialog-actions>
       <button mat-button (click)="cancel()">Cancel</button>
       <button mat-raised-button color="primary" (click)="upload()" [disabled]="isUploading || !title || !fileUrl">
         {{ isUploading ? 'Uploading...' : 'Upload' }}
@@ -172,14 +168,24 @@ export class DocumentsComponent implements OnInit, OnDestroy {
     </mat-dialog-actions>
   `,
   styles: [`
+    .dialog-content-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 0 0 0;
+    }
     .full-width {
       width: 100%;
+      max-width: 400px;
       margin-bottom: 16px;
+      display: block;
     }
     .info-text {
       color: var(--text-muted);
       font-size: 14px;
       margin-bottom: 20px;
+      text-align: center;
     }
     .info-text a {
       color: var(--primary);
@@ -192,22 +198,33 @@ export class DocumentsComponent implements OnInit, OnDestroy {
       color: #ef4444;
       font-size: 14px;
       margin-top: 8px;
+      text-align: center;
+    }
+    mat-dialog-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    h2[mat-dialog-title] {
+      text-align: center;
+      width: 100%;
+      margin-bottom: 8px;
     }
   `]
 })
 export class UploadDocumentDialogComponent {
-  private apiService = inject(ApiService);
-  private dialogRef = inject(MatDialogRef<UploadDocumentDialogComponent>);
-  private data = inject(MAT_DIALOG_DATA) as { userId: number; companyId: number };
-  
   title = '';
   description = '';
   fileUrl = '';
   isUploading = false;
   errorMessage = '';
 
-  userId = this.data.userId;
-  companyId = this.data.companyId;
+  private apiService = inject(ApiService);
+  private dialogRef = inject(MatDialogRef<UploadDocumentDialogComponent>);
+  data = inject(MAT_DIALOG_DATA) as { userId: number; companyId: number };
+  userId: number = this.data.userId;
+  companyId: number = this.data.companyId;
 
   cancel(): void {
     this.dialogRef.close();
@@ -218,23 +235,19 @@ export class UploadDocumentDialogComponent {
       this.errorMessage = 'Title and File URL are required';
       return;
     }
-
     this.isUploading = true;
-    this.errorMessage = '';
-
     const documentData = {
       title: this.title,
-      description: this.description || undefined,
+      description: this.description,
       fileUrl: this.fileUrl,
       uploadedBy: this.userId,
       companyId: this.companyId
     };
-
     this.apiService.createDocument(documentData).subscribe({
       next: () => {
         this.dialogRef.close(true);
       },
-      error: (err) => {
+      error: (err: unknown) => {
         console.error('Error uploading document:', err);
         this.errorMessage = 'Failed to upload document. Please try again.';
         this.isUploading = false;

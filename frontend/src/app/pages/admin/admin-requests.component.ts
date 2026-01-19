@@ -56,7 +56,7 @@ export class AdminRequestsComponent implements OnInit {
   }
 
   /**
-   * Kontroluje či je aktuálny užívateľ Admin (rola 2)
+   * Kontroluje ci je aktualny uzivatel Admin (rola 2)
    */
   isAdmin(): boolean {
     const user = this.auth.getCurrentUser();
@@ -64,7 +64,7 @@ export class AdminRequestsComponent implements OnInit {
   }
 
   /**
-   * Kontroluje či môže užívateľ spravovať userov (Employer alebo Admin)
+   * Kontroluje ci moze uzivatel spravovat userov (Employer alebo Admin)
    */
   canManageUsers(): boolean {
     const user = this.auth.getCurrentUser();
@@ -94,7 +94,7 @@ export class AdminRequestsComponent implements OnInit {
           const end = new Date(r.endDate);
           const days = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-          // Show user name or indicate user is deleted
+          // Zobraz meno uzivatela alebo indikuj ze bol zmazany
           let userName: string;
           if (user) {
             userName = `${user.firstName} ${user.lastName}`;
@@ -166,17 +166,17 @@ export class AdminRequestsComponent implements OnInit {
     const isEmployer = currentUser?.role === 1; // Employer má rolu 1
     const isAdmin = currentUser?.role === 2; // Admin má rolu 2
 
-    // Apply vacation filters
+    // Aplikovat filtrovanie dovoleniek
     let filtered = this.allRequests;
 
-    // Always filter out deleted user vacations
+    // Vzdy odfiltrovat dovolenky zmazanych uzivatelov
     filtered = filtered.filter(r => !r.userName.includes('(deleted)'));
 
-    // CRITICAL: Employer sees only requests from their company, Admin sees all
+    // KRITICKE: Employer vidi len ziadosti zo svojej firmy, Admin vidi vsetky
     if (isEmployer && !isAdmin && currentUserCompanyId) {
       const companyId = typeof currentUserCompanyId === 'string' ? parseInt(currentUserCompanyId) : currentUserCompanyId;
       filtered = filtered.filter(r => {
-        // Find user for this request and check their companyId
+        // Najst uzivatela pre tuto ziadost a skontrolovat jeho companyId
         const user = this.allUsers.find(u => u.id === r.userId);
         return user && user.companyId === companyId;
       });
@@ -184,7 +184,7 @@ export class AdminRequestsComponent implements OnInit {
 
     if (this.filterText.trim()) {
       const search = this.filterText.toLowerCase();
-      filtered = filtered.filter(r => 
+      filtered = filtered.filter(r =>
         r.userName.toLowerCase().includes(search) ||
         r.companyName.toLowerCase().includes(search) ||
         r.reason?.toLowerCase().includes(search)
@@ -197,10 +197,10 @@ export class AdminRequestsComponent implements OnInit {
 
     this.requests = filtered;
 
-    // Apply user filters
+    // Aplikovat filtrovanie uzivatelov
     let filteredUsers = this.allUsers;
 
-    // CRITICAL: Employer sees only users from their company, Admin sees all
+    // KRITICKE: Employer vidi len uzivatelov zo svojej firmy, Admin vidi vsetkych
     if (isEmployer && !isAdmin && currentUserCompanyId) {
       const companyId = typeof currentUserCompanyId === 'string' ? parseInt(currentUserCompanyId) : currentUserCompanyId;
       filteredUsers = filteredUsers.filter(u => u.companyId === companyId);
@@ -208,7 +208,7 @@ export class AdminRequestsComponent implements OnInit {
 
     if (this.userFilterText.trim()) {
       const search = this.userFilterText.toLowerCase();
-      filteredUsers = filteredUsers.filter(u => 
+      filteredUsers = filteredUsers.filter(u =>
         `${u.firstName} ${u.lastName}`.toLowerCase().includes(search) ||
         u.companyName.toLowerCase().includes(search) ||
         u.email.toLowerCase().includes(search)
@@ -234,12 +234,12 @@ export class AdminRequestsComponent implements OnInit {
   }
 
   setActiveTab(tab: 'vacations' | 'users'): void {
-    // Prevent users without management permissions from accessing Users tab
+    // Zabranit pristupu uzivatelom bez manazerskych opravneni na kartu Uzivatelia
     if (tab === 'users' && !this.canManageUsers()) {
       console.warn('Access denied: Users tab is only available for Employer and Admin users');
       return;
     }
-    
+
     this.activeTab = tab;
   }
 

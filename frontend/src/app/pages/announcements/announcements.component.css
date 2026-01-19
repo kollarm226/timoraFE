@@ -1,23 +1,36 @@
-.page {
-  padding-right: var(--spacing-2xl);
-  padding-left: 0;
+
+.announcements-page {
+  padding: var(--spacing-xl);
 }
 
-.page h1,
+.page h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--text);
+}
+
 .page h2 {
   margin: var(--spacing-xs) 0 var(--spacing-md);
   font-weight: 700;
 }
 
-.header {
+.announcements-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
 }
 
-.header h1 {
+.announcements-header h1 {
   margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.announcements-header button {
+  flex-shrink: 0;
 }
 
 .error-message {
@@ -41,6 +54,11 @@
   text-align: center;
   padding: var(--spacing-xl);
   color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
 }
 
 .empty-state mat-icon {
@@ -49,6 +67,26 @@
   height: 48px;
   margin-bottom: var(--spacing-md);
   opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: var(--spacing-sm) 0 var(--spacing-xl);
+  color: var(--text);
+}
+
+/* Dark mode: avoid white button in empty-state */
+:host-context(.dark-theme) .empty-state button.mat-mdc-raised-button,
+:host-context(.dark-theme) .empty-state button[mat-raised-button] {
+  background: transparent !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border);
+}
+
+:host-context(.dark-theme) .empty-state button.mat-mdc-raised-button:hover,
+:host-context(.dark-theme) .empty-state button[mat-raised-button]:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 /* Modal overlay s tmavym pozadim a kartou uprostred obrazovky */
@@ -226,15 +264,15 @@
   line-height: 1.4;
 }
 
-/* Responsive Design */
+/* Responzivny dizajn */
 @media (max-width: 768px) {
-  .page {
+  .announcements-page {
     padding-right: var(--spacing-lg);
   }
 }
 
 @media (max-width: 640px) {
-  .page {
+  .announcements-page {
     padding-right: 0;
     padding-left: 0;
   }

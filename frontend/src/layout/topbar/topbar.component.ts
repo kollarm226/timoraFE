@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,6 +24,7 @@ import { Company } from '../../app/models/api.models';
   styleUrl: './topbar.component.css'
 })
 export class TopbarComponent implements OnInit, OnDestroy {
+  private elementRef = inject(ElementRef);
   private sidebarService = inject(SidebarService);
   private auth = inject(AuthService);
   private router = inject(Router);
@@ -45,13 +46,13 @@ export class TopbarComponent implements OnInit, OnDestroy {
    */
   toggleTheme(): void {
     this.isDark = !this.isDark;
-    
+
     if (this.isDark) {
       document.body.classList.add('dark-theme');
-      try { localStorage.setItem('theme', 'dark'); } catch {}
+      try { localStorage.setItem('theme', 'dark'); } catch (e) { console.debug('Theme persist failed (dark)', e); }
     } else {
       document.body.classList.remove('dark-theme');
-      try { localStorage.setItem('theme', 'light'); } catch {}
+      try { localStorage.setItem('theme', 'light'); } catch (e) { console.debug('Theme persist failed (light)', e); }
     }
   }
 
@@ -62,8 +63,20 @@ export class TopbarComponent implements OnInit, OnDestroy {
     this.sidebarService.toggleSidebar();
   }
 
+  /**
+   * Zatvori uzivatelske menu pri kliknuti mimo neho
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    // Check if click is outside the user dropdown area
+    const userElement = this.elementRef.nativeElement.querySelector('.user');
+    if (userElement && !userElement.contains(event.target)) {
+      this.showMenu = false;
+    }
+  }
+
   ngOnInit(): void {
-    // Initialize theme from localStorage or system preference so topbar reflects current theme
+    // Inicializacia temy z localStorage alebo systemovych nastaveni
     try {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark' || (!savedTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -73,15 +86,15 @@ export class TopbarComponent implements OnInit, OnDestroy {
         this.isDark = false;
         document.body.classList.remove('dark-theme');
       }
-    } catch (e) {
+    } catch {
       // ignore storage errors
     }
 
-    // Load companies first
+    // Najprv nacitaj firmy
     this.api.getCompanies().pipe(takeUntil(this.destroy$)).subscribe({
       next: (companies) => {
         this.companies = companies;
-        // Update company name if user is already loaded
+        // Aktualizuj nazov firmy ak je uzivatel uz nacitany
         this.updateCompanyName();
       },
       error: (err) => {
@@ -98,7 +111,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
           this.role = this.getRoleText(user.role);
           this.roleId = user.role;
           this.companyId = user.companyId;
-          
+
           // Update company name
           this.updateCompanyName();
         } else {
@@ -112,16 +125,16 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    console.log('🔄 Starting logout...');
+    console.log('🔄 Zacinam odhlasovanie...');
     this.showMenu = false;
-    
+
     this.auth.logout().subscribe({
       next: () => {
-        console.log('✅ Logout OK, navigating to /login');
+        console.log('✅ Odhlasenie OK, presmerovanie na /login');
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.log('❌ Logout error but still navigating:', err);
+        console.log('❌ Chyba pri odhlasovani, ale presmeruvavam:', err);
         this.router.navigate(['/login']);
       }
     });

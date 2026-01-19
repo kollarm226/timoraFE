@@ -1,13 +1,8 @@
-<div class="page">
+<div class="page announcements-page">
 
   <!-- Modal overlay s celou spravou uprostred obrazovky -->
   <div class="detail-overlay" *ngIf="selected as s">
-    <div
-      class="detail-backdrop"
-      (click)="close()"
-      (keyup.enter)="close()"
-      tabindex="0"
-      role="button"></div>
+    <div class="detail-backdrop" (click)="close()" (keyup.enter)="close()" tabindex="0" role="button"></div>
     <div class="detail-modal">
       <div class="detail-header">
         <div class="detail-title">{{ s.title }}</div>
@@ -20,14 +15,14 @@
     </div>
   </div>
 
-  <!-- Error message -->
+  <!-- Sprava o chybe -->
   <div *ngIf="error" class="error-message">
     {{ error }}
     <button mat-button (click)="loadNotices()">Try again</button>
   </div>
 
-  <!-- Header with title and create button -->
-  <div class="header">
+  <!-- Hlavicka s nadpisom a tlacidlom na vytvorenie -->
+  <div class="header announcements-header">
     <h1>Announcements</h1>
     <button mat-raised-button color="primary" (click)="openCreateDialog()">
       <mat-icon>add</mat-icon>
@@ -35,21 +30,16 @@
     </button>
   </div>
 
-  <!-- Loading state -->
+  <!-- Stav nacitavania -->
   <div *ngIf="loading" class="loading">
     Loading...
   </div>
 
-  <!-- Content when not loading -->
+  <!-- Obsah ked sa nenacitava -->
   <div *ngIf="!loading">
-    <!-- Latest announcement -->
+    <!-- Najnovsie oznamenie -->
     <h2 *ngIf="latest">Latest</h2>
-    <mat-card
-      *ngIf="latest"
-      class="latest-card"
-      (click)="select(latest)"
-      (keyup.enter)="select(latest)"
-      tabindex="0"
+    <mat-card *ngIf="latest" class="latest-card" (click)="select(latest)" (keyup.enter)="select(latest)" tabindex="0"
       role="button">
       <div class="latest-header">
         <div class="status-dot" *ngIf="isNoticeUnread(latest.id)"></div>
@@ -63,16 +53,10 @@
       </div>
     </mat-card>
 
-    <!-- All announcements -->
+    <!-- Vsetky oznamenia -->
     <h2 *ngIf="all.length > 0">All Announcements</h2>
     <mat-card class="all-card" *ngIf="all.length > 0">
-      <div
-        class="row"
-        *ngFor="let a of all"
-        (click)="select(a)"
-        (keyup.enter)="select(a)"
-        tabindex="0"
-        role="button">
+      <div class="row" *ngFor="let a of all" (click)="select(a)" (keyup.enter)="select(a)" tabindex="0" role="button">
         <div class="row-header">
           <div class="name">{{ a.title }}</div>
           <div class="date">{{ a.createdAt | date:'dd.MM.yyyy' }}</div>
@@ -82,11 +66,11 @@
       </div>
     </mat-card>
 
-    <!-- Empty state -->
+    <!-- Prazdny stav -->
     <div *ngIf="all.length === 0" class="empty-state">
       <mat-icon>info</mat-icon>
       <p>No announcements yet.</p>
-      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+      <button mat-stroked-button color="primary" (click)="openCreateDialog()">
         Create First Announcement
       </button>
     </div>

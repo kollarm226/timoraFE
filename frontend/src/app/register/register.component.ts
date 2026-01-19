@@ -6,8 +6,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 /**
- * Register component - onboarding form for new users
- * Validates all inputs and creates a new account
+ * Registracny komponent - formular pre novych uzivatelov
+ * Validuje vsetky vstupy a vytvara novy ucet
  */
 @Component({
   selector: 'app-register',
@@ -28,7 +28,7 @@ export class RegisterComponent {
   showPassword = false;
   showConfirmPassword = false;
 
-  // Toggle between joining an existing company and creating a new one
+  // Prepmanie medzi pripojenim k existujucej firme a vytvorenim novej
   registerMode: 'join' | 'create' = 'join';
 
   constructor() {
@@ -36,7 +36,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Toggle dark theme: adds/removes `dark-theme` class on document body
+   * Prepnutie temy
    */
   toggleTheme(): void {
     this.isDark = !this.isDark;
@@ -50,7 +50,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Initialize theme from localStorage or system preference
+   * Inicializacia temy z localStorage alebo systemovych nastaveni
    */
   private initializeTheme(): void {
     const savedTheme = localStorage.getItem('theme');
@@ -64,21 +64,21 @@ export class RegisterComponent {
   }
 
   /**
-   * Toggle password visibility
+   * Prepnutie viditelnosti hesla
    */
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
   /**
-   * Toggle confirm password visibility
+   * Prepnutie viditelnosti potvrdzovacieho hesla
    */
   toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   /**
-   * Toggle between join (existing) and create (new) company modes
+   * Prepnutie medzi rezimom pripojenia (existujuca) a vytvorenia (nova) firmy
    */
   toggleRegisterMode(): void {
     this.registerMode = this.registerMode === 'join' ? 'create' : 'join';
@@ -138,7 +138,7 @@ export class RegisterComponent {
   });
 
   /**
-   * Validator - ensures password and confirmation match
+   * Validator - zabezpecuje zhodu hesla a potvrdenia hesla
    */
   private passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
     const pw = group.get('password')?.value;
@@ -147,7 +147,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - allows letters only (diacritics allowed)
+   * Validator - povoluje iba pismena (diakritika povolena)
    */
   private lettersOnlyValidator(): ValidatorFn {
     const regex = /^[A-Za-zÀ-ž]+(?:[\s'-][A-Za-zÀ-ž]+)*$/u;
@@ -159,7 +159,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - allows alphanumeric characters (no diacritics)
+   * Validator - povoluje alfanumericke znaky (bez diakritiky)
    */
   private alphanumericValidator(): ValidatorFn {
     const regex = /^[A-Za-z0-9_-]*$/;
@@ -171,19 +171,19 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - requires either companyId or companyName to be set
+   * Validator - vyzaduje nastavenie bud companyId alebo companyName
    */
   private companySelectionValidator(): ValidatorFn {
     return (group: AbstractControl): ValidationErrors | null => {
       const companyId = group.get('companyId')?.value;
       const companyName = group.get('companyName')?.value;
 
-      // Require at least one field
+      // Vyzaduje aspon jedno pole
       if (!companyId && !companyName) {
         return { companyRequired: true };
       }
 
-      // Disallow filling both fields at once
+      // Zakazuje vyplnenie oboch poli naraz
       if (companyId && companyName) {
         return { companyConflict: true };
       }
@@ -193,7 +193,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Validator - enforces password strength (upper/lowercase, number, special)
+   * Validator - vynucuje silu hesla (male/velke pismena, cislo, specialny znak)
    */
   private passwordStrengthValidator(): ValidatorFn {
     const upper = /[A-Z]/;
@@ -220,7 +220,7 @@ export class RegisterComponent {
   }
 
   /**
-   * Submit registration form
+   * Odoslanie registracneho formulara
    */
   onSubmit(): void {
     this.submitted = true;
@@ -238,7 +238,7 @@ export class RegisterComponent {
       password: String(this.f['password'].value)
     };
 
-    // Add companyId or companyName based on mode
+    // Pridat companyId alebo companyName podla rezimu
     if (this.registerMode === 'join') {
       const parsedId = parseInt(String(this.f['companyId'].value).trim(), 10);
       if (isNaN(parsedId)) {
@@ -259,11 +259,8 @@ export class RegisterComponent {
 
         console.log('🎉 Registration response:', response);
         console.log('Role from response:', response.user?.role || (response as Record<string, unknown>)['role']);
-        
-        // Retrieve Company ID from possible response shapes
-        const companyId = response.user?.companyId || (response as Record<string, unknown>)['companyId'] || 'N/A';
 
-        alert(`User registered successfully: ${registrationData['firstName']} ${registrationData['lastName']}\n\nYOUR COMPANY ID IS: ${companyId}\n\nPlease save this ID; you will need it to sign in.`);
+        alert(`User registered successfully: ${registrationData['firstName']} ${registrationData['lastName']}`);
         this.router.navigate(['/login']);
       },
       error: (err: unknown) => {
@@ -277,7 +274,7 @@ export class RegisterComponent {
     });
   }
 
-  /** Navigate to login page */
+  /** Prechod na prihlasovaciu stranku */
   goToLogin(): void {
     this.router.navigate(['/login']);
   }

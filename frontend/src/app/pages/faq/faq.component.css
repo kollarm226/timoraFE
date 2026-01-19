@@ -4,6 +4,13 @@
   gap: var(--spacing-lg);
 }
 
+.faq-page h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 32px 0;
+  color: var(--text);
+}
+
 .faq-card {
   padding: var(--spacing-xl);
   border-radius: var(--radius-lg);
@@ -13,12 +20,13 @@
   border: 1px solid var(--border);
 }
 
-.faq-item + .faq-item {
+.faq-item+.faq-item {
   margin-top: var(--spacing-xl);
 }
 
 .faq-item h2 {
   margin-bottom: var(--spacing-sm);
+  font-weight: 700;
 }
 
 .faq-item p,
@@ -37,13 +45,14 @@
   border-color: var(--border);
   box-shadow: var(--shadow-lg);
 }
+
 /* Responsive Design */
 @media (max-width: 640px) {
   .faq-card {
     padding: var(--spacing-lg);
   }
 
-  .faq-item + .faq-item {
+  .faq-item+.faq-item {
     margin-top: var(--spacing-lg);
   }
 

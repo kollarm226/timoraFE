@@ -1,77 +1,82 @@
 .documents-page {
-  padding: 24px;
+  padding: var(--spacing-xl);
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .header h1 {
+  font-size: 24px;
+  font-weight: 700;
   margin: 0;
+  color: var(--text);
 }
 
 .loading {
   text-align: center;
-  padding: 40px;
+  padding: var(--spacing-xl);
   color: var(--text-muted);
 }
 
 .error {
-  padding: 16px;
-  background: rgba(248, 113, 113, 0.1);
-  border: 2px solid #ef4444;
-  border-radius: 8px;
-  color: #ef4444;
-  margin-bottom: 16px;
+  padding: var(--spacing-md);
+  background: #ffebee;
+  border: 1px solid #ef4444;
+  border-radius: var(--radius-md);
+  color: #c62828;
+  margin-bottom: var(--spacing-md);
 }
 
 .empty-state {
   text-align: center;
-  padding: 60px 20px;
+  padding: var(--spacing-xl);
   color: var(--text-muted);
 }
 
 .empty-state mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  opacity: 0.3;
-  margin-bottom: 16px;
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  opacity: 0.5;
+  margin-bottom: var(--spacing-md);
 }
 
 .empty-state p {
   font-size: 18px;
-  margin-bottom: 20px;
+  line-height: 1.6;
+  margin: var(--spacing-sm) 0 var(--spacing-xl);
+  color: var(--text);
 }
 
 .documents-list {
-  margin-top: 16px;
-  border-radius: 16px;
+  margin-top: var(--spacing-lg);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--card-bg);
   border: 1px solid var(--border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .032);
+  box-shadow: var(--shadow-lg);
 }
 
 .document-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  padding: var(--spacing-lg) var(--spacing-xl);
   border-bottom: 1px solid var(--border);
   color: var(--text);
   transition: background-color 0.2s ease;
 }
 
 .document-item:hover {
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--hover-bg, rgba(0, 0, 0, 0.05));
 }
 
 :host-context(.dark-theme) .document-item:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .document-item:last-child {
@@ -81,7 +86,7 @@
 .doc-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--spacing-lg);
   flex: 1;
 }
 
@@ -125,8 +130,8 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
   color: var(--text);
   transition: background-color 0.2s ease;
   display: flex;
@@ -135,7 +140,7 @@
 }
 
 .download-btn:hover {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--hover-bg, rgba(0, 0, 0, 0.05));
   color: #3b82f6;
 }
 
@@ -155,9 +160,4 @@
   height: 20px;
 }
 
-/* Zvyraznenie boxu v dark mode, aby bolo jasne vidno ohranicenie */
-:host-context(.dark-theme) .documents-list {
-  background: #464646;
-  border-color: #d1d5db;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, .28);
-}
+/* Rely on theme variables for dark mode, consistent with Contact */

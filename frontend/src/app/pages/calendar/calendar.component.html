@@ -5,7 +5,7 @@
   </div>
 
   <div class="content-grid">
-    <!-- Calendar Card -->
+    <!-- Karta kalendara -->
     <mat-card class="calendar-card">
       <mat-card-header>
         <mat-card-title>
@@ -14,9 +14,7 @@
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <mat-calendar 
-          [dateClass]="dateClass"
-          [(selected)]="selectedStartDate"
+        <mat-calendar [dateClass]="dateClass" [(selected)]="selectedStartDate"
           (selectedChange)="onDateSelected($event)">
         </mat-calendar>
         <div class="legend">
@@ -32,7 +30,7 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- Request Form Card -->
+    <!-- Karta formulara ziadosti -->
     <mat-card class="form-card">
       <mat-card-header>
         <mat-card-title>
@@ -44,11 +42,7 @@
         <form [formGroup]="vacationForm" (ngSubmit)="onSubmit()">
           <mat-form-field appearance="fill" class="full-width">
             <mat-label>Start Date</mat-label>
-            <input 
-              matInput 
-              [matDatepicker]="startPicker" 
-              formControlName="startDate"
-              placeholder="Select start date">
+            <input matInput [matDatepicker]="startPicker" formControlName="startDate" placeholder="Select start date">
             <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
             <mat-datepicker #startPicker></mat-datepicker>
             <mat-error *ngIf="vacationForm.get('startDate')?.hasError('required')">
@@ -58,11 +52,7 @@
 
           <mat-form-field appearance="fill" class="full-width">
             <mat-label>End Date</mat-label>
-            <input 
-              matInput 
-              [matDatepicker]="endPicker" 
-              formControlName="endDate"
-              placeholder="Select end date">
+            <input matInput [matDatepicker]="endPicker" formControlName="endDate" placeholder="Select end date">
             <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
             <mat-datepicker #endPicker></mat-datepicker>
             <mat-error *ngIf="vacationForm.get('endDate')?.hasError('required')">
@@ -75,10 +65,7 @@
 
           <mat-form-field appearance="fill" class="full-width">
             <mat-label>Reason</mat-label>
-            <textarea 
-              matInput 
-              formControlName="reason"
-              rows="4"
+            <textarea matInput formControlName="reason" rows="4"
               placeholder="Describe the reason for your vacation request"></textarea>
             <mat-error *ngIf="vacationForm.get('reason')?.hasError('required')">
               Reason is required
@@ -88,11 +75,7 @@
             </mat-error>
           </mat-form-field>
 
-          <button 
-            mat-raised-button 
-            color="primary" 
-            type="submit"
-            [disabled]="!vacationForm.valid || loading"
+          <button mat-raised-button color="primary" type="submit" [disabled]="!vacationForm.valid || loading"
             class="submit-btn">
             <mat-icon>send</mat-icon>
             Submit Request
@@ -107,4 +90,3 @@
     <p>Loading...</p>
   </div>
 </div>
-

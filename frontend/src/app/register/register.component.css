@@ -4,6 +4,7 @@
   --border: #444;
   --card-bg: #353535;
 }
+
 .auth-page-bg {
   background-color: #f3f4f6;
 }
@@ -149,13 +150,13 @@
   color: #bbb !important;
 }
 
-/* Responsive padding adjustments */
+/* Prisposobenie paddingu pre responzivitu */
 @media (max-width: 640px) {
   :host-context(.dark-theme) .px-6 {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   :host-context(.dark-theme) .py-5 {
     padding-top: 1rem;
     padding-bottom: 1rem;

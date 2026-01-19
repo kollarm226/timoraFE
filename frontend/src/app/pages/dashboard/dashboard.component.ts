@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ApiService } from '../../services/api.service';
-import { HolidayRequest, Notice, ApiUser } from '../../models/api.models';
+import { HolidayRequest, Notice, ApiUser, Document as ApiDocument } from '../../models/api.models';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user.model';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
@@ -26,12 +26,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly apiService = inject(ApiService);
   private readonly auth = inject(AuthService);
   private destroy$ = new Subject<void>();
-  
+
   vacations: HolidayRequest[] = [];
   private allVacations: HolidayRequest[] = [];
   private currentUser: User | null = null;
   notices: Notice[] = [];
   allNotices: Notice[] = [];
+  latestDocument: ApiDocument | null = null;
   employer: ApiUser | null = null;
   loading = true;
   error: string | null = null;
@@ -43,7 +44,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   cancelError: string | null = null;
 
   get displayedColumns(): string[] {
-    const hasPendingVacations = this.getDisplayedVacations().some(v => 
+    const hasPendingVacations = this.getDisplayedVacations().some(v =>
       v.status === 0 || v.status === 'Pending' || this.getStatusView(v.status).class === 'pending'
     );
     return hasPendingVacations ? ['start', 'end', 'status', 'actions'] : ['start', 'end', 'status'];
@@ -77,12 +78,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     this.loadDashboardData();
-    
-    // Obnov dashboard data kazdych 10 sekund aby sa zobrazili nove dovolenky
+
+    // Obnov dashboard data kazdych 30 sekund aby sa zobrazili nove dovolenky
     const refreshInterval = setInterval(() => {
       this.loadDashboardData();
-    }, 10000);
-    
+    }, 30000);
+
     // Vycisti interval pri destroy
     this.destroy$.subscribe(() => {
       clearInterval(refreshInterval);
@@ -100,9 +101,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     forkJoin({
       holidayRequests: this.apiService.getHolidayRequests(),
       notices: this.apiService.getNotices(),
-      users: this.apiService.getUsers()
+      users: this.apiService.getUsers(),
+      documents: this.apiService.getDocuments()
     }).subscribe({
-      next: ({ holidayRequests, notices, users }) => {
+      next: ({ holidayRequests, notices, users, documents }) => {
         // Dovolenky
         this.allVacations = holidayRequests;
         this.filterVacations();
@@ -111,9 +113,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.allNotices = notices;
         this.updateNoticesDisplay();
 
+        // Dokumenty
+        if (documents && documents.length > 0) {
+          // Zoradit podla createdAt zostupne (vytvor kopiu aby sa nemenilo povodne pole)
+          this.latestDocument = [...documents].sort((a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )[0];
+        } else {
+          this.latestDocument = null;
+        }
+
         // Najdi zamestnavatela
         this.findEmployer(users);
-        
+
         this.loading = false;
       },
       error: (err) => {
@@ -126,13 +138,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!this.allVacations) return;
     const userId = this.currentUser?.id;
     console.log('filterVacations - currentUser:', this.currentUser, 'userId:', userId, 'allVacations count:', this.allVacations.length);
-    
+
     if (userId) {
       console.log('🔍 Debugging filter:');
       this.allVacations.forEach((v, idx) => {
         console.log(`  Vacation[${idx}]: userId=${v.userId} (type: ${typeof v.userId}), currentUserId=${userId} (type: ${typeof userId}), match=${v.userId === userId || String(v.userId) === String(userId)}`);
       });
-      
+
       // Skus porovnat cislo aj string, potom zorad od najnovsich po najstarsie
       this.vacations = this.allVacations
         .filter(v => {
@@ -144,8 +156,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Fallback: if no user id, attempt to keep list empty to avoid exposing others
-    console.warn('No userId available, vacations list will be empty');
+    // Fallback: ak chyba user ID, ponechaj zoznam prazdny kvoli ochrane sukromia
+    console.warn('userId is missing, vacation list will be empty');
     this.vacations = [];
   }
 
@@ -202,9 +214,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onNoticeClick(notice: Notice, event: Event): void {
     event.preventDefault();
     this.markNoticeAsRead(notice.id);
-    
-    // Mozete pridat dalsiu logiku - napr. navigacia na detail alebo modal
-    console.log('Notice clicked:', notice.title);
+
+    // Mozne doplnit dalsiu logiku - napr. navigacia na detail alebo modal
+    console.log('Clicked on notice:', notice.title);
   }
 
   /**
@@ -235,6 +247,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Stiahnutie dokumentu
+   */
+  downloadDocument(doc: ApiDocument): void {
+    if (doc.fileUrl) {
+      window.open(doc.fileUrl, '_blank');
+    }
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -245,13 +266,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
    */
   private handleError(message: string, error: unknown): void {
     console.error(message, error);
-    
-    // Extract user-friendly message from error
+
+    // Extrahovat spravu pre uzivatela z chyby
     let userMessage = 'Failed to load data from the backend';
     if (typeof error === 'object' && error !== null && 'message' in error) {
       userMessage = (error as { message: string }).message;
     }
-    
+
     this.error = userMessage;
     this.loading = false;
   }
@@ -261,8 +282,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
    */
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('en-US', {
-      month: 'long', 
-      day: 'numeric' 
+      month: 'long',
+      day: 'numeric'
     });
   }
 
@@ -295,7 +316,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (confirm(message)) {
       this.cancelingId = vacation.id;
       this.cancelError = null;
-      
+
       // Nastav status na Cancelled (3)
       this.apiService.updateHolidayRequestStatus(vacation.id, { status: 3 }).subscribe({
         next: () => {
@@ -320,7 +341,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Status moze byt string alebo number
     const statusStr = String(vacation.status).toLowerCase();
     const statusNum = typeof vacation.status === 'number' ? vacation.status : parseInt(vacation.status as string);
-    
+
     // Pending moze byt reprezentovane ako: 0, "0", "Pending", "pending"
     return statusNum === 0 || statusStr === 'pending' || vacation.status === 'Pending';
   }

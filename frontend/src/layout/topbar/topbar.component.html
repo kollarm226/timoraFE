@@ -1,26 +1,23 @@
 <mat-toolbar class="topbar">
   <div class="left">
-    <!-- Mobile Hamburger Menu -->
+    <!-- Mobilne hamburger menu -->
     <button mat-icon-button class="sidebar-toggle-mobile" (click)="toggleSidebar()" aria-label="Toggle sidebar">
       <mat-icon>menu</mat-icon>
     </button>
+    <!-- Nazov firmy - vyrazne zobrazeny -->
+    <span class="company-title" *ngIf="companyName">{{ companyName }}</span>
   </div>
   <div class="right">
-    <!-- Always visible: Theme toggle -->
+    <!-- Vzdy viditelne: Prepinac temy -->
     <button mat-icon-button aria-label="theme toggle" (click)="toggleTheme()">
       <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
     </button>
-    <!-- User info with dropdown -->
-    <div class="user" 
-         (click)="toggleUserMenu()" 
-         (keyup.enter)="toggleUserMenu()" 
-         tabindex="0" 
-         role="button">
+    <!-- Informacie o uzivatelovi s dropdown menu -->
+    <div class="user" (click)="toggleUserMenu()" (keyup.enter)="toggleUserMenu()" tabindex="0" role="button">
       <div class="avatar"></div>
       <div class="info">
         <div class="name">{{ displayName }}</div>
         <div class="role" *ngIf="role">{{ role }}</div>
-        <div class="company" *ngIf="companyName">{{ companyName }}</div>
       </div>
       <mat-icon class="dropdown-icon">{{ showMenu ? 'expand_less' : 'expand_more' }}</mat-icon>
       <div class="user-menu" *ngIf="showMenu">

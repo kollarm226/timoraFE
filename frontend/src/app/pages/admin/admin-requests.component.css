@@ -36,7 +36,7 @@
   cursor: not-allowed;
 }
 
-/* Tab Navigation */
+/* Navigacia kariet (tabs) */
 .tab-navigation {
   display: flex;
   gap: 0;
@@ -169,7 +169,7 @@
   border-bottom: none;
 }
 
-/* Users table */
+/* Tabulka uzivatelov */
 .users-table {
   width: 100%;
   border-collapse: collapse;
@@ -389,7 +389,7 @@
   font-size: 14px;
 }
 
-/* Responsive Design */
+/* Responzivny dizajn */
 @media (max-width: 768px) {
   .admin-page {
     padding: 16px;
@@ -435,7 +435,7 @@
     min-width: unset;
   }
 
-  /* Make tables scrollable on mobile */
+  /* Umoznit posuvanie tabuliek na mobilnych zariadeniach */
   .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;

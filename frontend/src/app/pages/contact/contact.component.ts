@@ -27,14 +27,14 @@ interface ContactItem {
 })
 export class ContactComponent implements OnInit {
   private apiService = inject(ApiService);
-  
+
   contacts: ContactItem[] = [];
   allContacts: ContactItem[] = [];
   companies: Company[] = [];
   loading = true;
   error: string | null = null;
-  
-  // Filter properties
+
+  // Filtrovacie vlastnosti
   filterText = '';
   filterRole = '';
   filterCompany = '';
@@ -46,7 +46,7 @@ export class ContactComponent implements OnInit {
   loadUsers(): void {
     this.loading = true;
     this.error = null;
-    
+
     console.log('Loading users and companies...');
 
     forkJoin({
@@ -64,7 +64,7 @@ export class ContactComponent implements OnInit {
         next: ({ users, companies }) => {
           console.log('Users loaded:', users);
           console.log('Companies loaded:', companies);
-          
+
           this.companies = companies;
           this.allContacts = users.map(user => this.mapUserToContact(user));
           this.applyFilters();
@@ -80,7 +80,7 @@ export class ContactComponent implements OnInit {
 
   private mapUserToContact(user: ApiUser): ContactItem {
     const company = this.companies.find(c => c.id === user.companyId);
-    
+
     return {
       id: user.id,
       name: `${user.firstName} ${user.lastName}`,
@@ -108,36 +108,36 @@ export class ContactComponent implements OnInit {
   applyFilters(): void {
     let filtered = this.allContacts;
 
-    // Filter by text (name or company)
+    // Filtrovanie podla textu (meno alebo firma)
     if (this.filterText.trim()) {
       const search = this.filterText.toLowerCase();
-      filtered = filtered.filter(c => 
+      filtered = filtered.filter(c =>
         c.name.toLowerCase().includes(search) ||
         c.company.toLowerCase().includes(search)
       );
     }
 
-    // Filter by role
+    // Filtrovanie podla role
     if (this.filterRole) {
       filtered = filtered.filter(c => c.role === this.filterRole);
     }
 
-    // Filter by company
+    // Filtrovanie podla firmy
     if (this.filterCompany) {
       filtered = filtered.filter(c => c.company === this.filterCompany);
     }
 
-    // Sort by role: Employer first (1), then Employee (0), then Admin (2)
+    // Zoradenie podla role: Prvy Employer (1), potom Employee (0), potom Admin (2)
     filtered = filtered.sort((a, b) => {
       const roleOrder = { 1: 0, 0: 1, 2: 2 }; // Employer=0, Employee=1, Admin=2
       const aOrder = roleOrder[a.roleNumber as keyof typeof roleOrder] ?? 3;
       const bOrder = roleOrder[b.roleNumber as keyof typeof roleOrder] ?? 3;
-      
+
       if (aOrder !== bOrder) {
         return aOrder - bOrder;
       }
-      
-      // If same role, sort by name alphabetically
+
+      // Ak je rola rovnaka, zoradit abecedne podla mena
       return a.name.localeCompare(b.name);
     });
 
