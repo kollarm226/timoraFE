@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, HostListener, ElementRef, Inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -186,7 +186,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   showCompanyIdDialog(): void {
     if (!this.companyId) return;
 
-    const dialogRef = this.dialog.open(CompanyIdDialogComponent, {
+    this.dialog.open(CompanyIdDialogComponent, {
       width: '400px',
       data: {
         companyId: this.companyId,
@@ -245,10 +245,9 @@ export class TopbarComponent implements OnInit, OnDestroy {
 export class CompanyIdDialogComponent {
   copiedMessage: string | null = null;
   isDarkMode = false;
+  data = inject(MAT_DIALOG_DATA) as { companyId: number | string; companyName: string };
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { companyId: number | string; companyName: string }
-  ) {
+  constructor() {
     // Detekuj či je dark theme aktívny
     this.isDarkMode = document.body.classList.contains('dark-theme');
   }
