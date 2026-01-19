@@ -66,7 +66,7 @@ export class CalendarComponent implements OnInit {
         console.log('Current user ID set:', this.currentUserId);
       }
     });
-    
+
     this.loadMyRequests();
   }
 
@@ -130,7 +130,7 @@ export class CalendarComponent implements OnInit {
       return;
     }
 
-    // Skontroluj či máme user ID
+    // Skontroluj ci mame user ID
     if (!this.currentUserId) {
       alert('You are not properly logged in. Please refresh the page.');
       return;
@@ -183,7 +183,7 @@ export class CalendarComponent implements OnInit {
   }
 
   /**
-   * Validator - start date must be strictly before end date
+   * Validator - datum zaciatku musi byt striktne pred datumom konca
    */
   private dateRangeValidator(): ValidatorFn {
     return (group: AbstractControl): ValidationErrors | null => {

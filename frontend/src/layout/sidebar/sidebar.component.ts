@@ -8,7 +8,7 @@ import { SidebarService } from '../../app/services/sidebar.service';
 /**
  * Sidebar komponent - bocny navigacny panel
  * Zobrazuje menu s odkazmi na jednotlive stranky
- * Responsive: hamburger menu na mobile
+ * Responzivny: hamburger menu na mobile
  */
 @Component({
   selector: 'app-sidebar',
@@ -31,7 +31,7 @@ export class SidebarComponent {
   }
 
   /**
-   * Navigate to dashboard when logo is clicked
+   * Prejde na dashboard po kliknuti na logo
    */
   navigateToDashboard() {
     this.router.navigate(['/dashboard']);

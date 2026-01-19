@@ -2,7 +2,14 @@
   padding: var(--spacing-xl);
 }
 
-/* Filter Section */
+.contact-page h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 32px 0;
+  color: var(--text);
+}
+
+/* Sekcia filtra */
 .filter-section {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -189,7 +196,8 @@
 .send-btn mat-icon {
   font-size: 24px;
 }
-/* Responsive Design */
+
+/* Responzivny dizajn */
 @media (max-width: 768px) {
   .contact-page {
     padding: 16px;

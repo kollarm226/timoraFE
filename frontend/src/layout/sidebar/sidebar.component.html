@@ -1,10 +1,7 @@
 <div class="sidebar-wrap" [class.open]="isOpen()">
   <div class="sidenav">
     <div class="brand">
-      <button (click)="navigateToDashboard()" 
-              class="logo-button"
-              title="Go to dashboard"
-              aria-label="Go to dashboard">
+      <button (click)="navigateToDashboard()" class="logo-button" title="Go to dashboard" aria-label="Go to dashboard">
         <div class="logo">
           <img src="assets/images/logo.png" alt="Timora" />
         </div>
@@ -12,16 +9,24 @@
       <div class="subtitle">Intranet & Vacation planner</div>
     </div>
     <mat-nav-list class="nav">
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()"><mat-icon matListItemIcon>dashboard</mat-icon><span matListItemTitle>Dashboard</span></a>
-      <a mat-list-item routerLink="/calendar" routerLinkActive="active" (click)="closeSidebar()"><mat-icon matListItemIcon>event</mat-icon><span matListItemTitle>Calendar</span></a>
-      <a mat-list-item routerLink="/announcements" routerLinkActive="active" (click)="closeSidebar()"><mat-icon matListItemIcon>campaign</mat-icon><span matListItemTitle>Announcements</span></a>
-      <a mat-list-item routerLink="/contact" routerLinkActive="active" (click)="closeSidebar()"><mat-icon matListItemIcon>call</mat-icon><span matListItemTitle>Contact</span></a>
-      <a mat-list-item routerLink="/documents" routerLinkActive="active" (click)="closeSidebar()"><mat-icon matListItemIcon>description</mat-icon><span matListItemTitle>Documents</span></a>
-      <a mat-list-item routerLink="/about" routerLinkActive="active" (click)="closeSidebar()"><mat-icon matListItemIcon>groups</mat-icon><span matListItemTitle>About us</span></a>
-      <a mat-list-item routerLink="/faq" routerLinkActive="active" (click)="closeSidebar()"><mat-icon matListItemIcon>help_outline</mat-icon><span matListItemTitle>FAQ</span></a>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" (click)="closeSidebar()"><mat-icon
+          matListItemIcon>dashboard</mat-icon><span matListItemTitle>Dashboard</span></a>
+      <a mat-list-item routerLink="/calendar" routerLinkActive="active" (click)="closeSidebar()"><mat-icon
+          matListItemIcon>event</mat-icon><span matListItemTitle>Calendar</span></a>
+      <a mat-list-item routerLink="/announcements" routerLinkActive="active" (click)="closeSidebar()"><mat-icon
+          matListItemIcon>campaign</mat-icon><span matListItemTitle>Announcements</span></a>
+      <a mat-list-item routerLink="/contact" routerLinkActive="active" (click)="closeSidebar()"><mat-icon
+          matListItemIcon>call</mat-icon><span matListItemTitle>Contact</span></a>
+      <a mat-list-item routerLink="/documents" routerLinkActive="active" (click)="closeSidebar()"><mat-icon
+          matListItemIcon>description</mat-icon><span matListItemTitle>Documents</span></a>
+      <a mat-list-item routerLink="/about" routerLinkActive="active" (click)="closeSidebar()"><mat-icon
+          matListItemIcon>groups</mat-icon><span matListItemTitle>About us</span></a>
+      <a mat-list-item routerLink="/faq" routerLinkActive="active" (click)="closeSidebar()"><mat-icon
+          matListItemIcon>help_outline</mat-icon><span matListItemTitle>FAQ</span></a>
     </mat-nav-list>
   </div>
 </div>
 
-<!-- Mobile Backdrop -->
-<div class="sidebar-backdrop" *ngIf="isOpen()" (click)="closeSidebar()" (keyup.escape)="closeSidebar()" tabindex="0"></div>
+<!-- Mobilne pozadie -->
+<div class="sidebar-backdrop" *ngIf="isOpen()" (click)="closeSidebar()" (keyup.escape)="closeSidebar()" tabindex="0">
+</div>

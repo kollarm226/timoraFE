@@ -38,11 +38,11 @@
     grid-template-columns: 1fr;
     overflow-y: auto;
   }
-  
+
   .vacation-planning {
     min-height: auto;
   }
-  
+
   mat-card {
     height: auto;
   }
@@ -149,7 +149,7 @@ mat-card-content {
   overflow-x: hidden;
 }
 
-/* Calendar Styles */
+/* Styly kalendara */
 .calendar-card {
   display: flex;
   flex-direction: column;
@@ -168,7 +168,7 @@ mat-card-content {
   transform-origin: top;
 }
 
-/* Dark mode for calendar */
+/* Tmavy rezim pre kalendar */
 ::ng-deep .mat-calendar {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -188,7 +188,7 @@ mat-card-content {
   color: #ffffff;
 }
 
-:host-context(.dark-theme) ::ng-deep .mat-calendar-body-disabled > .mat-calendar-body-cell-content {
+:host-context(.dark-theme) ::ng-deep .mat-calendar-body-disabled>.mat-calendar-body-cell-content {
   color: rgba(255, 255, 255, 0.3);
 }
 
@@ -196,7 +196,7 @@ mat-card-content {
   border-color: #ffffff;
 }
 
-/* Dark mode navigation arrows and period button */
+/* Navigacne sipky v tmavom rezime */
 :host-context(.dark-theme) ::ng-deep .mat-calendar-previous-button,
 :host-context(.dark-theme) ::ng-deep .mat-calendar-next-button,
 :host-context(.dark-theme) ::ng-deep .mat-calendar-period-button {
@@ -251,7 +251,7 @@ mat-card-content {
   background: #f59e0b;
 }
 
-/* Form Styles */
+/* Styly formulara */
 .form-card {
   display: flex;
   flex-direction: column;
@@ -284,7 +284,7 @@ mat-card-content {
   margin-top: 4px;
 }
 
-/* Custom fill background - white/transparent */
+/* Vlastne pozadie vyplne - biele/priehladne */
 ::ng-deep .form-card .mat-mdc-text-field-wrapper {
   background-color: rgba(255, 255, 255, 0.7) !important;
 }
@@ -297,7 +297,7 @@ mat-card-content {
   background-color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Dark mode form fields */
+/* Polia formulara v tmavom rezime */
 :host-context(.dark-theme) ::ng-deep .form-card .mat-mdc-text-field-wrapper,
 :host-context(.dark-theme) ::ng-deep .form-card .mdc-text-field--filled {
   background-color: rgba(255, 255, 255, 0.05) !important;
@@ -332,7 +332,7 @@ mat-card-content {
   opacity: 0.6;
 }
 
-/* Loading Overlay */
+/* Prekrytie nacitavania */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -356,11 +356,16 @@ mat-card-content {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Marked dates on calendar */
+/* Oznacene datumy v kalendari */
 ::ng-deep .marked-date .mat-calendar-body-cell-content {
   background: rgba(102, 126, 167, 0.3);
   border: 2px solid #667EA7;

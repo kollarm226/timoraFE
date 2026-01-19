@@ -4,6 +4,13 @@
   gap: var(--spacing-lg);
 }
 
+.about-page h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 32px 0;
+  color: var(--text);
+}
+
 .about-card {
   padding: var(--spacing-xl);
   border-radius: var(--radius-lg);
@@ -13,24 +20,26 @@
   border: 1px solid var(--border);
 }
 
-.about-section + .about-section {
+.about-section+.about-section {
   margin-top: var(--spacing-xl);
 }
 
 .about-section h2 {
   margin-bottom: var(--spacing-sm);
+  font-weight: 700;
 }
 
 .about-section p {
   margin: var(--spacing-xs) 0;
 }
+
 /* Responsive Design */
 @media (max-width: 640px) {
   .about-card {
     padding: var(--spacing-lg);
   }
 
-  .about-section + .about-section {
+  .about-section+.about-section {
     margin-top: var(--spacing-lg);
   }
 }
