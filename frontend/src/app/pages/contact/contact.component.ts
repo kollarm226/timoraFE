@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { ApiUser, Company } from '../../models/api.models';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -27,12 +28,14 @@ interface ContactItem {
 })
 export class ContactComponent implements OnInit {
   private apiService = inject(ApiService);
+  private authService = inject(AuthService);
 
   contacts: ContactItem[] = [];
   allContacts: ContactItem[] = [];
   companies: Company[] = [];
   loading = true;
   error: string | null = null;
+  currentUserCompanyId: number | string | undefined;
 
   // Filtrovacie vlastnosti
   filterText = '';
@@ -40,7 +43,17 @@ export class ContactComponent implements OnInit {
   filterCompany = '';
 
   ngOnInit(): void {
+    // Najprv nacitaj userov a firmy, potom ziskaj companyId
     this.loadUsers();
+    
+    // Ziskaj companyId aktualneho pouzivatela
+    this.authService.currentUser$.subscribe(user => {
+      if (user?.companyId) {
+        this.currentUserCompanyId = user.companyId;
+        // Znova filtuj kontakty ked zmeni companyId
+        this.applyFilters();
+      }
+    });
   }
 
   loadUsers(): void {
@@ -64,8 +77,10 @@ export class ContactComponent implements OnInit {
         next: ({ users, companies }) => {
           console.log('Users loaded:', users);
           console.log('Companies loaded:', companies);
+          console.log('Current user company ID:', this.currentUserCompanyId);
 
           this.companies = companies;
+          // Uloz vsetkych userov najprv
           this.allContacts = users.map(user => this.mapUserToContact(user));
           this.applyFilters();
           this.loading = false;
@@ -107,6 +122,14 @@ export class ContactComponent implements OnInit {
 
   applyFilters(): void {
     let filtered = this.allContacts;
+
+    // Filtrovanie podla companyId prihlaseneho užívateľa - HLAVNY FILTER
+    if (this.currentUserCompanyId) {
+      const userCompanyIdNum = typeof this.currentUserCompanyId === 'string' 
+        ? parseInt(this.currentUserCompanyId, 10) 
+        : this.currentUserCompanyId;
+      filtered = filtered.filter(c => c.companyId === userCompanyIdNum);
+    }
 
     // Filtrovanie podla textu (meno alebo firma)
     if (this.filterText.trim()) {
