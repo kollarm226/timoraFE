@@ -19,10 +19,30 @@ export class AppComponent {
   private router = inject(Router);
 
   constructor() {
+    // Inicializacia temy z localStorage AKO PRVA, pred routovanim
+    this.initializeTheme();
+
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
       this.updateSidebarVisibility();
     });
     this.updateSidebarVisibility();
+  }
+
+  /**
+   * Inicializacia temy z localStorage alebo systemovych nastaveni
+   * Volane v konstruktore pre aplikovanie temy pred vykreslenim UI
+   */
+  private initializeTheme(): void {
+    try {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia?.('(prefers-color-scheme: dark)').matches)) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+    } catch {
+      // Ignorovat chyby localStorage (napr. private mode)
+    }
   }
 
   private updateSidebarVisibility(): void {

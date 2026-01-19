@@ -32,7 +32,7 @@ export class LoginComponent {
   }
 
   /**
-   * Toggle dark theme: adds/removes `dark-theme` class on document body
+   * Prepnutie tmavej temy: prida/odoberie triedu 'dark-theme' na elemente body
    */
   toggleTheme(): void {
     this.isDark = !this.isDark;
@@ -46,7 +46,7 @@ export class LoginComponent {
   }
 
   /**
-   * Initialize theme from localStorage or system preference
+   * Inicializacia temy z localStorage alebo systemovych nastaveni
    */
   private initializeTheme(): void {
     const savedTheme = localStorage.getItem('theme');
@@ -60,7 +60,7 @@ export class LoginComponent {
   }
 
   /**
-   * Toggle password visibility
+   * Prepnutie viditelnosti hesla
    */
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -99,7 +99,7 @@ export class LoginComponent {
     }
 
     const credentials = {
-      username: String(this.f['email'].value).trim(), // Email used as username
+      username: String(this.f['email'].value).trim(), // Email pouzity ako prihlasovacie meno
       password: String(this.f['password'].value)
     };
 
@@ -120,7 +120,7 @@ export class LoginComponent {
     });
   }
 
-  /** Router register page */
+  /** Presmerovanie na registracnu stranku */
   goToRegister(): void {
     this.router.navigate(['/register']);
   }

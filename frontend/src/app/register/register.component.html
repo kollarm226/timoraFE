@@ -1,70 +1,48 @@
 <div class="flex items-center justify-center min-h-screen auth-page-bg overflow-auto px-4 py-4 sm:px-0">
   <div class="w-full max-w-sm rounded-2xl shadow-lg overflow-hidden relative auth-card">
-    <button type="button" (click)="toggleTheme()" aria-label="Toggle dark mode" class="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200/60 active:bg-gray-300/60 z-10">
+    <button type="button" (click)="toggleTheme()" aria-label="Toggle dark mode"
+      class="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200/60 active:bg-gray-300/60 z-10">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5 text-gray-700">
         <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79z" />
       </svg>
     </button>
-    
-    
+
+
     <div class="bg-slate-600 text-white text-center py-6 px-6">
       <img src="assets/images/logo.png" alt="Timora" class="h-16 mx-auto" />
       <div class="text-white/80 text-sm mt-1">Intranet & Vacation planner</div>
     </div>
-    
-    
+
+
     <div class="bg-white px-6 py-5">
       <h2 class="text-xl font-bold text-center mb-4">Sign Up</h2>
 
-      
-      <div
-        class="mb-3 p-2 bg-red-100 text-red-600 text-sm rounded"
-        *ngIf="serverError"
-      >
+
+      <div class="mb-3 p-2 bg-red-100 text-red-600 text-sm rounded" *ngIf="serverError">
         {{ serverError }}
       </div>
 
-      <form
-        [formGroup]="registerForm"
-        (ngSubmit)="onSubmit()"
-        novalidate
-        class="space-y-2"
-      >
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate class="space-y-2">
         <!-- Toggle medzi join a create company -->
         <div class="flex gap-2 mb-3">
-          <button
-            type="button"
-            (click)="toggleRegisterMode()"
-            [class.bg-blue-500]="registerMode === 'join'"
-            [class.text-white]="registerMode === 'join'"
-            [class.bg-gray-200]="registerMode !== 'join'"
+          <button type="button" (click)="toggleRegisterMode()" [class.bg-blue-500]="registerMode === 'join'"
+            [class.text-white]="registerMode === 'join'" [class.bg-gray-200]="registerMode !== 'join'"
             [class.dark-mode-button]="registerMode !== 'join'"
-            class="flex-1 py-1 px-2 rounded text-xs font-semibold transition-colors"
-          >
+            class="flex-1 py-1 px-2 rounded text-xs font-semibold transition-colors">
             Join Company
           </button>
-          <button
-            type="button"
-            (click)="toggleRegisterMode()"
-            [class.bg-blue-500]="registerMode === 'create'"
-            [class.text-white]="registerMode === 'create'"
-            [class.bg-gray-200]="registerMode !== 'create'"
+          <button type="button" (click)="toggleRegisterMode()" [class.bg-blue-500]="registerMode === 'create'"
+            [class.text-white]="registerMode === 'create'" [class.bg-gray-200]="registerMode !== 'create'"
             [class.dark-mode-button]="registerMode !== 'create'"
-            class="flex-1 py-1 px-2 rounded text-xs font-semibold transition-colors"
-          >
+            class="flex-1 py-1 px-2 rounded text-xs font-semibold transition-colors">
             Create Company
           </button>
         </div>
 
-        <!-- Dynamic company field -->
+        <!-- Dynamicke pole pre firmu -->
         <div *ngIf="registerMode === 'join'">
-          <input
-            formControlName="companyId"
-            type="number"
-            min="1"
-            placeholder="Company ID *"
-            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-          />
+          <input formControlName="companyId" type="number" min="1" placeholder="Company ID *"
+            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
           <div class="text-red-600 text-xs h-4 font-bold">
             <ng-container *ngIf="(submitted || f['companyId'].touched) && f['companyId'].errors as e">
               <span *ngIf="e['minlength']">Please enter a valid company ID.</span>
@@ -73,14 +51,8 @@
         </div>
 
         <div *ngIf="registerMode === 'create'">
-          <input
-            formControlName="companyName"
-            type="text"
-            placeholder="Company Name *"
-            minlength="3"
-            maxlength="100"
-            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-          />
+          <input formControlName="companyName" type="text" placeholder="Company Name *" minlength="3" maxlength="100"
+            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
           <div class="text-red-600 text-xs h-4 font-bold">
             <ng-container *ngIf="(submitted || f['companyName'].touched) && f['companyName'].errors as e">
               <span *ngIf="e['minlength']">Please enter at least 3 characters.</span>
@@ -89,7 +61,7 @@
           </div>
         </div>
 
-        <!-- Global company validation error -->
+        <!-- Globalna chyba validacie firmy -->
         <div class="text-red-600 text-xs" *ngIf="submitted && registerForm.errors?.['companyRequired']">
           Please select or create a company.
         </div>
@@ -97,14 +69,8 @@
           Please select either join or create company, not both.
         </div>
 
-        <input
-          formControlName="firstName"
-          type="text"
-          placeholder="First Name *"
-          minlength="2"
-          maxlength="50"
-          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-        />
+        <input formControlName="firstName" type="text" placeholder="First Name *" minlength="2" maxlength="50"
+          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
         <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['firstName'].touched) && f['firstName'].errors as e">
             <span *ngIf="e['minlength']">Please enter at least 2 characters.</span>
@@ -113,14 +79,8 @@
           </ng-container>
         </div>
 
-        <input
-          formControlName="lastName"
-          type="text"
-          placeholder="Last Name *"
-          minlength="2"
-          maxlength="50"
-          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-        />
+        <input formControlName="lastName" type="text" placeholder="Last Name *" minlength="2" maxlength="50"
+          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
         <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['lastName'].touched) && f['lastName'].errors as e">
             <span *ngIf="e['minlength']">Please enter at least 2 characters.</span>
@@ -129,14 +89,8 @@
           </ng-container>
         </div>
 
-        <input
-          formControlName="userName"
-          type="text"
-          placeholder="Username *"
-          minlength="3"
-          maxlength="30"
-          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-        />
+        <input formControlName="userName" type="text" placeholder="Username *" minlength="3" maxlength="30"
+          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
         <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['userName'].touched) && f['userName'].errors as e">
             <span *ngIf="e['minlength']">Please enter at least 3 characters.</span>
@@ -145,12 +99,8 @@
           </ng-container>
         </div>
 
-        <input
-          formControlName="email"
-          type="email"
-          placeholder="E-mail address *"
-          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-        />
+        <input formControlName="email" type="email" placeholder="E-mail address *"
+          class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
         <div class="text-red-600 text-xs h-4 font-bold">
           <ng-container *ngIf="(submitted || f['email'].touched) && f['email'].errors as e">
             <span *ngIf="e['email']">Invalid email.</span>
@@ -158,26 +108,21 @@
         </div>
 
         <div class="password-input-wrapper">
-          <input
-            formControlName="password"
-            [type]="showPassword ? 'text' : 'password'"
-            placeholder="Password *"
-            minlength="8"
-            maxlength="64"
-            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-          />
-          <button type="button" 
-                  (click)="togglePasswordVisibility()" 
-                  class="password-toggle"
-                  aria-label="Toggle password visibility"
-                  tabindex="-1">
-            <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
+          <input formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="Password *"
+            minlength="8" maxlength="64"
+            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+          <button type="button" (click)="togglePasswordVisibility()" class="password-toggle"
+            aria-label="Toggle password visibility" tabindex="-1">
+            <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" class="h-5 w-5">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
             </svg>
-            <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
+            <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" class="h-5 w-5">
+              <path
+                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
             </svg>
           </button>
         </div>
@@ -190,44 +135,42 @@
         </div>
 
         <div class="password-input-wrapper">
-          <input
-            formControlName="confirmPassword"
-            [type]="showConfirmPassword ? 'text' : 'password'"
+          <input formControlName="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'"
             placeholder="Repeat password *"
-            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-          />
-          <button type="button" 
-                  (click)="toggleConfirmPasswordVisibility()" 
-                  class="password-toggle"
-                  aria-label="Toggle confirm password visibility"
-                  tabindex="-1">
-            <svg *ngIf="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
+            class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+          <button type="button" (click)="toggleConfirmPasswordVisibility()" class="password-toggle"
+            aria-label="Toggle confirm password visibility" tabindex="-1">
+            <svg *ngIf="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" class="h-5 w-5">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
             </svg>
-            <svg *ngIf="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
+            <svg *ngIf="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" class="h-5 w-5">
+              <path
+                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
             </svg>
           </button>
         </div>
         <div class="text-red-600 text-xs h-4 font-bold">
-          <ng-container *ngIf="(submitted || f['confirmPassword'].touched) && (f['confirmPassword'].errors || registerForm.errors?.['passwordsNotMatching'])">>
+          <ng-container
+            *ngIf="(submitted || f['confirmPassword'].touched) && (f['confirmPassword'].errors || registerForm.errors?.['passwordsNotMatching'])">>
             <span *ngIf="registerForm.errors?.['passwordsNotMatching']">Passwords don't match.</span>
           </ng-container>
         </div>
 
         <div class="grid grid-cols-1 gap-3">
-          <button
-            type="submit"
-            [disabled]="registerForm.invalid"
-            class="w-full h-10 flex items-center justify-center px-6 rounded-lg transition-all duration-150 disabled:opacity-50 text-sm text-white submit-button"
-            >Sign Up</button>
+          <button type="submit" [disabled]="registerForm.invalid"
+            class="w-full h-10 flex items-center justify-center px-6 rounded-lg transition-all duration-150 disabled:opacity-50 text-sm text-white submit-button">Sign
+            Up</button>
         </div>
       </form>
 
       <div class="text-center text-sm text-gray-600 mt-4">
-        Already have an account? <a (click)="goToLogin()" (keyup.enter)="goToLogin()" tabindex="0" class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Sign in!</a>
+        Already have an account? <a (click)="goToLogin()" (keyup.enter)="goToLogin()" tabindex="0"
+          class="underline cursor-pointer hover:text-slate-600 active:text-slate-800 transition-colors duration-150">Sign
+          in!</a>
       </div>
     </div>
   </div>

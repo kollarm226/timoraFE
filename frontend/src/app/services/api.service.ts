@@ -27,7 +27,7 @@ export class ApiService {
   }
 
   // ===== COMPANIES =====
-  
+
   /**
    * Nacita zoznam vsetkych firiem
    */
@@ -50,7 +50,7 @@ export class ApiService {
   }
 
   // ===== HOLIDAY REQUESTS =====
-  
+
   /**
    * Nacita vsetky ziadosti o dovolenky
    */
@@ -86,14 +86,14 @@ export class ApiService {
     // Konvertuj Date objekty na ISO datetime format pre backend
     const payload = {
       userId: request.userId,
-      startDate: typeof request.startDate === 'string' 
-        ? request.startDate.includes('T') 
-          ? request.startDate 
+      startDate: typeof request.startDate === 'string'
+        ? request.startDate.includes('T')
+          ? request.startDate
           : `${request.startDate}T00:00:00.000Z`
         : request.startDate.toISOString(),
-      endDate: typeof request.endDate === 'string' 
-        ? request.endDate.includes('T') 
-          ? request.endDate 
+      endDate: typeof request.endDate === 'string'
+        ? request.endDate.includes('T')
+          ? request.endDate
           : `${request.endDate}T23:59:59.999Z`
         : request.endDate.toISOString(),
       reason: request.reason
@@ -116,7 +116,7 @@ export class ApiService {
   }
 
   // ===== NOTICES =====
-  
+
   /**
    * Nacita vsetky oznamenia
    */
@@ -153,7 +153,7 @@ export class ApiService {
   }
 
   // ===== USERS =====
-  
+
   /**
    * Nacita zoznam vsetkych uzivatelov
    */
@@ -192,17 +192,11 @@ export class ApiService {
   // ===== DOCUMENTS =====
 
   /**
-   * Nacita vsetky dokumenty
+   * Nacita vsetky dokumenty pre firmu aktualneho pouzivatela
+   * Backend automaticky filtruje podla companyId z JWT claims
    */
   getDocuments(): Observable<Document[]> {
     return this.http.get<Document[]>(`${this.baseUrl}/Documents`, { headers: this.getHeaders() });
-  }
-
-  /**
-   * Nacita dokumenty pre konkretnu firmu
-   */
-  getDocumentsByCompanyId(companyId: number): Observable<Document[]> {
-    return this.http.get<Document[]>(`${this.baseUrl}/Documents/company/${companyId}`, { headers: this.getHeaders() });
   }
 
   /**
