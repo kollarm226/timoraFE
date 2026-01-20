@@ -64,11 +64,12 @@ export class AdminPendingUsersComponent implements OnInit {
     this.errorMessage = null;
 
     this.authService.getPendingUsers().subscribe({
-      next: (users: any[]) => {
+      next: (result: unknown[]) => {
+        const users = result as PendingUser[];
         this.pendingUsers = users;
         this.isLoading = false;
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.isLoading = false;
         this.errorMessage = 'Failed to load pending users. You may not have permission to view this page.';
         console.error('Error loading pending users:', error);
@@ -92,7 +93,7 @@ export class AdminPendingUsersComponent implements OnInit {
         this.pendingUsers = this.pendingUsers.filter(u => u.id !== userId);
         setTimeout(() => this.successMessage = null, 3000);
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.approvingUserId = null;
         this.errorMessage = 'Failed to approve user. Please try again.';
         console.error('Error approving user:', error);
@@ -120,7 +121,7 @@ export class AdminPendingUsersComponent implements OnInit {
         this.pendingUsers = this.pendingUsers.filter(u => u.id !== userId);
         setTimeout(() => this.successMessage = null, 3000);
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.rejectingUserId = null;
         this.errorMessage = 'Failed to reject user. Please try again.';
         console.error('Error rejecting user:', error);
