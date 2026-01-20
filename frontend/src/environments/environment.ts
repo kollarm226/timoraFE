@@ -1,5 +1,5 @@
 // Konfiguracia pre development prostredie
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5200/api'
+  apiUrl: 'https://timorabe.azurewebsites.net/api'
 };

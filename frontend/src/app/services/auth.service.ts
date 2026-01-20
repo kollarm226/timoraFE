@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, from, throwError, BehaviorSubject, Subscription, of } from 'rxjs';
+import { Observable, from, throwError, BehaviorSubject, Subscription, of, race } from 'rxjs';
 import { map, catchError, switchMap, filter, take, timeout } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { ApiUser } from '../models/api.models';
@@ -51,6 +51,7 @@ export class AuthService {
   private baseUrl = environment.apiUrl || 'https://timorabe.azurewebsites.net/api';
   private currentUser = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUser.asObservable();
+  private authError = new BehaviorSubject<string | null>(null); // For communicating auth errors to login flow
   private currentUserSubscription: Subscription | null = null; // Sledovanie aktivneho odberu
 
   constructor() {
@@ -142,7 +143,7 @@ export class AuthService {
             };
             console.log('Mapped user object:', JSON.stringify(user, null, 2));
             console.log('Setting currentUser to:', user);
-            
+
             // Skontroluj ci sa este stale nacitava ten isty uzivatel (ochranu pred race condition)
             if (this.currentUserSubscription === subscription) {
               this.currentUser.next(user);
@@ -152,7 +153,39 @@ export class AuthService {
           },
           error: (err) => {
             console.error('Failed to fetch user from backend /api/auth/me:', err);
-            // Fallback na Firebase displayName ak backend zlyha
+
+            // Handle 404 - User not found in backend (Rejected/Deleted)
+            if (err.status === 404) {
+              const creationTime = firebaseUser.metadata.creationTime;
+              const creationDate = creationTime ? new Date(creationTime) : new Date();
+              const now = new Date();
+              const diffSeconds = (now.getTime() - creationDate.getTime()) / 1000;
+
+              console.log(`User 404 in backend. Firebase account age: ${diffSeconds}s`);
+
+              // If user is older than 30 seconds, assume they are REJECTED/DELETED by admin
+              // (Allowing 30s buffer for the Registration process to complete backend creation)
+              if (diffSeconds > 30) {
+                console.warn('User not found in backend and account is old - assuming Rejected/Deleted. Cleaning up.');
+
+                // Signal login failure immediately
+                this.authError.next('User does not exist.');
+
+                // Attempt to delete from Firebase to allow re-registration
+                deleteUser(firebaseUser).then(() => {
+                  console.log('Firebase user deleted successfully.');
+                  this.currentUser.next(null);
+                }).catch(deleteErr => {
+                  console.error('Failed to delete firebase user (likely requires recent login):', deleteErr);
+                  // Fallback: Just logout to ensure they don't see "Pending"
+                  this.logout().subscribe();
+                });
+
+                return; // Stop here, do NOT create fallback user
+              }
+            }
+
+            // Fallback na Firebase displayName ak backend zlyha (alebo je to nova registracia)
             const user: User = {
               id: undefined,
               companyId: firebaseUser.displayName?.split('|')[0] || '',
@@ -165,7 +198,7 @@ export class AuthService {
               isApproved: false // Fallback to false to be safe
             };
             console.log('Using fallback user:', user);
-            
+
             // Skontroluj ci sa este stale nacitava ten isty uzivatel
             if (this.currentUserSubscription === subscription) {
               this.currentUser.next(user);
@@ -331,29 +364,45 @@ export class AuthService {
       switchMap(() => {
         console.log('Firebase prihlasenie uspesne, cakam na data uzivatela...');
 
+        // Reset previous errors
+        this.authError.next(null);
+
         // Po Firebase prihlaseni cakaj na onAuthStateChanged callback
         // ktory automaticky nacita user data cez /api/auth/me
         // KRITICKE: Musime cakat na SPRAVNEHO uzivatela (porovnaj email)
-        return this.currentUser$.pipe(
+
+        const successLog$ = this.currentUser$.pipe(
           filter(user => {
             if (user === null) return false;
             const isCorrectUser = user.email?.toLowerCase() === expectedEmail;
             console.log('currentUser$ emitted:', user.email, '| Expected:', expectedEmail, '| Match:', isCorrectUser);
             return isCorrectUser;
           }),
-          take(1), // Vezmeme iba prvý emit so správnym userom
+          take(1)
+        );
+
+        const errorLog$ = this.authError.pipe(
+          filter(err => err !== null),
+          take(1),
+          switchMap(err => throwError(() => new Error(err!)))
+        );
+
+        return race(successLog$, errorLog$).pipe(
           timeout(10000), // Cakaj max 10 sekund na nacitanie user data, potom timeout
           switchMap(user => {
-            if (!user) {
+            // TypeScript guard - race would throw if errorLog$ wins, so user is User here
+            const u = user as User;
+
+            if (!u) {
               return throwError(() => new Error('User not found'));
             }
             // Check if user is approved
-            if (user.isApproved === false) {
+            if (u.isApproved === false) {
               return throwError(() => new Error('Your account is pending approval by your employer.'));
             }
             return of({
               success: true,
-              user: user!
+              user: u
             });
           })
         );
@@ -387,7 +436,7 @@ export class AuthService {
   initializeAuthState(): Observable<void> {
     return new Observable(observer => {
       console.log('Initializing auth state (triggering onAuthStateChanged)...');
-      
+
       // onAuthStateChanged je už nastaveny v constructor
       // Iba ho spustíme explicitne aby sa preloadla user data
       // Počkaj 500ms aby sa firebase session ustálila
