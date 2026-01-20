@@ -18,8 +18,8 @@ export class PendingApprovalComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  userName: string = '';
-  companyName: string = '';
+  userName = '';
+  companyName = '';
   isDark = false;
 
   ngOnInit(): void {

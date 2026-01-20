@@ -737,11 +737,11 @@ export class AuthService {
    * Get all pending users for current employer's company
    * Only accessible by employers
    */
-  getPendingUsers(): Observable<any[]> {
+  getPendingUsers(): Observable<unknown[]> {
     const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());
     return from(token).pipe(
       switchMap((t: string) =>
-        this.http.get<any[]>(`${this.baseUrl}/admin/pending-users`, {
+        this.http.get<unknown[]>(`${this.baseUrl}/admin/pending-users`, {
           headers: { Authorization: `Bearer ${t}` }
         })
       ),
@@ -755,7 +755,7 @@ export class AuthService {
   /**
    * Approve a pending user by employer
    */
-  approveUser(userId: number): Observable<any> {
+  approveUser(userId: number): Observable<unknown> {
     const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());
     return from(token).pipe(
       switchMap((t: string) =>
@@ -773,7 +773,7 @@ export class AuthService {
   /**
    * Reject a pending user by employer (deletes the user)
    */
-  rejectUser(userId: number): Observable<any> {
+  rejectUser(userId: number): Observable<unknown> {
     const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());
     return from(token).pipe(
       switchMap((t: string) =>
