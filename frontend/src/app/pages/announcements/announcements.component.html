@@ -6,12 +6,18 @@
     <div class="detail-modal">
       <div class="detail-header">
         <div class="detail-title">{{ s.title }}</div>
-        <button class="detail-close" type="button" (click)="close()">×</button>
       </div>
-      <div class="detail-meta">
-        <small>Od: {{ s.author }} | {{ s.createdAt | date:'dd.MM.yyyy HH:mm' }}</small>
+      <div class="detail-meta"
+        style="display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+        <mat-icon style="font-size: 20px; height: 20px; width: 20px; opacity: 0.7;">person</mat-icon>
+        <span style="font-weight: 600; font-size: 15px;">{{ s.author }}</span>
+        <span style="opacity: 0.4; margin: 0 4px;">•</span>
+        <span style="opacity: 0.8;">{{ s.createdAt | date:'MMMM d, y, h:mm a' }}</span>
       </div>
       <div class="detail-body">{{ s.body }}</div>
+      <div class="detail-actions" style="margin-top: 24px; text-align: right;">
+        <button mat-raised-button color="primary" (click)="close()">Close</button>
+      </div>
     </div>
   </div>
 
@@ -41,9 +47,14 @@
     <h2 *ngIf="latest">Latest</h2>
     <mat-card *ngIf="latest" class="latest-card" (click)="select(latest)" (keyup.enter)="select(latest)" tabindex="0"
       role="button">
-      <div class="latest-header">
-        <div class="status-dot" *ngIf="isNoticeUnread(latest.id)"></div>
-        <div class="latest-title">{{ latest.title }}</div>
+      <div class="latest-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="status-dot" *ngIf="isNoticeUnread(latest.id)"></div>
+          <div class="latest-title">{{ latest.title }}</div>
+        </div>
+        <button mat-icon-button color="warn" *ngIf="canCreate" (click)="deleteNotice($event, latest.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
       </div>
       <div class="latest-meta">
         <small>{{ latest.author }} | {{ latest.createdAt | date:'dd.MM.yyyy HH:mm' }}</small>
@@ -57,9 +68,15 @@
     <h2 *ngIf="all.length > 0">All Announcements</h2>
     <mat-card class="all-card" *ngIf="all.length > 0">
       <div class="row" *ngFor="let a of all" (click)="select(a)" (keyup.enter)="select(a)" tabindex="0" role="button">
-        <div class="row-header">
+        <div class="row-header" style="display: flex; justify-content: space-between; align-items: center;">
           <div class="name">{{ a.title }}</div>
-          <div class="date">{{ a.createdAt | date:'dd.MM.yyyy' }}</div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="date">{{ a.createdAt | date:'dd.MM.yyyy' }}</div>
+            <button mat-icon-button color="warn" style="height: 32px; width: 32px; line-height: 32px;" *ngIf="canCreate"
+              (click)="deleteNotice($event, a.id)">
+              <mat-icon style="font-size: 18px;">delete</mat-icon>
+            </button>
+          </div>
         </div>
         <div class="author">{{ a.author }}</div>
         <div class="preview">{{ a.preview }}</div>

@@ -94,20 +94,24 @@
 
     <mat-card class="docs" *ngIf="latestDocument; else noDocs">
       <h2>Latest Document</h2>
-      <div class="doc-title">{{ latestDocument.title }}</div>
-      <p class="doc-desc">{{ latestDocument.description || 'No description' }}</p>
-      <mat-icon class="doc-icon clickable" fontIcon="description" (click)="downloadDocument(latestDocument)"
-        (keyup.enter)="downloadDocument(latestDocument)" tabindex="0" role="button" title="Download document">
-      </mat-icon>
-      <div class="doc-date">Uploaded: {{ latestDocument.createdAt | date:'dd.MM.yyyy' }}</div>
+      <div class="centered-content">
+        <div class="doc-title">{{ latestDocument.title }}</div>
+        <p class="doc-desc">{{ latestDocument.description || 'No description' }}</p>
+        <mat-icon class="doc-icon clickable" fontIcon="description" (click)="downloadDocument(latestDocument)"
+          (keyup.enter)="downloadDocument(latestDocument)" tabindex="0" role="button" title="Download document">
+        </mat-icon>
+        <div class="doc-date">Uploaded: {{ latestDocument.createdAt | date:'dd.MM.yyyy' }}</div>
+      </div>
     </mat-card>
 
     <ng-template #noDocs>
       <mat-card class="docs">
         <h2>Documents</h2>
-        <div class="muted">No documents</div>
-        <p>No documents uploaded yet.</p>
-        <mat-icon class="doc-icon" fontIcon="folder_off"></mat-icon>
+        <div class="centered-content">
+          <div class="muted">No documents</div>
+          <p>No documents uploaded yet.</p>
+          <mat-icon class="doc-icon" fontIcon="folder_off"></mat-icon>
+        </div>
       </mat-card>
     </ng-template>
   </div>
