@@ -5,8 +5,8 @@ describe('Register and creating company registration with darkmode test , should
       cy.viewport(1920, 1080);
 
        cy.get('[formcontrolname="companyId"]')
-      .type('13')
-      .should('have.value', '13')
+      .type('1')
+      .should('have.value', '1')
 
       cy.get('[formcontrolname="firstName"]')
       .type('Daniel')
