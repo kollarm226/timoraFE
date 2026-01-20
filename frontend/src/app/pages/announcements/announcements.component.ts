@@ -154,6 +154,28 @@ export class AnnouncementsComponent implements OnInit {
     this.selected = announcement;
   }
 
+  deleteNotice(event: Event, noticeId: number): void {
+    event.stopPropagation(); // Zabran otvoreniu detailu pri kliknuti na delete
+
+    if (!confirm('Are you sure you want to delete this announcement?')) {
+      return;
+    }
+
+    this.apiService.deleteNotice(noticeId).subscribe({
+      next: () => {
+        this.loadNotices();
+        // Ak bolo vymazane vybrane oznamenie, zatvor detail
+        if (this.selected?.id === noticeId) {
+          this.close();
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting notice:', err);
+        this.error = 'Failed to delete announcement.';
+      }
+    });
+  }
+
   close(): void {
     this.selected = null;
   }
