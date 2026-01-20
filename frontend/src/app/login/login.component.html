@@ -27,10 +27,11 @@
 
       
       <div
-        class="mb-3 p-2 bg-red-100 text-red-600 text-sm rounded"
+        [class]="'mb-3 p-3 text-sm rounded ' + (isPendingApproval ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' : 'bg-red-100 text-red-600')"
         *ngIf="serverError"
       >
-        {{ serverError }}
+        <div class="font-semibold">{{ isPendingApproval ? '⏳ Account Pending Approval' : '❌ Login Error' }}</div>
+        <div class="text-sm mt-1">{{ serverError }}</div>
       </div>
 
       <form

@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
 
   submitted = false;
   serverError: string | null = null;
+  isPendingApproval = false;
   loading = false;
   isDark = false;
   showPassword = false;
@@ -106,6 +107,7 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     this.submitted = true;
     this.serverError = null;
+    this.isPendingApproval = false;
 
     if (this.loginForm.invalid) {
       return;
@@ -128,6 +130,12 @@ export class LoginComponent implements OnInit {
         const message = (err instanceof Error)
           ? err.message
           : 'Login failed. Please check your credentials.';
+
+        // Check if it's a pending approval error
+        if (message.includes('pending approval')) {
+          this.isPendingApproval = true;
+        }
+
         this.serverError = message;
       }
     });

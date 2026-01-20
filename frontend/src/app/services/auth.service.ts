@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, from, throwError, BehaviorSubject, Subscription } from 'rxjs';
+import { Observable, from, throwError, BehaviorSubject, Subscription, of, race } from 'rxjs';
 import { map, catchError, switchMap, filter, take, timeout } from 'rxjs/operators';
 import { User } from '../models/user.model';
 import { ApiUser } from '../models/api.models';
@@ -37,6 +37,8 @@ interface FlexibleUserResponse {
   companyId?: string | number;
   Role?: string | number;
   role?: string | number;
+  IsApproved?: boolean;
+  isApproved?: boolean;
 }
 
 /**
@@ -49,6 +51,7 @@ export class AuthService {
   private baseUrl = environment.apiUrl || 'https://timorabe.azurewebsites.net/api';
   private currentUser = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUser.asObservable();
+  private authError = new BehaviorSubject<string | null>(null); // For communicating auth errors to login flow
   private currentUserSubscription: Subscription | null = null; // Sledovanie aktivneho odberu
 
   constructor() {
@@ -72,6 +75,7 @@ export class AuthService {
         console.log('Uzivatel prihlaseny:', firebaseUser.email, '- stahujem data z backendu...');
 
         const expectedEmail = firebaseUser.email; // Uloz email na validaciu
+        const subscription = new Subscription(); // Vytvor subscription holder
 
         const userSubscription = from(firebaseUser.getIdToken(true)).pipe( // true = vynut obnovenie tokenu
           switchMap((token: string) => {
@@ -115,7 +119,9 @@ export class AuthService {
             if (responseEmail !== expectedEmail) {
               console.error('🔴 Nezhoda emailov! Cakany:', expectedEmail, 'Dostany:', responseEmail);
               console.error('Bezpecnostny problem: Backend vratil nespravne udaje uzivatela!');
-              throw new Error(`Nezhoda emailov: cakany ${expectedEmail}, dostany ${responseEmail}`);
+              // Nastav null namiesto throw aby sa zabranilo chybam
+              this.currentUser.next(null);
+              return;
             }
 
             const user: User = {
@@ -132,31 +138,77 @@ export class AuthService {
               email: responseEmail as string,
               address: '',
               password: '',
-              role: this.mapRoleStringToNumber((apiUser as FlexibleUserResponse).Role || (apiUser as FlexibleUserResponse).role)
+              role: this.mapRoleStringToNumber((apiUser as FlexibleUserResponse).Role || (apiUser as FlexibleUserResponse).role),
+              isApproved: (apiUser as FlexibleUserResponse & { IsApproved?: boolean; isApproved?: boolean }).IsApproved ?? (apiUser as FlexibleUserResponse & { IsApproved?: boolean; isApproved?: boolean }).isApproved ?? false
             };
             console.log('Mapped user object:', JSON.stringify(user, null, 2));
             console.log('Setting currentUser to:', user);
-            this.currentUser.next(user);
+
+            // Skontroluj ci sa este stale nacitava ten isty uzivatel (ochranu pred race condition)
+            if (this.currentUserSubscription === subscription) {
+              this.currentUser.next(user);
+            } else {
+              console.warn('User context changed during loading, ignoring old user data');
+            }
           },
           error: (err) => {
             console.error('Failed to fetch user from backend /api/auth/me:', err);
-            // Fallback na Firebase displayName ak backend zlyha
+
+            // Handle 404 - User not found in backend (Rejected/Deleted)
+            if (err.status === 404) {
+              const creationTime = firebaseUser.metadata.creationTime;
+              const creationDate = creationTime ? new Date(creationTime) : new Date();
+              const now = new Date();
+              const diffSeconds = (now.getTime() - creationDate.getTime()) / 1000;
+
+              console.log(`User 404 in backend. Firebase account age: ${diffSeconds}s`);
+
+              // If user is older than 30 seconds, assume they are REJECTED/DELETED by admin
+              // (Allowing 30s buffer for the Registration process to complete backend creation)
+              if (diffSeconds > 30) {
+                console.warn('User not found in backend and account is old - assuming Rejected/Deleted. Cleaning up.');
+
+                // Signal login failure immediately
+                this.authError.next('User does not exist.');
+
+                // Attempt to delete from Firebase to allow re-registration
+                deleteUser(firebaseUser).then(() => {
+                  console.log('Firebase user deleted successfully.');
+                  this.currentUser.next(null);
+                }).catch(deleteErr => {
+                  console.error('Failed to delete firebase user (likely requires recent login):', deleteErr);
+                  // Fallback: Just logout to ensure they don't see "Pending"
+                  this.logout().subscribe();
+                });
+
+                return; // Stop here, do NOT create fallback user
+              }
+            }
+
+            // Fallback na Firebase displayName ak backend zlyha (alebo je to nova registracia)
             const user: User = {
+              id: undefined,
               companyId: firebaseUser.displayName?.split('|')[0] || '',
               firstName: firebaseUser.displayName?.split('|')[1]?.split(' ')[0] || '',
               lastName: firebaseUser.displayName?.split('|')[1]?.split(' ')[1] || '',
               email: firebaseUser.email || '',
               address: firebaseUser.displayName?.split('|')[2] || '',
               password: '',
-              role: 0 // Default Employee
+              role: 0, // Default Employee
+              isApproved: false // Fallback to false to be safe
             };
             console.log('Using fallback user:', user);
-            this.currentUser.next(user);
+
+            // Skontroluj ci sa este stale nacitava ten isty uzivatel
+            if (this.currentUserSubscription === subscription) {
+              this.currentUser.next(user);
+            }
           }
         });
 
         // Ulož subscription aby si ju mohol neskôr zrušiť
-        this.currentUserSubscription = userSubscription;
+        subscription.add(userSubscription);
+        this.currentUserSubscription = subscription;
       } else {
         // User nie je prihlaseny - vyčisti stav
         console.log('User logged out - clearing currentUser');
@@ -312,22 +364,47 @@ export class AuthService {
       switchMap(() => {
         console.log('Firebase prihlasenie uspesne, cakam na data uzivatela...');
 
+        // Reset previous errors
+        this.authError.next(null);
+
         // Po Firebase prihlaseni cakaj na onAuthStateChanged callback
         // ktory automaticky nacita user data cez /api/auth/me
         // KRITICKE: Musime cakat na SPRAVNEHO uzivatela (porovnaj email)
-        return this.currentUser$.pipe(
+
+        const successLog$ = this.currentUser$.pipe(
           filter(user => {
             if (user === null) return false;
             const isCorrectUser = user.email?.toLowerCase() === expectedEmail;
             console.log('currentUser$ emitted:', user.email, '| Expected:', expectedEmail, '| Match:', isCorrectUser);
             return isCorrectUser;
           }),
-          take(1), // Vezmeme iba prvý emit so správnym userom
+          take(1)
+        );
+
+        const errorLog$ = this.authError.pipe(
+          filter(err => err !== null),
+          take(1),
+          switchMap(err => throwError(() => new Error(err!)))
+        );
+
+        return race(successLog$, errorLog$).pipe(
           timeout(10000), // Cakaj max 10 sekund na nacitanie user data, potom timeout
-          map(user => ({
-            success: true,
-            user: user!
-          }))
+          switchMap(user => {
+            // TypeScript guard - race would throw if errorLog$ wins, so user is User here
+            const u = user as User;
+
+            if (!u) {
+              return throwError(() => new Error('User not found'));
+            }
+            // Check if user is approved
+            if (u.isApproved === false) {
+              return throwError(() => new Error('Your account is pending approval by your employer.'));
+            }
+            return of({
+              success: true,
+              user: u
+            });
+          })
         );
       }),
       catchError(error => {
@@ -342,6 +419,8 @@ export class AuthService {
           errorMessage = 'Invalid email address';
         } else if (error.code === 'auth/invalid-credential') {
           errorMessage = 'Invalid email or password';
+        } else if (error instanceof Error && error.message.includes('pending approval')) {
+          errorMessage = error.message;
         }
 
         return throwError(() => new Error(errorMessage));
@@ -357,7 +436,7 @@ export class AuthService {
   initializeAuthState(): Observable<void> {
     return new Observable(observer => {
       console.log('Initializing auth state (triggering onAuthStateChanged)...');
-      
+
       // onAuthStateChanged je už nastaveny v constructor
       // Iba ho spustíme explicitne aby sa preloadla user data
       // Počkaj 500ms aby sa firebase session ustálila
@@ -652,5 +731,60 @@ export class AuthService {
     } catch (e) {
       console.warn('⚠️ Selektivne cistenie uloziska zlyhalo:', e);
     }
+  }
+
+  /**
+   * Get all pending users for current employer's company
+   * Only accessible by employers
+   */
+  getPendingUsers(): Observable<any[]> {
+    const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());
+    return from(token).pipe(
+      switchMap((t: string) =>
+        this.http.get<any[]>(`${this.baseUrl}/admin/pending-users`, {
+          headers: { Authorization: `Bearer ${t}` }
+        })
+      ),
+      catchError(error => {
+        console.error('Failed to fetch pending users:', error);
+        return throwError(() => new Error('Failed to fetch pending users'));
+      })
+    );
+  }
+
+  /**
+   * Approve a pending user by employer
+   */
+  approveUser(userId: number): Observable<any> {
+    const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());
+    return from(token).pipe(
+      switchMap((t: string) =>
+        this.http.post(`${this.baseUrl}/admin/approve-user/${userId}`, {}, {
+          headers: { Authorization: `Bearer ${t}` }
+        })
+      ),
+      catchError(error => {
+        console.error('Failed to approve user:', error);
+        return throwError(() => new Error('Failed to approve user'));
+      })
+    );
+  }
+
+  /**
+   * Reject a pending user by employer (deletes the user)
+   */
+  rejectUser(userId: number): Observable<any> {
+    const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());
+    return from(token).pipe(
+      switchMap((t: string) =>
+        this.http.post(`${this.baseUrl}/admin/reject-user/${userId}`, {}, {
+          headers: { Authorization: `Bearer ${t}` }
+        })
+      ),
+      catchError(error => {
+        console.error('Failed to reject user:', error);
+        return throwError(() => new Error('Failed to reject user'));
+      })
+    );
   }
 }

@@ -1,0 +1,18 @@
+/* Pending Approval Component Styles */
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.dark-theme {
+  color-scheme: dark;
+}
+
+/* Ensure consistent theme */
+.dark-theme .bg-gradient-to-br {
+  --tw-gradient-stops: rgb(17 24 39) var(--tw-gradient-from-stop), rgb(31 41 55) var(--tw-gradient-to-stop);
+}

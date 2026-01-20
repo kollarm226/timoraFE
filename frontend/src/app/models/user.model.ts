@@ -13,4 +13,5 @@ export interface User {
   userName?: string;   // volitelne uzivatelske meno
   companyName?: string; // volitelny nazov firmy (pri registracii)
   role?: number;       // rola uzivatela (0=Employee, 1=Employer, 2=Admin)
+  isApproved?: boolean;  // ci je uzivatel schvaleny zamestnavatelom (default true pre creatorov, false pre joinery)
 }
