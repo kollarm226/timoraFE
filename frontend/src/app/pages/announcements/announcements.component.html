@@ -24,7 +24,7 @@
   <!-- Hlavicka s nadpisom a tlacidlom na vytvorenie -->
   <div class="header announcements-header">
     <h1>Announcements</h1>
-    <button mat-raised-button color="primary" (click)="openCreateDialog()">
+    <button mat-raised-button color="primary" (click)="openCreateDialog()" *ngIf="canCreate">
       <mat-icon>add</mat-icon>
       Create Announcement
     </button>
@@ -70,7 +70,7 @@
     <div *ngIf="all.length === 0" class="empty-state">
       <mat-icon>info</mat-icon>
       <p>No announcements yet.</p>
-      <button mat-stroked-button color="primary" (click)="openCreateDialog()">
+      <button mat-stroked-button color="primary" (click)="openCreateDialog()" *ngIf="canCreate">
         Create First Announcement
       </button>
     </div>

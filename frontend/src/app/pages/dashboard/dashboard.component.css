@@ -257,7 +257,7 @@ mat-card {
   width: 120px;
   height: 120px;
   border-radius: 9999px;
-  background: #d1d5db;
+  background: url('https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=') no-repeat center center / 150%;
   margin: var(--spacing-lg) auto;
 }
 
