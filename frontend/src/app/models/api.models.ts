@@ -71,6 +71,7 @@ export interface ApiUser {
   companyId: number;
   role?: number;
   isActive?: boolean;
+  isApproved?: boolean;
   createdAt?: Date;
 }
 

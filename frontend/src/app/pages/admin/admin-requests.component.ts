@@ -286,6 +286,57 @@ export class AdminRequestsComponent implements OnInit {
     });
   }
 
+  approveUser(user: UserView): void {
+    if (this.userActionLoading[user.id]) return;
+    this.userActionLoading[user.id] = true;
+
+    this.auth.approveUser(user.id).subscribe({
+      next: () => {
+        // Update user in list - mark as approved
+        const index = this.allUsers.findIndex(u => u.id === user.id);
+        if (index !== -1) {
+          this.allUsers[index] = { ...this.allUsers[index], isApproved: true };
+        }
+        this.applyFilters();
+        this.closeUserMenu();
+        this.userActionLoading[user.id] = false;
+      },
+      error: (err) => {
+        console.error('Failed to approve user', err);
+        this.error = err?.error?.message || 'Failed to approve user';
+        this.userActionLoading[user.id] = false;
+      }
+    });
+  }
+
+  rejectUser(user: UserView): void {
+    if (!confirm(`Are you sure you want to reject ${user.firstName} ${user.lastName}? This action cannot be undone.`)) {
+      return;
+    }
+
+    if (this.userActionLoading[user.id]) return;
+    this.userActionLoading[user.id] = true;
+
+    this.auth.rejectUser(user.id).subscribe({
+      next: () => {
+        // Remove user from list
+        this.allUsers = this.allUsers.filter(u => u.id !== user.id);
+        this.applyFilters();
+        this.closeUserMenu();
+        this.userActionLoading[user.id] = false;
+      },
+      error: (err) => {
+        console.error('Failed to reject user', err);
+        this.error = err?.error?.message || 'Failed to reject user';
+        this.userActionLoading[user.id] = false;
+      }
+    });
+  }
+
+  isPendingUser(user: UserView): boolean {
+    return user.isApproved === false;
+  }
+
   updateStatus(request: HolidayRequest, status: 1 | 2 | 3, comment?: string): void {
     if (this.actionLoading[request.id]) return;
     this.actionLoading[request.id] = true;

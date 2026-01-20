@@ -410,6 +410,79 @@
   font-size: 14px;
 }
 
+.pending-user {
+  background: rgba(251, 191, 36, 0.05);
+}
+
+:host-context(.dark-theme) .pending-user {
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.pending {
+  background: #fcd34d;
+  color: #78350f;
+}
+
+.status-badge.approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-buttons .approve {
+  padding: 8px 14px;
+  font-size: 13px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.action-buttons .approve:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.action-buttons .approve:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.action-buttons .reject {
+  padding: 8px 14px;
+  font-size: 13px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.action-buttons .reject:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.action-buttons .reject:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Responzivny dizajn */
 @media (max-width: 768px) {
   .admin-page {

@@ -47,6 +47,6 @@ export class AppComponent {
 
   private updateSidebarVisibility(): void {
     const url = this.router.url || '';
-    this.hideSidebar = url.startsWith('/register') || url.startsWith('/login') || url === '/';
+    this.hideSidebar = url.startsWith('/register') || url.startsWith('/login') || url.startsWith('/pending-approval') || url === '/';
   }
 }
