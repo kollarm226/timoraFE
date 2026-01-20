@@ -49,6 +49,7 @@ export class CalendarComponent implements OnInit {
   selectedEndDate: Date | null = null;
   isSelectingEndDate = false;
   currentUserId: number | null = null;
+  minDate = new Date();
 
   constructor() {
     this.vacationForm = this.fb.group({
@@ -137,6 +138,34 @@ export class CalendarComponent implements OnInit {
     }
 
     const formValue = this.vacationForm.value;
+
+    // Check for overlaps with existing requests
+    const newStart = new Date(formValue.startDate);
+    const newEnd = new Date(formValue.endDate);
+    newStart.setHours(0, 0, 0, 0);
+    newEnd.setHours(0, 0, 0, 0);
+
+    const hasOverlap = this.myRequests.some(req => {
+      // Ignore rejected/cancelled requests
+      const status = String(req.status).toLowerCase();
+      if (['rejected', 'denied', 'cancelled', '2', '3'].includes(status)) {
+        return false;
+      }
+
+      const reqStart = new Date(req.startDate);
+      const reqEnd = new Date(req.endDate);
+      reqStart.setHours(0, 0, 0, 0);
+      reqEnd.setHours(0, 0, 0, 0);
+
+      // Check overlap: (StartA <= EndB) and (EndA >= StartB)
+      return newStart <= reqEnd && newEnd >= reqStart;
+    });
+
+    if (hasOverlap) {
+      alert('You already have a vacation request for the selected dates.');
+      return;
+    }
+
     this.loading = true;
 
     // Prepare backend payload with UTC-normalized dates

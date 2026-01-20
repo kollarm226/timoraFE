@@ -161,7 +161,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #d1d5db;
+  background: url('https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=') no-repeat center center / 150%;
   flex-shrink: 0;
 }
 
@@ -399,6 +399,7 @@ body.dark-theme .topbar button[mat-icon-button] mat-icon {
     transform: translateY(10px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;

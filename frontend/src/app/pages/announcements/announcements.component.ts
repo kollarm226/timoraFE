@@ -29,13 +29,13 @@ interface Announcement {
   standalone: true,
   imports: [
     MatCardModule,
-    MatButtonModule, 
+    MatButtonModule,
     MatIconModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    NgForOf, 
-    NgIf, 
+    NgForOf,
+    NgIf,
     DatePipe,
     FormsModule,
     ReactiveFormsModule
@@ -54,8 +54,12 @@ export class AnnouncementsComponent implements OnInit {
   all: Announcement[] = [];
   loading = true;
   error: string | null = null;
+  canCreate = false;
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.canCreate = user ? (user.role || 0) >= 1 : false;
+    });
     this.loadNotices();
   }
 
@@ -80,11 +84,11 @@ export class AnnouncementsComponent implements OnInit {
 
   // Mapuje notice z API na announcement objekt
   private mapNoticeToAnnouncement(notice: Notice): Announcement {
-    const authorName = notice.user 
+    const authorName = notice.user
       ? `${notice.user.firstName} ${notice.user.lastName}`
       : 'Unknown author';
-    
-    const preview = notice.content.length > 150 
+
+    const preview = notice.content.length > 150
       ? notice.content.substring(0, 150) + '...'
       : notice.content;
 
@@ -121,6 +125,11 @@ export class AnnouncementsComponent implements OnInit {
   }
 
   openCreateDialog(): void {
+    if (!this.canCreate) {
+      this.error = 'Only employers can create announcements.';
+      return;
+    }
+
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) {
       this.error = 'You must be logged in to create an announcement.';
@@ -240,7 +249,7 @@ export class CreateNoticeDialogComponent {
   onSubmit(): void {
     if (this.noticeForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
-      
+
       const createRequest: CreateNoticeRequest = {
         userId: this.userId,
         title: this.noticeForm.value.title,
