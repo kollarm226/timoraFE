@@ -60,7 +60,7 @@ export class CalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Ziskaj aktuálneho usera z AuthService
+    // Ziskaj aktualneho usera z AuthService
     this.authService.currentUser$.subscribe(user => {
       if (user && user.id) {
         this.currentUserId = user.id;

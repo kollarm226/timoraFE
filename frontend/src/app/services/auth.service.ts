@@ -17,10 +17,9 @@ import {
 } from 'firebase/auth';
 import { auth } from '../config/firebase.config';
 
-// Typ pre flexibilnu API odpoved, ktora moze mat rozne nazvy poli
+// Typ pre flexibilnu API odpoved s roznymi nazvami poli
 interface FlexibleUserResponse {
   [key: string]: unknown;
-  // Bezne variacie pre polia uzivatela
   UserId?: string | number;
   userId?: string | number;
   id?: string | number;
@@ -51,35 +50,28 @@ export class AuthService {
   private baseUrl = environment.apiUrl || 'https://timorabe.azurewebsites.net/api';
   private currentUser = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUser.asObservable();
-  private authError = new BehaviorSubject<string | null>(null); // For communicating auth errors to login flow
-  private currentUserSubscription: Subscription | null = null; // Sledovanie aktivneho odberu
+  private authError = new BehaviorSubject<string | null>(null); // Na komunikovanie chyb pre login
+  private currentUserSubscription: Subscription | null = null; // Sleduje aktivne predplatne
 
   constructor() {
-    // Monitorovanie zmien stavu autentifikacie
+    // Sleduj zmeny stavu autentifikacie
     onAuthStateChanged(auth, (firebaseUser) => {
-      console.log('onAuthStateChanged spustene, firebaseUser:', firebaseUser?.email || 'null');
-
-      // Ak existuje stary odber, zrus ho - aby sa nenacitavali stare udaje
+      // Ak existuje stare predplatne, zrus ho aby sa nenacitali stare data
       if (this.currentUserSubscription) {
-        console.log('Rusim odber predchadzajuceho pouzivatela...');
         this.currentUserSubscription.unsubscribe();
         this.currentUserSubscription = null;
       }
 
       if (firebaseUser && firebaseUser.email) {
-        // KRITICKE: Najskor vycisti currentUser aby sa predislo race condition so starymi datami
-        console.log('Cistim stare udaje pouzivatela pred nacitanim noveho...');
+        // KRITICKE: Najprv vycisti currentUser aby sa predislo race condition
         this.currentUser.next(null);
 
-        // Uzivatel je prihlaseny - nacitaj jeho data z backendu cez /api/auth/me endpoint
-        console.log('Uzivatel prihlaseny:', firebaseUser.email, '- stahujem data z backendu...');
+        // Uzivatel je prihlaseny - nacitaj jeho data z backendu
+        const expectedEmail = firebaseUser.email;
+        const subscription = new Subscription();
 
-        const expectedEmail = firebaseUser.email; // Uloz email na validaciu
-        const subscription = new Subscription(); // Vytvor subscription holder
-
-        const userSubscription = from(firebaseUser.getIdToken(true)).pipe( // true = vynut obnovenie tokenu
+        const userSubscription = from(firebaseUser.getIdToken(true)).pipe( // true = refresh tokenu
           switchMap((token: string) => {
-            console.log('Ziskany Firebase token, volam /api/auth/me...');
             return this.http.get<ApiUser>(`${this.baseUrl}/auth/me`, {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -91,101 +83,82 @@ export class AuthService {
           })
         ).subscribe({
           next: (apiUser) => {
-            console.log('=== UZIVATEL NACITANY Z BACKENDU ===');
-            console.log('Plna odpoved:', JSON.stringify(apiUser, null, 2));
-            console.log('Kluce odpovede:', Object.keys(apiUser));
-
-            // Skusaj vsetky mozne nazvy poli
-            console.log('--- Mozne identifikatory ---');
-            console.log('UserId:', (apiUser as FlexibleUserResponse).UserId);
-            console.log('userId:', (apiUser as FlexibleUserResponse).userId);
-            console.log('id:', (apiUser as FlexibleUserResponse).id);
-            console.log('ID:', (apiUser as FlexibleUserResponse).ID);
-
-            console.log('--- Mozne polia mien ---');
-            console.log('FirstName:', (apiUser as FlexibleUserResponse).FirstName);
-            console.log('firstName:', (apiUser as FlexibleUserResponse).firstName);
-            console.log('first_name:', (apiUser as FlexibleUserResponse).first_name);
-            console.log('LastName:', (apiUser as FlexibleUserResponse).LastName);
-            console.log('lastName:', (apiUser as FlexibleUserResponse).lastName);
-            console.log('last_name:', (apiUser as FlexibleUserResponse).last_name);
-
-            console.log('--- Email ---');
-            console.log('Email:', (apiUser as FlexibleUserResponse).Email);
-            console.log('email:', (apiUser as FlexibleUserResponse).email);
-
-            // Validuj ze nacitany uzivatel je ten spravny
+            // Over, ci email z backendu sedi
             const responseEmail = (apiUser as FlexibleUserResponse).Email || (apiUser as FlexibleUserResponse).email;
             if (responseEmail !== expectedEmail) {
-              console.error('🔴 Nezhoda emailov! Cakany:', expectedEmail, 'Dostany:', responseEmail);
-              console.error('Bezpecnostny problem: Backend vratil nespravne udaje uzivatela!');
-              // Nastav null namiesto throw aby sa zabranilo chybam
+              console.error('Email mismatch in backend response! Expected:', expectedEmail, 'Received:', responseEmail);
               this.currentUser.next(null);
               return;
             }
 
             const user: User = {
               id: (() => {
-                const idValue = (apiUser as FlexibleUserResponse).UserId || (apiUser as FlexibleUserResponse).userId || (apiUser as FlexibleUserResponse).id;
+                const idValue = (apiUser as FlexibleUserResponse).UserId ||
+                                (apiUser as FlexibleUserResponse).userId ||
+                                (apiUser as FlexibleUserResponse).id;
                 return idValue ? Number(idValue) : undefined;
               })(),
               companyId: (() => {
-                const companyValue = (apiUser as FlexibleUserResponse).CompanyId || (apiUser as FlexibleUserResponse).companyId;
+                const companyValue = (apiUser as FlexibleUserResponse).CompanyId ||
+                                     (apiUser as FlexibleUserResponse).companyId;
                 return companyValue || '';
               })(),
-              firstName: String((apiUser as FlexibleUserResponse).FirstName || (apiUser as FlexibleUserResponse).firstName || (apiUser as FlexibleUserResponse).first_name || ''),
-              lastName: String((apiUser as FlexibleUserResponse).LastName || (apiUser as FlexibleUserResponse).lastName || (apiUser as FlexibleUserResponse).last_name || ''),
+              firstName: String((apiUser as FlexibleUserResponse).FirstName ||
+                                (apiUser as FlexibleUserResponse).firstName ||
+                                (apiUser as FlexibleUserResponse).first_name || ''),
+              lastName: String((apiUser as FlexibleUserResponse).LastName ||
+                               (apiUser as FlexibleUserResponse).lastName ||
+                               (apiUser as FlexibleUserResponse).last_name || ''),
               email: responseEmail as string,
               address: '',
               password: '',
-              role: this.mapRoleStringToNumber((apiUser as FlexibleUserResponse).Role || (apiUser as FlexibleUserResponse).role),
-              isApproved: (apiUser as FlexibleUserResponse & { IsApproved?: boolean; isApproved?: boolean }).IsApproved ?? (apiUser as FlexibleUserResponse & { IsApproved?: boolean; isApproved?: boolean }).isApproved ?? false
+              role: this.mapRoleStringToNumber((apiUser as FlexibleUserResponse).Role ||
+                                               (apiUser as FlexibleUserResponse).role),
+              isApproved: (apiUser as FlexibleUserResponse).IsApproved ??
+                          (apiUser as FlexibleUserResponse).isApproved ??
+                          false
             };
-            console.log('Mapped user object:', JSON.stringify(user, null, 2));
-            console.log('Setting currentUser to:', user);
 
-            // Skontroluj ci sa este stale nacitava ten isty uzivatel (ochranu pred race condition)
+            // Over, ci stale nacitavame rovnakeho uzivatela
             if (this.currentUserSubscription === subscription) {
               this.currentUser.next(user);
             } else {
-              console.warn('User context changed during loading, ignoring old user data');
+              console.warn('User context changed during loading, ignoring outdated data');
             }
           },
-          error: (err) => {
-            console.error('Failed to fetch user from backend /api/auth/me:', err);
 
-            // Handle 404 - User not found in backend (Rejected/Deleted)
+          error: (err) => {
+            console.error('Failed to load user from backend /auth/me:', err);
+
+            // Spracovanie 404 - uzivatel neexistuje v backend
             if (err.status === 404) {
               const creationTime = firebaseUser.metadata.creationTime;
               const creationDate = creationTime ? new Date(creationTime) : new Date();
               const now = new Date();
               const diffSeconds = (now.getTime() - creationDate.getTime()) / 1000;
 
-              console.log(`User 404 in backend. Firebase account age: ${diffSeconds}s`);
-
-              // If user is older than 30 seconds, assume they are REJECTED/DELETED by admin
-              // (Allowing 30s buffer for the Registration process to complete backend creation)
+              // Ak konto existuje dlhsie ako 30s → zamietnute/odstranene adminom
               if (diffSeconds > 30) {
-                console.warn('User not found in backend and account is old - assuming Rejected/Deleted. Cleaning up.');
+                console.warn('User not found in backend and account is old → assuming rejected/removed.');
 
-                // Signal login failure immediately
+                // Oznac chybu
                 this.authError.next('User does not exist.');
 
-                // Attempt to delete from Firebase to allow re-registration
-                deleteUser(firebaseUser).then(() => {
-                  console.log('Firebase user deleted successfully.');
-                  this.currentUser.next(null);
-                }).catch(deleteErr => {
-                  console.error('Failed to delete firebase user (likely requires recent login):', deleteErr);
-                  // Fallback: Just logout to ensure they don't see "Pending"
-                  this.logout().subscribe();
-                });
+                // Pokus o zmazanie Firebase pouzivatela
+                deleteUser(firebaseUser)
+                  .then(() => {
+                    this.currentUser.next(null);
+                  })
+                  .catch(deleteErr => {
+                    console.error('Failed to delete Firebase user:', deleteErr);
+                    this.logout().subscribe();
+                  });
 
-                return; // Stop here, do NOT create fallback user
+                return;
               }
             }
 
-            // Fallback na Firebase displayName ak backend zlyha (alebo je to nova registracia)
+            // Fallback pri chybe backendu
             const user: User = {
               id: undefined,
               companyId: firebaseUser.displayName?.split('|')[0] || '',
@@ -194,75 +167,67 @@ export class AuthService {
               email: firebaseUser.email || '',
               address: firebaseUser.displayName?.split('|')[2] || '',
               password: '',
-              role: 0, // Default Employee
-              isApproved: false // Fallback to false to be safe
+              role: 0,
+              isApproved: false
             };
-            console.log('Using fallback user:', user);
 
-            // Skontroluj ci sa este stale nacitava ten isty uzivatel
             if (this.currentUserSubscription === subscription) {
               this.currentUser.next(user);
             }
           }
         });
 
-        // Ulož subscription aby si ju mohol neskôr zrušiť
         subscription.add(userSubscription);
         this.currentUserSubscription = subscription;
       } else {
-        // User nie je prihlaseny - vyčisti stav
-        console.log('User logged out - clearing currentUser');
+        // Uzivatel nie je prihlaseny
         this.currentUser.next(null);
       }
     });
   }
-
-  /**
+    /**
    * Registracia noveho uzivatela cez Firebase + backend
    * 1. Vycisti cache aby sa nenacitali stare data
-   * 2. Vytvori uzivatela v Firebase
+   * 2. Vytvori uzivatela vo Firebase
    * 3. Ziska Firebase token
    * 4. Odosle POST /api/auth/register na backend (s companyId alebo companyName)
    * 5. Ak backend zlyha, odstrani uzivatela z Firebase (rollback)
    */
   register(user: User | Record<string, unknown>): Observable<{ success: boolean; user: FlexibleUserResponse }> {
-    // KRITICKE: Vycisti vsetky cache PRED registraciou a POCKAJ na dokoncenie
-    console.log('Cistim vsetku cache pred registraciou...');
-
+    // KRITICKE: Vycisti vsetku cache PRED registraciou a POCKAJ na dokoncenie
     return from(this.clearAllCache()).pipe(
       switchMap(() => {
-        console.log('Cache vycistena, pokracujem s Firebase registraciou...');
         const userEmail = (user as User).email || String((user as Record<string, unknown>)['email'] || '');
         const userPassword = (user as User).password || String((user as Record<string, unknown>)['password'] || '');
         return from(createUserWithEmailAndPassword(auth, userEmail, userPassword));
       }),
       switchMap((userCredential: UserCredential) => {
-        // Store the Firebase credential for potential rollback
+        // Uloz Firebase credential pre pripadny rollback
         const firebaseUser = userCredential.user;
-        // Set displayName so it's preserved in Firebase for later use
-        const displayName = `${(user as User).companyId || (user as Record<string, unknown>)['companyId'] || 'default'}|${(user as User).firstName || (user as Record<string, unknown>)['firstName']} ${(user as User).lastName || (user as Record<string, unknown>)['lastName']}`;
+        // Nastav displayName, aby sa zachoval vo Firebase pre neskorsie pouzitie
+        const displayName =
+          `${(user as User).companyId || (user as Record<string, unknown>)['companyId'] || 'default'}|` +
+          `${(user as User).firstName || (user as Record<string, unknown>)['firstName']} ` +
+          `${(user as User).lastName || (user as Record<string, unknown>)['lastName']}`;
+
         return from(updateProfile(firebaseUser, { displayName })).pipe(
           switchMap(() => from(userCredential.user.getIdToken())),
           switchMap((token: string) => {
-            // Prepare request body depending on companyId or companyName
+            // Priprav telo requestu podla companyId alebo companyName
             const body: Record<string, unknown> = {
               firstName: (user as User).firstName || (user as Record<string, unknown>)['firstName'],
               lastName: (user as User).lastName || (user as Record<string, unknown>)['lastName'],
               userName: (user as User).userName || String((user as User).email || (user as Record<string, unknown>)['email']).split('@')[0],
-              email: (user as User).email || (user as Record<string, unknown>)['email']  // ← REQUIRED by backend!
+              email: (user as User).email || (user as Record<string, unknown>)['email'] // ← POVINNE pre backend
             };
 
             if ((user as User).companyId !== undefined && (user as User).companyId !== null) {
               body['companyId'] = (user as User).companyId;
-              console.log('Register: Joining existing company with ID:', (user as User).companyId);
             } else if ((user as User).companyName || (user as Record<string, unknown>)['companyName']) {
               body['companyName'] = (user as User).companyName || (user as Record<string, unknown>)['companyName'];
-              console.log('Register: Creating new company with name:', (user as User).companyName || (user as Record<string, unknown>)['companyName']);
             }
 
-            console.log('Register request body:', body);
-
-            // Volaj backend /api/auth/register s Firebase tokenом
+            // Zavolaj backend /api/auth/register s Firebase tokenom
             return this.http.post<{ success: boolean; user: FlexibleUserResponse }>(
               `${this.baseUrl}/auth/register`,
               body,
@@ -275,30 +240,24 @@ export class AuthService {
               catchError(backendError => {
                 console.error('Backend registration failed:', backendError);
 
-                // If user already exists (409), update their firstName/lastName and continue
+                // Ak uzivatel uz existuje (409), uprav firstName/lastName a pokracuj
                 if (backendError.status === 409) {
-                  console.log('User already exists, updating firstName and lastName');
                   return from(userCredential.user.getIdToken()).pipe(
                     switchMap((token: string) => {
-                      // Get user by email first to get their ID
-                      return this.http.get<FlexibleUserResponse>(`${this.baseUrl}/Users/by-email/${encodeURIComponent(userCredential.user.email!)}`, {
-                        headers: {
-                          Authorization: `Bearer ${token}`
-                        }
-                      }).pipe(
+                      // Najprv ziskaj pouzivatela podla emailu, aby si ziskal jeho ID
+                      return this.http.get<FlexibleUserResponse>(
+                        `${this.baseUrl}/Users/by-email/${encodeURIComponent(userCredential.user.email!)}`,
+                        { headers: { Authorization: `Bearer ${token}` } }
+                      ).pipe(
                         switchMap((existingUser) => {
-                          // Update user with new firstName/lastName
+                          // Uprav pouzivatela novym firstName/lastName
                           return this.http.patch<ApiUser>(
                             `${this.baseUrl}/Users/${existingUser.id}`,
                             {
-                              firstName: user.firstName,
-                              lastName: user.lastName
+                              firstName: (user as User).firstName,
+                              lastName: (user as User).lastName
                             },
-                            {
-                              headers: {
-                                Authorization: `Bearer ${token}`
-                              }
-                            }
+                            { headers: { Authorization: `Bearer ${token}` } }
                           ).pipe(
                             map((updatedUser) => ({
                               success: true,
@@ -311,10 +270,10 @@ export class AuthService {
                   );
                 }
 
-                // For other errors, rollback Firebase user
+                // Pre ine chyby sprav rollback Firebase pouzivatela
                 return from(deleteUser(firebaseUser)).pipe(
                   switchMap(() => throwError(() => backendError)),
-                  catchError(() => throwError(() => backendError)) // Even if delete fails, throw backend error
+                  catchError(() => throwError(() => backendError)) // Aj ked zmazanie zlyha, vyhod backend error
                 );
               })
             );
@@ -322,10 +281,9 @@ export class AuthService {
         );
       }),
       switchMap((registrationResult) => {
-        // Po úspešnej registrácii inicializuj auth state
-        console.log('Registration successful, initializing auth state for immediate login...');
+        // Po uspesnej registracii inicializuj auth stav
         return this.initializeAuthState().pipe(
-          map(() => registrationResult) // Vrať originálne registračné dáta
+          map(() => registrationResult) // Vrat povodne registration data
         );
       }),
       catchError(error => {
@@ -355,27 +313,24 @@ export class AuthService {
    * 4. Caka kym sa uzivatel nacita a potom vrati uspech
    */
   login(credentials: { username: string; password: string }): Observable<{ success: boolean; user: User }> {
-    // username je email v login formu
+    // Username je email v login formulari
     const expectedEmail = credentials.username.toLowerCase().trim();
 
     return from(
       signInWithEmailAndPassword(auth, credentials.username, credentials.password)
     ).pipe(
       switchMap(() => {
-        console.log('Firebase prihlasenie uspesne, cakam na data uzivatela...');
-
-        // Reset previous errors
+        // Reset predoslych chyb
         this.authError.next(null);
 
-        // Po Firebase prihlaseni cakaj na onAuthStateChanged callback
+        // Po Firebase logine pockaj na onAuthStateChanged callback,
         // ktory automaticky nacita user data cez /api/auth/me
-        // KRITICKE: Musime cakat na SPRAVNEHO uzivatela (porovnaj email)
+        // KRITICKE: Musi pockat na SPRAVNEHO uzivatela (porovnaj email)
 
         const successLog$ = this.currentUser$.pipe(
           filter(user => {
             if (user === null) return false;
             const isCorrectUser = user.email?.toLowerCase() === expectedEmail;
-            console.log('currentUser$ emitted:', user.email, '| Expected:', expectedEmail, '| Match:', isCorrectUser);
             return isCorrectUser;
           }),
           take(1)
@@ -388,15 +343,15 @@ export class AuthService {
         );
 
         return race(successLog$, errorLog$).pipe(
-          timeout(10000), // Cakaj max 10 sekund na nacitanie user data, potom timeout
+          timeout(10000), // Cakaj max 10 sekund na nacitanie user dat, potom timeout
           switchMap(user => {
-            // TypeScript guard - race would throw if errorLog$ wins, so user is User here
+            // TypeScript guard - race hodi error, ak vyhra errorLog$, takze user je tu User
             const u = user as User;
 
             if (!u) {
               return throwError(() => new Error('User not found'));
             }
-            // Check if user is approved
+            // Skontroluj, ci je uzivatel schvaleny
             if (u.isApproved === false) {
               return throwError(() => new Error('Your account is pending approval by your employer.'));
             }
@@ -429,19 +384,15 @@ export class AuthService {
   }
 
   /**
-   * Inicializacia auth stavu bez vynucovania logoutu
-   * Spusta onAuthStateChanged callback aby sa preloadla user data do cache
-   * Pouziva sa po registrácii aby sa user data nacitala skôr ako sa user prihlásti
+   * Inicializuje auth stav bez vynutenia logoutu
+   * Spusti onAuthStateChanged callback, aby sa prednacitali user data do cache
+   * Pouzite po registracii na nacitanie user dat pred tym, nez uzivatel pokracuje
    */
   initializeAuthState(): Observable<void> {
     return new Observable(observer => {
-      console.log('Initializing auth state (triggering onAuthStateChanged)...');
-
-      // onAuthStateChanged je už nastaveny v constructor
-      // Iba ho spustíme explicitne aby sa preloadla user data
-      // Počkaj 500ms aby sa firebase session ustálila
+      // onAuthStateChanged je uz nastavene v konstruktore
+      // Len pockaj, aby sa Firebase session stabilizovala
       setTimeout(() => {
-        console.log('Auth state initialization triggered');
         observer.next();
         observer.complete();
       }, 500);
@@ -450,17 +401,13 @@ export class AuthService {
 
   /**
    * Odhlasenie uzivatela
-   * Vycisti Firebase relaciu, resetuje currentUser a vymaze VSETKU cache
-   * - localStorage, sessionStorage
-   * - Firebase IndexedDB
-   * - Service Worker cache
+   * Vymaze Firebase session a resetuje currentUser
    */
   logout(): Observable<void> {
-    // Najjednoduchsi logout - iba Firebase signOut
+    // Jednoduche odhlasenie - iba Firebase signOut
     this.currentUser.next(null);
-    console.log('Uzivatel odhlaseny a currentUser vycisteny');
 
-    // Vyčisti subscription
+    // Zrus predplatne
     if (this.currentUserSubscription) {
       this.currentUserSubscription.unsubscribe();
       this.currentUserSubscription = null;
@@ -471,7 +418,7 @@ export class AuthService {
 
   /**
    * Vycisti localStorage, sessionStorage a selektivne Firebase cache
-   * Vracia Promise aby sa dalo cakat na dokoncenie
+   * Vracia Promise, aby sa dalo pockat na dokoncenie
    */
   private clearAllCache(): Promise<void> {
     return new Promise((resolve) => {
@@ -480,57 +427,56 @@ export class AuthService {
       try {
         savedTheme = localStorage.getItem('theme');
       } catch (e) {
-        console.warn('Nepodarilo sa precitat temu:', e);
+        console.warn('Failed to read theme setting:', e);
       }
 
       // 2. Vycisti Web Storage
       try {
         localStorage.clear();
         sessionStorage.clear();
-        console.log('Vycistene localStorage a sessionStorage');
+        console.log('localStorage and sessionStorage cleared');
       } catch (e) {
         console.warn('Could not clear storage:', e);
       }
 
-      // 3. Restore theme setting immediately after clearing
+      // 3. Obnov nastavenie temy hned po vycisteni
       if (savedTheme) {
         try {
           localStorage.setItem('theme', savedTheme);
-          console.log('Restored theme setting:', savedTheme);
+          console.log('Theme setting restored:', savedTheme);
         } catch (e) {
-          console.warn('Could not restore theme:', e);
+          console.warn('Could not restore theme setting:', e);
         }
       }
 
-      // 4. Vyčisti iba kritické Firebase IndexedDB (nie všetky)
+      // 4. Vycisti iba kriticke Firebase IndexedDB (nie vsetky)
       const dbPromise = this.clearCriticalFirebaseDB();
 
-      // 5. Vyčisti Service Worker cache
+      // 5. Vycisti Service Worker cache
       let cachePromise = Promise.resolve();
       if ('caches' in window) {
         cachePromise = caches.keys().then(cacheNames => {
           return Promise.all(
             cacheNames.map(cacheName =>
               caches.delete(cacheName).then(() => {
-                console.log(`Cleared cache: ${cacheName}`);
+                console.log(`Cache cleared: ${cacheName}`);
               })
             )
           );
-        }).then(() => { /* Cache cleared */ }).catch(e => {
+        }).then(() => { /* cache cleared */ }).catch(e => {
           console.warn('Error clearing service worker cache:', e);
         });
       }
 
-      // Počkaj na všetky async operácie + malý delay pre istotu
+      // Pockaj na vsetky async operacie + maly delay pre istotu
       Promise.all([dbPromise, cachePromise]).then(() => {
-        // Malý delay pre istotu, že IndexedDB operácie sa dokončili
+        // Maly delay, aby sa IndexedDB operacie stihli dokoncit
         setTimeout(() => {
           console.log('All cache cleared successfully (with delay)');
           resolve();
-        }, 300); // Kratší delay
+        }, 300);
       }).catch(() => {
         console.warn('Some cache clearing failed, but continuing...');
-        // Kratší delay aj pri chybe
         setTimeout(() => resolve(), 150);
       });
     });
@@ -543,9 +489,9 @@ export class AuthService {
   private clearCriticalFirebaseDB(): Promise<void> {
     return new Promise((resolve) => {
       try {
-        // Iba kriticke databazy ktore mozu obsahovat staru relaciu
+        // Iba kriticke databazy, ktore mozu obsahovat staru relaciu
         const criticalDBs = [
-          'firebaseLocalStorageDb'      // <- KRITICKE! Tu Firebase Auth uklada relaciu
+          'firebaseLocalStorageDb' // <- KRITICKE: Firebase Auth tu uklada relaciu
         ];
 
         const deletePromises = criticalDBs.map((dbName) => {
@@ -554,19 +500,19 @@ export class AuthService {
               try {
                 const request = indexedDB.deleteDatabase(dbName);
                 request.onsuccess = () => {
-                  console.log(`Vycistena kriticka Firebase IndexedDB: ${dbName}`);
+                  console.log(`Critical Firebase IndexedDB cleared: ${dbName}`);
                   resolveDb();
                 };
                 request.onerror = () => {
-                  console.warn(`Nepodarilo sa vycistit ${dbName}`);
+                  console.warn(`Could not clear ${dbName}`);
                   resolveDb();
                 };
                 request.onblocked = () => {
-                  console.warn(`Databaza ${dbName} je blokovana, vynucujem uzavretie...`);
+                  console.warn(`Database ${dbName} is blocked, forcing close...`);
                   resolveDb();
                 };
               } catch (e) {
-                console.warn(`Nepodarilo sa vycistit ${dbName}:`, e);
+                console.warn(`Could not clear ${dbName}:`, e);
                 resolveDb();
               }
             } else {
@@ -576,11 +522,11 @@ export class AuthService {
         });
 
         Promise.all(deletePromises).then(() => {
-          console.log('Kriticke Firebase IndexedDB vycistene');
+          console.log('Critical Firebase IndexedDB cleared');
           resolve();
         });
       } catch (e) {
-        console.warn('Chyba pri cisteni kritickych Firebase IndexedDB:', e);
+        console.warn('Error while clearing critical Firebase IndexedDB:', e);
         resolve();
       }
     });
@@ -588,14 +534,14 @@ export class AuthService {
 
   /**
    * Vycisti Firebase IndexedDB databazy
-   * Potrebne aby sa stary cached user data nenacital pri dalsom login-e
-   * KRITICKE: Zahrna firebaseLocalStorageDb kde Firebase Auth uklada relaciu!
+   * Potrebne, aby sa stary cached user data nenacital pri dalsom login-e
+   * KRITICKE: Zahrna firebaseLocalStorageDb kde Firebase Auth uklada relaciu
    */
   private clearFirebaseIndexedDB(): Promise<void> {
     return new Promise((resolve) => {
       try {
         const firebaseDBs = [
-          'firebaseLocalStorageDb',      // ← KRITICKÉ! Tu Firebase Auth ukladá session
+          'firebaseLocalStorageDb', // <- KRITICKE: Firebase Auth tu uklada session
           'firebase-heartbeat-store',
           'firebase-installations-store',
           'firebase-app-check-store',
@@ -608,7 +554,7 @@ export class AuthService {
               try {
                 const request = indexedDB.deleteDatabase(dbName);
                 request.onsuccess = () => {
-                  console.log(`Cleared Firebase IndexedDB: ${dbName}`);
+                  console.log(`Firebase IndexedDB cleared: ${dbName}`);
                   resolveDb();
                 };
                 request.onerror = () => {
@@ -646,11 +592,11 @@ export class AuthService {
   resetPassword(email: string): Observable<void> {
     return from(sendPasswordResetEmail(auth, email)).pipe(
       catchError(error => {
-        let message = 'Obnovenie hesla zlyhalo';
+        let message = 'Password reset failed';
         if (error.code === 'auth/user-not-found') {
-          message = 'Uzivatel nenajdeny';
+          message = 'User not found';
         } else if (error.code === 'auth/invalid-email') {
-          message = 'Neplatny email';
+          message = 'Invalid email';
         }
         return throwError(() => new Error(message));
       })
@@ -658,14 +604,14 @@ export class AuthService {
   }
 
   /**
-   * Ziska aktualneho uzivatela
+   * Vrati aktualneho uzivatela
    */
   getCurrentUser(): User | null {
     return this.currentUser.value;
   }
 
   /**
-   * Skontroluje ci je uzivatel overeny
+   * Skontroluje, ci je uzivatel prihlaseny
    */
   isAuthenticated(): boolean {
     return this.currentUser.value !== null;
@@ -692,7 +638,7 @@ export class AuthService {
         case 'admin':
           return 2;
         default:
-          console.warn(`Neznama rola: ${roleString}, nastavujem predvolenu Employee`);
+          console.warn(`Unknown role: ${roleString}, defaulting to Employee`);
           return 0;
       }
     }
@@ -703,11 +649,11 @@ export class AuthService {
 
   /**
    * Dodatocne cistenie uloziska pre istotu - iba problematicke kluce
-   * Nevymazava vsetky Firebase kluce aby nenarusilo nove prihlasenia
+   * Nevymazava vsetky Firebase kluce, aby nenarusilo nove prihlasenia
    */
   private forceExtraStorageClearing(): void {
     try {
-      // Iba specificke kluce ktore mozu sposobovat problemy s logout/login
+      // Iba specificke kluce, ktore mozu sposobovat problemy s logout/login
       const problematicKeys = [
         'CachedUserToken',
         'UserToken',
@@ -721,21 +667,21 @@ export class AuthService {
         try {
           localStorage.removeItem(key);
           sessionStorage.removeItem(key);
-          console.log(`Odstraneny problematicky kluc: ${key}`);
+          console.log(`Removed problematic key: ${key}`);
         } catch (e) {
-          console.warn(`Nepodarilo sa odstranit ${key}:`, e);
+          console.warn(`Could not remove ${key}:`, e);
         }
       });
 
-      console.log('✅ Selektivne cistenie uloziska dokoncene');
+      console.log('✅ Selective storage cleanup completed');
     } catch (e) {
-      console.warn('⚠️ Selektivne cistenie uloziska zlyhalo:', e);
+      console.warn('⚠️ Selective storage cleanup failed:', e);
     }
   }
 
   /**
-   * Get all pending users for current employer's company
-   * Only accessible by employers
+   * Ziska vsetky pending pouzivatelov pre firmu zamestnavatela
+   * Pristupne iba pre employer rolu
    */
   getPendingUsers(): Observable<unknown[]> {
     const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());
@@ -753,7 +699,7 @@ export class AuthService {
   }
 
   /**
-   * Approve a pending user by employer
+   * Schvali pending pouzivatela zamestnavatelom
    */
   approveUser(userId: number): Observable<unknown> {
     const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());
@@ -771,7 +717,7 @@ export class AuthService {
   }
 
   /**
-   * Reject a pending user by employer (deletes the user)
+   * Zamietne pending pouzivatela zamestnavatelom (zmaze uzivatela)
    */
   rejectUser(userId: number): Observable<unknown> {
     const token = auth.currentUser?.getIdToken() || from(auth.currentUser!.getIdToken());

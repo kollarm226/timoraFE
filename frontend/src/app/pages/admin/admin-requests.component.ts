@@ -163,8 +163,8 @@ export class AdminRequestsComponent implements OnInit {
   applyFilters(): void {
     const currentUser = this.auth.getCurrentUser();
     const currentUserCompanyId = currentUser?.companyId;
-    const isEmployer = currentUser?.role === 1; // Employer má rolu 1
-    const isAdmin = currentUser?.role === 2; // Admin má rolu 2
+    const isEmployer = currentUser?.role === 1; // Employer ma rolu 1
+    const isAdmin = currentUser?.role === 2; // Admin ma rolu 2
 
     // Aplikovat filtrovanie dovoleniek
     let filtered = this.allRequests;
