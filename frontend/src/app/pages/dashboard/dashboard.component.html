@@ -52,6 +52,7 @@
     <mat-card class="contact-card">
       <h2>Contact</h2>
       <div *ngIf="employer" class="employer-contact">
+        <div class="avatar"></div>
         <div class="employer-name clickable" (click)="openEmployerEmail()" (keyup.enter)="openEmployerEmail()"
           title="Send email" tabindex="0" role="button">
           {{ employer.firstName }} {{ employer.lastName }}

@@ -4,6 +4,19 @@
   padding: var(--spacing-xl);
 }
 
+@media (max-width: 768px) {
+  .page {
+    padding-top: 76px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding-top: 72px;
+    padding: var(--spacing-lg);
+  }
+}
+
 .page h1 {
   font-size: 24px;
   margin: 0 0 var(--spacing-md) 0;

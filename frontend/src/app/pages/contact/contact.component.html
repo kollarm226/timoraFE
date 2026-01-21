@@ -36,7 +36,7 @@
   <div *ngIf="!loading && !error" class="contact-list">
     <div class="contact-item" *ngFor="let c of contacts">
       <div class="contact-left">
-        <div class="avatar"></div>
+        <mat-icon class="avatar-icon">person</mat-icon>
         <div class="text">
           <div class="name">{{ c.name }}</div>
           <div class="role">{{ c.role }}</div>

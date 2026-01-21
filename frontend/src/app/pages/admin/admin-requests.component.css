@@ -484,6 +484,16 @@
 }
 
 /* Responzivny dizajn */
+@media (max-width: 1024px) {
+  .admin-page {
+    padding: 20px;
+  }
+
+  .filter-input {
+    min-width: 200px;
+  }
+}
+
 @media (max-width: 768px) {
   .admin-page {
     padding: 16px;
@@ -493,12 +503,29 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .admin-header h1 {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+
+  .muted {
+    font-size: 14px;
+  }
+
+  .refresh {
+    align-self: flex-end;
+    padding: 8px 14px;
+    font-size: 14px;
   }
 
   .tab-navigation {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    margin-bottom: 20px;
   }
 
   .tab-navigation::-webkit-scrollbar {
@@ -512,13 +539,14 @@
   }
 
   .filter-section {
-    padding: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
   }
 
   .filter-row {
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
+    gap: 10px;
   }
 
   .filter-input,
@@ -527,12 +555,21 @@
     width: 100%;
     box-sizing: border-box;
     min-width: unset;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .filter-info {
+    font-size: 13px;
+    margin-top: 10px;
   }
 
   /* Umoznit posuvanie tabuliek na mobilnych zariadeniach */
   .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    border: 1px solid var(--border);
   }
 
   .requests-table,
@@ -551,19 +588,53 @@
   .reason {
     max-width: 150px;
   }
+
+  .actions {
+    white-space: nowrap;
+  }
+
+  .actions button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .admin-page {
     padding: 12px;
+  }
+
+  .admin-header {
+    gap: 10px;
   }
 
   .admin-header h1 {
     font-size: 20px;
   }
 
+  .muted {
+    font-size: 13px;
+  }
+
+  .refresh {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .tab-button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
   .filter-section {
-    padding: 10px;
+    padding: 12px;
+  }
+
+  .filter-input,
+  .filter-select,
+  .clear-filters {
+    font-size: 13px;
+    padding: 9px 10px;
   }
 
   .requests-table th,
@@ -577,12 +648,92 @@
   .actions button {
     padding: 5px 8px;
     font-size: 11px;
-    margin-right: 4px;
+    margin-right: 2px;
   }
 
   .role-badge,
   .status {
     padding: 3px 8px;
     font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-page {
+    padding: 10px;
+    margin-top: 56px;
+  }
+
+  .admin-header {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .admin-header h1 {
+    font-size: 18px;
+  }
+
+  .muted {
+    font-size: 12px;
+  }
+
+  .refresh {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .tab-navigation {
+    margin-bottom: 16px;
+  }
+
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .filter-section {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .filter-input,
+  .filter-select,
+  .clear-filters {
+    font-size: 12px;
+    padding: 8px 8px;
+  }
+
+  .filter-info {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  .table-wrapper {
+    margin-bottom: 0;
+  }
+
+  .requests-table,
+  .users-table {
+    min-width: 700px;
+  }
+
+  .requests-table th,
+  .requests-table td,
+  .users-table th,
+  .users-table td {
+    padding: 6px 4px;
+    font-size: 11px;
+  }
+
+  .actions button {
+    padding: 4px 6px;
+    font-size: 10px;
+    margin-right: 1px;
+  }
+
+  .role-badge,
+  .status {
+    padding: 2px 6px;
+    font-size: 10px;
   }
 }

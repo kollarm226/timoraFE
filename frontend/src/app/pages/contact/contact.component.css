@@ -1,3 +1,8 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .contact-page {
   padding: var(--spacing-xl);
 }
@@ -148,11 +153,12 @@
   gap: var(--spacing-lg);
 }
 
-.avatar {
+.avatar-icon {
   width: 40px;
   height: 40px;
-  border-radius: 9999px;
-  background: #d1d5db;
+  font-size: 40px;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .text .name {

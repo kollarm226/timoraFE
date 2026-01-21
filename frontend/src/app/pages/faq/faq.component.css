@@ -1,3 +1,9 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+}
+
 .faq-page {
   display: flex;
   flex-direction: column;
