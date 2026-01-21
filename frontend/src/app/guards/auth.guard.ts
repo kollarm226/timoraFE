@@ -20,14 +20,14 @@ export const authGuard: CanActivateFn = () => {
         return false;
       }
 
-      // Check if user is approved
-      if (user.isApproved === false) {
-        // User is pending approval, presmeruj na pending-approval page
+      //Zamestnavatelia - Employers (role === 1) su auto-approved
+      if (user.role !== 1 && user.isApproved === false) {
+        // User caka na schvalenie zamestnavatelom
         router.navigate(['/pending-approval']);
         return false;
       }
 
-      // User je prihlaseny a schvaleny
+      // User je prihlaseny a schvaleny (alebo je Employer)
       return true;
     })
   );
