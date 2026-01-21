@@ -94,7 +94,9 @@ export class DocumentsComponent implements OnInit, OnDestroy {
    */
   openUploadDialog(): void {
     const dialogRef = this.dialog.open(UploadDocumentDialogComponent, {
-      width: '500px',
+      width: '100%',
+      maxWidth: '600px',
+      maxHeight: '90vh',
       data: {
         userId: this.currentUser?.id,
         companyId: this.currentUser?.companyId
@@ -144,21 +146,25 @@ export class DocumentsComponent implements OnInit, OnDestroy {
   imports: [CommonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, FormsModule],
   template: `
     <h2 mat-dialog-title>Upload Document</h2>
-    <mat-dialog-content class="dialog-content-center">
+    <mat-dialog-content>
       <p class="info-text">Upload your file (for example) <a href="https://nahrajsoubor.cz" target="_blank">nahrajsoubor.cz</a> and paste the link here</p>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Document Title</mat-label>
-        <input matInput [(ngModel)]="title" placeholder="e.g. Summer Newsletter" required>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Description (optional)</mat-label>
-        <textarea matInput [(ngModel)]="description" placeholder="Brief description of the document" rows="2"></textarea>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>File URL</mat-label>
-        <input matInput [(ngModel)]="fileUrl" placeholder="https://nahrajsoubor.cz/..." required>
-        <mat-hint>Paste the download link from nahrajsoubor.cz</mat-hint>
-      </mat-form-field>
+      
+      <div class="form-group">
+        <label for="title">Document Title</label>
+        <input id="title" type="text" [(ngModel)]="title" placeholder="e.g. Summer Newsletter" class="form-input" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description (optional)</label>
+        <textarea id="description" [(ngModel)]="description" placeholder="Brief description of the document" class="form-textarea"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="fileUrl">File URL</label>
+        <input id="fileUrl" type="text" [(ngModel)]="fileUrl" placeholder="https://nahrajsoubor.cz/..." class="form-input" required>
+        <small class="hint-text">Paste the download link from nahrajsoubor.cz</small>
+      </div>
+
       <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
     </mat-dialog-content>
     <mat-dialog-actions>
@@ -168,51 +174,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
       </button>
     </mat-dialog-actions>
   `,
-  styles: [`
-    .dialog-content-center {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 0 0 0;
-    }
-    .full-width {
-      width: 100%;
-      max-width: 400px;
-      margin-bottom: 16px;
-      display: block;
-    }
-    .info-text {
-      color: var(--text-muted);
-      font-size: 14px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .info-text a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-    .info-text a:hover {
-      text-decoration: underline;
-    }
-    .error-message {
-      color: #ef4444;
-      font-size: 14px;
-      margin-top: 8px;
-      text-align: center;
-    }
-    mat-dialog-actions {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 12px;
-    }
-    h2[mat-dialog-title] {
-      text-align: center;
-      width: 100%;
-      margin-bottom: 8px;
-    }
-  `]
+  styleUrl: './upload-document-dialog.component.css'
 })
 export class UploadDocumentDialogComponent {
   title = '';
