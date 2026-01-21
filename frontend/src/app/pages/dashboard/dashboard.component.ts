@@ -209,7 +209,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /**
    * Najdi zamestnavatela pre aktualneho pouzivatela
    */
-  priFind employer for current user
+  findEmployer(users: User[]): void {
     const currentUser = this.auth.getCurrentUser();
     if (!currentUser) {
       return;
@@ -217,7 +217,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Najdi zamestnavatelov v tej istej spolocnosti
     const user = users.find(u => u.id === currentUser.id);
-    if Find employers in the same company
+    if (user) {
       const employer = users.find(u => u.companyId === user.companyId && u.role === 1); // 1 = Employer
       if (employer) {
         this.employer = employer;
