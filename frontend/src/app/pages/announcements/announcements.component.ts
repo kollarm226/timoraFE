@@ -136,8 +136,14 @@ export class AnnouncementsComponent implements OnInit {
       return;
     }
 
+    // Determine responsive dialog width based on viewport
+    const isMobile = window.innerWidth < 768;
+    const dialogWidth = isMobile ? '95vw' : '500px';
+    const maxWidth = isMobile ? '95vw' : '500px';
+
     const dialogRef = this.dialog.open(CreateNoticeDialogComponent, {
-      width: '500px',
+      width: dialogWidth,
+      maxWidth: maxWidth,
       data: { userId: currentUser.id }
     });
 

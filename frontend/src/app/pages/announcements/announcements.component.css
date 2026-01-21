@@ -33,6 +33,40 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 768px) {
+  .announcements-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .announcements-header button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .announcements-header {
+    gap: var(--spacing-sm);
+  }
+
+  .announcements-header h1 {
+    font-size: 20px;
+  }
+
+  .announcements-header button {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .announcements-header button mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
 .error-message {
   background: #ffebee;
   color: #c62828;
@@ -74,6 +108,55 @@
   line-height: 1.6;
   margin: var(--spacing-sm) 0 var(--spacing-xl);
   color: var(--text);
+}
+
+.empty-state button {
+  margin-top: var(--spacing-md);
+}
+
+@media (max-width: 640px) {
+  .empty-state {
+    padding: var(--spacing-lg);
+    min-height: 40vh;
+  }
+
+  .empty-state mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .empty-state p {
+    font-size: 15px;
+  }
+
+  .empty-state button {
+    width: 100%;
+    max-width: 300px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .empty-state {
+    padding: var(--spacing-md);
+  }
+
+  .empty-state mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .empty-state p {
+    font-size: 13px;
+    margin: var(--spacing-xs) 0 var(--spacing-lg);
+  }
+
+  .empty-state button {
+    width: 100%;
+    font-size: 12px;
+  }
 }
 
 /* Dark mode: jednotný štýl tlačidiel na Announcements stránke */
