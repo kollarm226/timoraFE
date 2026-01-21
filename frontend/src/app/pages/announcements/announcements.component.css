@@ -374,7 +374,9 @@
   background-color: rgba(0, 0, 0, 0.04);
 }
 
-:hjustify-content: space-between;
+.row-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-xs);
 }
