@@ -209,7 +209,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /**
    * Najdi zamestnavatela pre aktualneho pouzivatela
    */
-  findEmployer(users: User[]): void {
+  findEmployer(users: ApiUser[]): void {
     const currentUser = this.auth.getCurrentUser();
     if (!currentUser) {
       return;
@@ -312,8 +312,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           // Obnov data
           this.loadDashboardData();
         },
-        error: () => {
-          console.error('Error cancelling vacation:', err);
+        error: (error) => {
+          console.error('Error cancelling vacation:', error);
           this.cancelError = 'Failed to cancel vacation request. Please try again.';
           this.cancelingId = null;
         }
