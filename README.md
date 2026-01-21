@@ -52,7 +52,7 @@ src/
 - **Angular Material** - UI components
 - **Firebase 12** - Authentication & database
 - **Cypress** - E2E testing
-- **Jasmine/Karma** - Unit testing
+- **Postman** - API testing
 - **Angular SSR** - Server-side rendering
 
 ## Features
@@ -84,7 +84,8 @@ npm run build
 ### Testing
 
 ```bash
-npm run test      # Unit tests
+
+npx cypress open  # Cypress open
 npm run e2e       # E2E tests
 ```
 
