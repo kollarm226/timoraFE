@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe(user => {
         this.currentUser = user;
 
-        // Ak mame usera bez id, skus obohacit z backendu cez email
+        // Ak mame uzivatela bez id, skus obohatit z backendu cez email
         if (user && !user.id && user.email) {
           this.apiService.getUserByEmail(user.email).subscribe({
             next: apiUser => {
@@ -64,7 +64,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
               this.filterVacations();
             },
             error: () => {
-              // tichy fallback; pokracuj s filtrom co sa da
+              // Tichy fallback; pokracuj s filtrom co sa da
               this.filterVacations();
             }
           });
@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Nacita data z backendu (dovolenky, oznamenia, users a companies)
+    * Nacita data z backendu (dovolenky, oznamenia, users a companies)
    */
   private loadDashboardData(): void {
     this.loading = true;
@@ -137,27 +137,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private filterVacations(): void {
     if (!this.allVacations) return;
     const userId = this.currentUser?.id;
-    console.log('filterVacations - currentUser:', this.currentUser, 'userId:', userId, 'allVacations count:', this.allVacations.length);
 
     if (userId) {
-      console.log('🔍 Debugging filter:');
-      this.allVacations.forEach((v, idx) => {
-        console.log(`  Vacation[${idx}]: userId=${v.userId} (type: ${typeof v.userId}), currentUserId=${userId} (type: ${typeof userId}), match=${v.userId === userId || String(v.userId) === String(userId)}`);
-      });
-
-      // Skus porovnat cislo aj string, potom zorad od najnovsich po najstarsie
       this.vacations = this.allVacations
-        .filter(v => {
-          const isMatch = v.userId === userId || String(v.userId) === String(userId);
-          return isMatch;
-        })
-        .sort((a, b) => b.id - a.id); // Zoradit od najnovsich po najstarsie
-      console.log('Filtered vacations:', this.vacations);
+        .filter(v => v.userId === userId || String(v.userId) === String(userId))
+        .sort((a, b) => b.id - a.id); // Zorad od najnovsich po najstarsie
       return;
     }
 
-    // Fallback: ak chyba user ID, ponechaj zoznam prazdny kvoli ochrane sukromia
-    console.warn('userId is missing, vacation list will be empty');
+     // Fallback: ak chyba user ID, ponechaj zoznam prazdny kvoli ochrane sukromia
+    this.vacations = [];
     this.vacations = [];
   }
 
@@ -172,7 +161,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Skrati text oznamenia na max pocet znakov
+   * Skrati text oznamenia na maximalny pocet znakov
    */
   truncateContent(content: string, maxLength = 100): string {
     if (content.length <= maxLength) {
@@ -214,15 +203,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onNoticeClick(notice: Notice, event: Event): void {
     event.preventDefault();
     this.markNoticeAsRead(notice.id);
-
-    // Mozne doplnit dalsiu logiku - napr. navigacia na detail alebo modal
-    console.log('Clicked on notice:', notice.title);
+    // Naviguj na stranku oznameni alebo zobraz detail v modali
   }
 
   /**
    * Najdi zamestnavatela pre aktualneho pouzivatela
    */
-  private findEmployer(users: ApiUser[]): void {
+  priFind employer for current user
     const currentUser = this.auth.getCurrentUser();
     if (!currentUser) {
       return;
@@ -230,7 +217,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Najdi zamestnavatelov v tej istej spolocnosti
     const user = users.find(u => u.id === currentUser.id);
-    if (user) {
+    if Find employers in the same company
       const employer = users.find(u => u.companyId === user.companyId && u.role === 1); // 1 = Employer
       if (employer) {
         this.employer = employer;
@@ -267,7 +254,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private handleError(message: string, error: unknown): void {
     console.error(message, error);
 
-    // Extrahovat spravu pre uzivatela z chyby
+    // Extrakt spravu pre uzivatela z chyby
     let userMessage = 'Failed to load data from the backend';
     if (typeof error === 'object' && error !== null && 'message' in error) {
       userMessage = (error as { message: string }).message;
@@ -325,7 +312,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           // Obnov data
           this.loadDashboardData();
         },
-        error: (err: unknown) => {
+        error: () => {
           console.error('Error cancelling vacation:', err);
           this.cancelError = 'Failed to cancel vacation request. Please try again.';
           this.cancelingId = null;
@@ -354,7 +341,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Toggles zobrazenie vsetkych notices
+   * Prepina zobrazenie vsetkych notices
    */
   toggleAllNotices(): void {
     this.showAllNotices = !this.showAllNotices;

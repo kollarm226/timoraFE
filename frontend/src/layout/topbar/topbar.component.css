@@ -205,7 +205,7 @@ body.dark-theme .topbar button[mat-icon-button] mat-icon {
     min-height: 56px;
   }
 
-  /* Skryť company name na mobile */
+  /* Skryt company name na mobile */
   .company-title {
     display: none;
   }

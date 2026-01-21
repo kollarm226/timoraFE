@@ -123,7 +123,7 @@ export class ContactComponent implements OnInit {
   applyFilters(): void {
     let filtered = this.allContacts;
 
-    // Filtrovanie podla companyId prihlaseneho užívateľa - HLAVNY FILTER
+    // Filtrovanie podla companyId prihlaseneho uzivatela - HLAVNY FILTER
     if (this.currentUserCompanyId) {
       const userCompanyIdNum = typeof this.currentUserCompanyId === 'string' 
         ? parseInt(this.currentUserCompanyId, 10) 

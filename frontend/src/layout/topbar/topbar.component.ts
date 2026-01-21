@@ -127,16 +127,14 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    console.log('🔄 Zacinam odhlasovanie...');
     this.showMenu = false;
 
     this.auth.logout().subscribe({
       next: () => {
-        console.log('✅ Odhlasenie OK, presmerovanie na /login');
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.log('❌ Chyba pri odhlasovani, ale presmeruvavam:', err);
+        console.error('Error during logout:', err);
         this.router.navigate(['/login']);
       }
     });
@@ -248,7 +246,7 @@ export class CompanyIdDialogComponent {
   data = inject(MAT_DIALOG_DATA) as { companyId: number | string; companyName: string };
 
   constructor() {
-    // Detekuj či je dark theme aktívny
+    // Detekuj ci je dark theme aktivny
     this.isDarkMode = document.body.classList.contains('dark-theme');
   }
 

@@ -159,7 +159,7 @@
   }
 }
 
-/* Dark mode: jednotný štýl tlačidiel na Announcements stránke */
+/* Dark mode: jednotny styl tlacidiel na Announcements stranke */
 :host-context(.dark-theme) .announcements-header button.mat-mdc-raised-button,
 :host-context(.dark-theme) .announcements-header button[mat-raised-button],
 :host-context(.dark-theme) .empty-state button.mat-mdc-raised-button,
