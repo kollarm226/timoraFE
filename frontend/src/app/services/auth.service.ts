@@ -351,8 +351,9 @@ export class AuthService {
             if (!u) {
               return throwError(() => new Error('User not found'));
             }
-            // Skontroluj, ci je uzivatel schvaleny
-            if (u.isApproved === false) {
+            // Zamestnavatelia (role === 1) su auto-approved
+            // Iba blokuj zamestnancov (role === 0) ktori niesu schvaleni
+            if (u.role !== 1 && u.isApproved === false) {
               return throwError(() => new Error('Your account is pending approval by your employer.'));
             }
             return of({
