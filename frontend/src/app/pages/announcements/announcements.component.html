@@ -7,15 +7,14 @@
       <div class="detail-header">
         <div class="detail-title">{{ s.title }}</div>
       </div>
-      <div class="detail-meta"
-        style="display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-        <mat-icon style="font-size: 20px; height: 20px; width: 20px; opacity: 0.7;">person</mat-icon>
-        <span style="font-weight: 600; font-size: 15px;">{{ s.author }}</span>
-        <span style="opacity: 0.4; margin: 0 4px;">•</span>
-        <span style="opacity: 0.8;">{{ s.createdAt | date:'MMMM d, y, h:mm a' }}</span>
+      <div class="detail-meta">
+        <mat-icon class="detail-meta-icon">person</mat-icon>
+        <span class="detail-meta-author">{{ s.author }}</span>
+        <span class="detail-meta-separator">•</span>
+        <span class="detail-meta-date">{{ s.createdAt | date:'MMMM d, y, h:mm a' }}</span>
       </div>
       <div class="detail-body">{{ s.body }}</div>
-      <div class="detail-actions" style="margin-top: 24px; text-align: right;">
+      <div class="detail-actions">
         <button mat-raised-button color="primary" (click)="close()">Close</button>
       </div>
     </div>
@@ -47,8 +46,8 @@
     <h2 *ngIf="latest">Latest</h2>
     <mat-card *ngIf="latest" class="latest-card" (click)="select(latest)" (keyup.enter)="select(latest)" tabindex="0"
       role="button">
-      <div class="latest-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <div style="display: flex; align-items: center; gap: 8px;">
+      <div class="latest-header">
+        <div class="latest-header-content">
           <div class="status-dot" *ngIf="isNoticeUnread(latest.id)"></div>
           <div class="latest-title">{{ latest.title }}</div>
         </div>
@@ -68,13 +67,13 @@
     <h2 *ngIf="all.length > 0">All Announcements</h2>
     <mat-card class="all-card" *ngIf="all.length > 0">
       <div class="row" *ngFor="let a of all" (click)="select(a)" (keyup.enter)="select(a)" tabindex="0" role="button">
-        <div class="row-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="row-header">
           <div class="name">{{ a.title }}</div>
-          <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="row-actions">
             <div class="date">{{ a.createdAt | date:'dd.MM.yyyy' }}</div>
-            <button mat-icon-button color="warn" style="height: 32px; width: 32px; line-height: 32px;" *ngIf="canCreate"
+            <button mat-icon-button color="warn" class="delete-button" *ngIf="canCreate"
               (click)="deleteNotice($event, a.id)">
-              <mat-icon style="font-size: 18px;">delete</mat-icon>
+              <mat-icon class="delete-icon">delete</mat-icon>
             </button>
           </div>
         </div>
